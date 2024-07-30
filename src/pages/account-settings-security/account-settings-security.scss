@@ -1,0 +1,24 @@
+.main-container-account-settings-security{
+    width: 100%;
+}
+.container-account-settings-security{
+    display: flex;
+    flex-direction: coloumn;
+}
+.account-settings-security{
+    display: flex;
+    padding: 15px;
+    gap: 10px;
+    align-items: center;
+}
+.account-settings-security-header{
+    display: flex;
+    flex-direction:row;
+    gap: 10px;
+    padding: 0px 15px;
+}
+.account-settings-security-header p{
+    color: #1C9CA7;
+    font-weight: 600;
+    font-size: 1.1rem;
+}

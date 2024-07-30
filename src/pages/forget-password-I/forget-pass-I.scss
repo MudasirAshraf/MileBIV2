@@ -1,0 +1,104 @@
+.main-container-forget-pass-I{
+    width: 100%;
+}
+.form-header-forget-password-I{
+    font-size: 1.3rem;
+}
+.header-container-forget-password-I{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 370px;
+}
+.form-header-text-forget-password-div{
+    margin-left: 410px;
+}
+.progress-bar-forget-password-I{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin-left: 142px; 
+}
+.progress-I-fp-I{
+    position: relative;
+}
+.progress-I-image-I-fp-I{
+    position: absolute;
+    left:38%;
+    top: 22%;
+}
+.progress-I-image-III-fp-I{
+    position: absolute;
+    left: 33%;
+    bottom: -20%;
+}
+.progress-II-fp-I{
+   position: absolute;
+   left: 53.1%;
+}
+.progress-III-fp-I{
+    position: absolute;
+    left: 77.5%;
+}
+.progress-III-image-II-fp-I{
+    position: absolute;
+    top: 25%;
+    left: 34%;
+}
+.progress-IV-fp-I{
+   position: absolute;
+   left: 85.7%; 
+}
+.progress-V-fp-I{
+    position: absolute;
+    left: 109.5%;
+}
+.progress-V-image-II-fp-I{
+    position: absolute;
+    left: 35.25%;
+    bottom: -1%;
+    top: 24.7%;
+}
+.input-group-fp-I{
+    display: flex;
+    align-items: center;
+    margin-left: 100px;
+    margin-bottom: 1rem;
+    border: 1px solid #2A374A;
+    padding:5px;
+    width: 800px;
+    border-radius: 5px;
+    background-color: #2A374A;
+}
+.input-group-fp-I input {
+    flex: 1;
+    border: none;
+    outline: none;
+  }
+  .button-fp-I{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: flex-end;
+    padding-right: 85px;
+    margin-top: 120px;
+  }
+  .btn-fp-I{
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .line-fp-I{
+    margin-top:20px;
+  }
+  .form-sign-in-fp-I{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: flex-end;
+    padding-right: 85px;
+    margin-top: 50px;
+  }

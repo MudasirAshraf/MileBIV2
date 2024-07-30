@@ -1,0 +1,114 @@
+.main-container-create-dashboard {
+    width: 100%;
+  }
+  .container-create-dashboard {
+    display: flex;
+    flex-direction: column;
+  } 
+  .header-create-dasdhboard {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    padding: 0px 35px;
+  }
+  
+  .header-I-create-dashboard,
+  .header-II-create-dashboard,
+  .header-III-create-dashboard {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+    position: relative;
+  }
+  
+  .create-dashboard-links {
+    color: white;
+    text-decoration: none;
+    margin-top: 30px;
+  }
+  
+  .create-dashboard-circle {
+    height: 20px;
+    width: 20px;
+    border-radius: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #1C9CA7;
+    color: white;
+    margin-top: 30px;
+    font-size: 0.7rem;
+  }
+  
+  .header-I-create-dashboard.active .create-dashboard-links,
+  .header-II-create-dashboard.active .create-dashboard-links,
+  .header-III-create-dashboard.active .create-dashboard-links {
+    font-weight: bold;
+    color: #1C9CA7;
+  }
+  
+  .header-I-create-dashboard.active::after,
+  .header-II-create-dashboard.active::after,
+  .header-III-create-dashboard.active::after {
+    content: '';
+    position: absolute;
+    bottom: -19px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #1C9CA7;
+  }
+  
+  .main-container-create-dashboard-card-component {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); // 4 columns
+    gap: 16px;
+    padding: 16px;
+  }
+  .main-container-available-templates{
+     display: grid;
+    grid-template-columns: repeat(4, 1fr); // 4 columns
+    gap: 16px;
+    padding: 16px;
+  }
+  .main-container-datasets{
+    display: grid;
+    grid-template-columns: repeat(6, 1fr); // 4 columns
+    gap: 16px;
+    padding: 6px;
+  }
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+  }
+  
+  .pagination button {
+    background-color: transparent;
+    border: 2px solid white;
+    border-radius: 100px;
+    padding: 8px 12px;
+    margin: 0 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  
+  .pagination button:hover {
+    font-weight: 700;
+      color: #1C9CA7;
+  }
+  
+  .pagination button.active {
+        color: #1C9CA7;
+        font-weight: 700;
+  }
+  
+  .pagination button:disabled {
+    cursor: not-allowed;
+    opacity: 0.9;
+  }
+  
+  

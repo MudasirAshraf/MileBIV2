@@ -1,0 +1,130 @@
+.main-container-sccount-settings-pi{
+    width: 100%;
+}
+.container-account-settings-pi{
+    display: flex;
+    flex-direction: coloumn;
+}
+.account-settings-pi{
+    display: flex;
+    padding: 15px;
+    gap: 10px;
+    align-items: center;
+}
+.account-settings-pi-header{
+    display: flex;
+    flex-direction:row;
+    gap: 10px;
+    padding: 0px 15px;
+}
+.account-settings-pi-header p{
+    color: #1C9CA7;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+.image-upload-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0px 15px;
+  }
+  .backgroung-image-container{
+    height: 60px;
+    width: 60px;
+    background-color: white;
+    border-radius: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .uploaded-image, .default-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-top: 6px;
+  }
+  .change-button {
+    background-color: #00b3a6;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .alert-button{
+    display: flex;
+    flex-direction: column;
+    padding-top: 10px;
+  }
+  .alert-button-inside{
+    display: flex;
+    gap: 10px;
+  }
+  .alert-text p{
+    color: #1C9CA7;
+    font-weight: 600;
+    font-size: 0.5rem;
+  }
+  .change-button:hover {
+    background-color: #009688;
+  }
+  .form-account-settings-pi{
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+  .account-settings-pi-form{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    padding: 0px 15px;
+  }
+  .input-group-sign-in-account-settings-pi {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    border: 1px solid #2A374A;
+    padding:5px;
+    width: 275px;
+    border-radius: 5px;
+    background-color: #232D3C;
+    gap: 3px; 
+  }
+  .input-details-sign-in-account-settings-pi{
+    background-color: #232D3C;
+  }
+  .input-group-sign-in-account-settings-pi input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background-color: #232D3C;
+    color: white;
+  }
+  .input-group-sign-in-row-I-account-settings-pi{
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    border: 1px solid #2A374A;
+    padding:10px 5px;
+    width: 275px;
+    border-radius: 5px;
+    background-color: #232D3C;
+}
+.input-details-sign-in-row-I-account-settings-pi{
+  background-color: #232D3C;
+}
+.input-group-sign-in-row-I-account-settings-pi input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background-color: #232D3C;
+  color: white;
+}
+  .account-settings-pi-form-button{
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: flex-end;
+    padding-right: 14px;
+  }

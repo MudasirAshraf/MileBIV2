@@ -1,0 +1,92 @@
+.card-ii{
+    display: flex;
+    flex-direction: column;
+    background-color: rgba(255, 255, 255, 0.05);
+    gap: 10px;
+    border-radius: 10px;
+}
+.first-column-cardii{
+    background-color: #1B2534;
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+    align-items: center;
+}
+.sub-first-column{
+padding: 10px;
+position: relative;
+opacity: 0.4;
+}
+.card-ii-rows{
+    display: flex;
+    flex-direction: row;
+    gap: 227px;
+    position: absolute;
+}
+.first-column-card-ii-row-i{
+    background-color: #0E6C17;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    gap:5px;
+    height: 17px;
+    padding: 3px;
+    font-size: 0.5rem;
+    margin-top: 15px;
+}
+.first-column-card-ii-row-i-part-i{
+    background-color: #5A5A5A;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    gap:5px;
+    height: 17px;
+    padding: 3px 5px;
+    font-size: 0.5rem;
+    margin-top: 15px;
+}
+.first-column-card-ii-row-ii {
+    background-color: #1C9CA7;
+    display: flex;
+    align-items: center;
+    padding: 5px;
+    border-radius: 3px;
+    margin-top: 15px;
+    position: relative; /* Ensure this is set */
+    cursor: pointer; /* Optional: change cursor to pointer */
+  }
+  .second-column-card-ii{
+    display: flex;
+    flex-direction:column ;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding-left: 10px;
+  }
+  .second-column-card-ii-data-i,
+  .second-column-card-ii-data-ii{
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+  }
+  .third-column-card-ii{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 5px;
+  }
+  .third-column-card-ii-button{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0px 102px;
+    font-size: 0.8rem;
+  }
+  .third-column-card-ii-button-part-i{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0px 138px;
+    font-size: 0.8rem;
+  }
+  

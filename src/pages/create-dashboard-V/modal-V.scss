@@ -1,0 +1,26 @@
+.main-container-dashboard-V{
+    width: 100%;
+}
+.container-dashboard-V{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 50px;
+    margin-top: 120px;
+}
+.second-column-dashboard-V{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.second-column-dashboard-V h1{
+   font-size: 2.6rem;
+    font-weight: 200;
+}
+.second-column-dashboard-V p{
+    font-size: 0.9rem;
+     font-weight: 400;
+     color: #1C9CA7;
+ }

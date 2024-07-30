@@ -1,0 +1,47 @@
+.card-iv{
+    display: flex;
+    flex-direction: column;
+    background-color: rgba(255, 255, 255, 0.05);
+    gap: 10px;
+    border-radius: 10px;
+}
+.card-iv-setting{
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    padding-right: 5px;
+}
+.first-column-card-iv{
+    display: flex;
+    padding: 3px;
+    border-radius: 3px;
+    margin-top: 5px;
+    background-color: #1C9CA7;
+    border-radius: 3px;
+    cursor: pointer;
+}
+.first-column-card-iv-image{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+   
+}
+.second-column-card-iv,
+.third-column-card-iv{
+    display: flex;
+   align-items: center;
+   justify-content: center;
+}
+.fourth-column-card-iv{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.fourth-column-card-iv-button{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0px 82px;
+    font-size: 0.8rem;
+    cursor: pointer;
+}

@@ -1,0 +1,13 @@
+.main-container-workspaces{
+    width: 100%;
+}
+.container-workspaces{
+    display: flex;
+    flex-direction: column;
+}
+.main-container-workspaces-cards{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); // 4 columns
+    gap: 16px;
+    padding: 16px;
+}

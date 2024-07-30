@@ -1,0 +1,99 @@
+.main-container-sign-in-page-III{
+    width: 100%;
+}
+.container-sign-in-page-III{
+    max-width: 1280px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px; 
+    align-items: center;
+    margin: auto;
+}
+.header-container-sign-in-page-III{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 370px;
+}
+.progress-bar-sign-in-page-III{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin-left: 180px;
+    margin-top: 15px;
+}
+.progress-sp-III-I-image-I{
+    position: absolute;
+    left:48.7%;
+    top: 21%;
+  }
+  .progress-sp-III-I-image-III{
+      position: absolute;
+      top: -50%;
+      left: 46.5%;
+  }
+  .progress-sp-III-II-image-I{
+    position: absolute;
+    top: 10.9%;
+    left: 53.5%;
+}
+.progress-sp-III-III{
+    position: absolute;
+    left: 82%;
+    top: 1.9%;
+}
+.progress-sp-III-III-image-I{
+    position: absolute;
+    top: 24%;
+    left: 34%;
+}
+.progress-sp-III-III-image-III{
+    position: absolute;
+    top: -50%;
+    left: 20%;
+}
+.progress-sp-III-IV--image-I{
+position: absolute;
+left: 91.7%;
+top: 10.4%;
+}
+.progress-sp-III-V{
+    position: absolute;
+    left: 120.7%;
+    top: 0.5%;
+}
+.progress-sp-III-V-image-II{
+    position:absolute;
+    left: 37%;
+    top: 24%;
+}
+.progress-sp-III-V-image-III{
+    position: absolute;
+    top: 80%;
+    left: 33%;
+}
+.select-login-page-III {
+    width: 400px; /* Adjust width as needed */
+    padding: 9px;
+    font-size: 13px;
+    background-color: #2A374A;
+    border: none;
+    color: grey;
+}
+select:invalid {
+    color: grey; /* Placeholder text color */
+}
+option:not(:first-child) {
+    color: white;
+}
+
+
+
+
+
+    
+
+

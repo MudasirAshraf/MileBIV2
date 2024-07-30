@@ -1,0 +1,84 @@
+.custom-select {
+    position: relative;
+    width: 300px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    border: 1px solid #2A374A;
+    padding:0px 5px;
+    border-radius: 5px;
+    background-color: #2A374A;
+    color: white;
+    margin-bottom: 1rem;
+  
+    .selected-option {
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+  
+    .options {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      border: 1px solid #ccc;
+      background: white;
+      width: 100%;
+      color: black;
+  
+      .option {
+        padding: 10px;
+        display: flex;
+     gap: 10px;
+        align-items: center;
+  
+        &:hover {
+          background: #E4EDFB;
+        }
+      }
+  
+      .small-line {
+        display: block;
+        width: 300px;
+      }
+  
+      p {
+        padding: 10px;
+        cursor: pointer;
+        &:hover {
+          background: #eee;
+        }
+      }
+    }
+  
+    &:hover .options {
+      display: block;
+    }
+  }
+  .para-custom-select{
+    color: #1C9CA7;
+    font-size: 0.8rem;
+  }
+  .create-button{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid black;
+  }
+  .create-button-btn{
+display: flex;
+height: 40px;
+align-items: center;
+width: 105px;
+justify-content: center;
+  }
+  .input{
+    height: 40px;
+    border: none;
+  }
+  .alert-custom-select{
+    color: red;
+    font-size: 0.8rem;
+  }

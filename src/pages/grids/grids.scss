@@ -1,0 +1,31 @@
+.main-container {
+  width: 100%;
+}
+.container-grids {
+  padding: 10px;
+}
+.content-grids {
+  background-color: white;
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+  gap: 10px;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.grid-item {
+  background-color: transparent;
+  border: 1px dotted #ccc;
+  border-radius: 8px;
+  padding: 15px;
+  height: 300px;
+  width: 500px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.grid-body {
+  line-height: 1.5rem;
+  color: black;
+}

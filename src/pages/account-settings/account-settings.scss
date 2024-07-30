@@ -1,0 +1,23 @@
+.main-container-account-settings{
+width: 100%;
+}
+.container-account-settings{
+    display: flex;
+    flex-direction: coloumn;
+}
+.account-settings{
+    display: flex;
+   padding: 15px;
+   gap: 10px;
+   align-items: center;
+}
+.account-settings p{
+    font-size: 2rem;
+    font-weight: 300;
+}
+.account-settings-card-component-container{
+    display: flex;
+    flex-direction: row;
+    padding: 15px;
+    gap: 10px;
+}

@@ -1,0 +1,175 @@
+.main-container-sign-in-page-I{
+    width: 100%;
+}
+.container-sign-in-page-I{
+    display: flex;
+    flex-direction: column;
+    gap: 40px; 
+    align-items: center;
+    margin: auto;
+}
+.header-details-sign-in-page-I{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.image-sign-up{
+   height: 30px;
+   cursor: pointer;
+}
+.form-container-sign-in-page-I{
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+    background-color: #1B2534;
+    padding: 10px;
+    width: 1000px;
+}
+.header-container-sign-in-page{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 400px;
+}
+.form-header-text-sign-in-page-div{
+    margin-left: 450px;
+}
+.form-header-sign-in-page{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.form-header-text-sign-in-page{
+    color: white;
+    font-size: 1.7rem;
+    font-weight: 400;
+}
+.progress-bar-sign-in-page-I{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin-left: 180px; 
+}
+.progress-I{
+    position: relative;
+}
+.progress-I-image-I{
+    position: absolute;
+    left:38%;
+    top: 22%;
+}
+.progress-I-image-III{
+    position: absolute;
+    left: 33%;
+    bottom: -26%;
+}
+.progress-II{
+   position: absolute;
+   left: 53.5%;
+}
+.progress-III{
+    position: absolute;
+    left: 82.5%;
+}
+.progress-III-image-II{
+    position: absolute;
+    top: 25%;
+    left: 34%;
+}
+.progress-IV{
+   position: absolute;
+   left: 92.7%; 
+}
+.progress-V{
+    position: absolute;
+    left: 120.5%;
+}
+.progress-V-image-II{
+    position: absolute;
+    left: 35.25%;
+    bottom: -1%;
+    top: 24.7%;
+}
+.sub-header-sign-in-page-I{
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    gap: 10px;
+    padding-left: 100px;
+}
+.sub-header-sign-in-page-I-text{
+    color: #1C9CA7;
+    font-weight: 700;
+}
+// Form CSS
+.form-column-details{
+    display: flex;
+    flex-direction: column;
+}
+.first-column-details,
+.second-column-details,
+.third-column-details{
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+    padding-left: 100px;
+}
+.input-group-sign-in-row-I{
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    border: 1px solid #2A374A;
+    padding:10px 5px;
+    width: 400px;
+    border-radius: 5px;
+    background-color: #2A374A;
+}
+.input-group-sign-in {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    border: 1px solid #2A374A;
+    padding:5px;
+    width: 400px;
+    border-radius: 5px;
+    background-color: #2A374A;
+  
+  }
+  .input-details-sign-in{
+    background-color: #2A374A;
+  }
+  .input-group-sign-in input {
+    flex: 1;
+    border: none;
+    outline: none;
+  }
+  .input-details-sign-in-row-I{
+    background-color: #2A374A;
+  }
+  .input-group-sign-in-row-I input {
+    flex: 1;
+    border: none;
+    outline: none;
+  }
+
+  .form-sign-in-page-button{
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    padding-right: 45px;
+  }
+  .form-sign-in-button-div{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 42px;
+  }
+  .form-sign-in-link-i{
+    text-decoration: none;
+    color: white;
+    padding-left: 60px;
+  }

@@ -1,0 +1,79 @@
+.main-container-create-dashboard-modals{
+    width: 100%;
+    background-color: #1B2534;
+}
+.cross-icon-dashboard-modals{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    width: 1300px;
+    background-color: #1B2534;
+    margin: auto;
+}
+.container-dashboard-modals{
+    display: flex;
+    flex-direction: column;
+    background-color: #1B2534;
+    padding-top: 30px;
+    padding-bottom: 500px;
+    width: 1300px;
+   position: relative;
+   margin: auto;
+}
+.first-row-dashboard-modals{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 400;
+}
+.second-row-dashboard-modals{
+    position: absolute;
+    left: 90%;
+}
+.third-row-dashboard-modals{
+    display: flex;
+    padding-right: 555px;
+}
+.header-dashboard-modals{
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+    color: #1C9CA7;
+   gap: 20px;
+   padding-left: 170px;
+}
+.form-dashboard-modals{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 30px;
+    padding-left: 170px;
+}
+.input-group-sign-in-row-I-dm{
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    border: 1px solid #2A374A;
+    padding:13.5px 5px;
+    width: 300px;
+    border-radius: 5px;
+    background-color: #2A374A;
+}
+.input-details-sign-in-row-I-dm{
+    background-color: #2A374A;
+  }
+  .input-group-sign-in-row-I-dm input {
+    flex: 1;
+    border: none;
+    outline: none;
+  }
+  .button-dashboard-modal{
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 130px;
+    margin-top: 80px;
+  }

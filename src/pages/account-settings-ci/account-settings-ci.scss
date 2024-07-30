@@ -1,0 +1,93 @@
+.main-container-sccount-settings-ci{
+    width: 100%;
+}
+.container-account-settings-ci{
+    display: flex;
+    flex-direction: coloumn;
+}
+.account-settings-ci{
+    display: flex;
+    padding: 15px;
+    gap: 10px;
+    align-items: center;
+}
+.account-settings-ci-header{
+    display: flex;
+    flex-direction:row;
+    gap: 10px;
+    padding: 0px 15px;
+}
+.account-settings-ci-header p{
+    color: #1C9CA7;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+.account-settings-ci-form-container{
+    display: flex;
+    flex-direction: column;
+    padding: 0px 15px;
+    gap: 20px;
+}
+.account-settings-ci-ist-row,
+.account-settings-ci-2nd-row{
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}
+.input-group-sign-in-account-settings-ci {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    border: 1px solid #2A374A;
+    padding:5px;
+    width: 275px;
+    border-radius: 5px;
+    background-color: #232D3C;
+    gap: 3px; 
+  }
+  .input-details-sign-in-account-settings-ci{
+    background-color: #232D3C;
+  }
+  .input-group-sign-in-account-settings-ci input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background-color: #232D3C;
+    color: white;
+  }
+  .styled-select{
+    width: 285px;
+    padding:10px 5px;
+    font-size: 14px;
+    color: white;
+    background-color: #232D3C;
+    border: none;
+    border-radius: 5px;
+  }
+  .account-settings-ci-third-row{
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: flex-end;
+  }
+  .input-group-ci{
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    border: 1px solid #2A374A;
+    padding:5px;
+    width: 582px;
+    border-radius: 5px;
+    background-color: #232D3C;
+    gap: 3px; 
+  }
+  .input-details-adress-ci{
+    background-color: #232D3C;
+  }
+  .input-group-ci input{
+    flex: 1;
+    border: none;
+    outline: none;
+    background-color: #232D3C;
+    color: white;
+  }

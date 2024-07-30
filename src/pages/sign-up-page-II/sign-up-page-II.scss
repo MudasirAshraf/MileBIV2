@@ -1,0 +1,120 @@
+.main-container-sign-in-page-II{
+    width: 100%;
+}
+.container-sign-in-page-II{
+    max-width: 1280px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px; 
+    align-items: center;
+    margin: auto;
+}
+.header-container-sign-in-page-II{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 370px;
+}
+.progress-bar-sign-in-page-II{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin-left: 180px;
+    margin-top: 5px;
+}
+.progress-sp-I-image-I{
+  position: absolute;
+  left:48.7%;
+  top: 25%;
+}
+.progress-sp-I-image-III{
+    position: absolute;
+    top: -50%;
+    left: 46.3%;
+}
+.progress-sp-II-image-I{
+    position: absolute;
+    top: 10.5%;
+    left: 53.7%;
+}
+.progress-sp-III{
+    position: absolute;
+    left: 82.5%;
+}
+.progress-sp-III-image-I{
+    position: absolute;
+    top: 23%;
+    left: 36%;
+}
+.progress-sp-III-image-III{
+    position: absolute;
+    top: 80%;
+    left: 33%;
+}
+.progress-sp-IV-image-I{
+    position: absolute;
+    top: 10.5%;
+    left: 80.3%;
+}
+.progress-sp-V{
+    position: absolute;
+    left: 311%;
+    top: 1.5%;
+}
+.progress-sp-V-image-II{
+    position:absolute;
+    left: 37%;
+    top: 24%;
+}
+.paragrapgh-I-div{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding-left: 100px;
+}
+.paragraph-I{
+font-size: 1rem;
+}
+.paragraph-II{
+    font-size: 0.8rem;
+    color: #B0BFD4;
+    }
+    .code-div{
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+    .code-entry {
+        display: flex;
+        gap: 10px;
+      }
+      
+      .code-entry input {
+        width: 40px;
+        height: 40px;
+        font-size: 24px;
+        text-align: center;
+        background-color: #2A374A;
+        color: white;
+      }
+      
+      .code-entry button {
+        margin-left: 10px;
+      }
+      .code-resend-sp-II{
+        color: #2b5087;
+        cursor: pointer;
+      }
+      .proceed-button{
+        display: flex;
+        align-items: flex-end;
+        justify-content: flex-end;
+        flex-direction: row;
+        padding-right: 50px;
+      }
+      

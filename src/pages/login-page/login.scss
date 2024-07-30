@@ -1,0 +1,135 @@
+.main-container-login-page{
+    width: 100%;
+}
+.container-login-page{
+    max-width: 1280px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    align-items: center;
+    margin: auto;
+}
+.login-page-select-option{
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: flex-end;
+}
+.select-option{
+    border-radius: 7px;
+    border: 2px solid white;
+    background-color: #1B2534;
+    color: white;
+    font-size: 0.7rem;
+}
+.select-option:hover{
+    border: 2px solid black;
+}
+.form-container{
+    display: flex;
+    flex-direction: column;
+    border: 2px solid black;
+    border-radius: 10px;
+    background-color: #1B2534;
+    padding: 10px;
+    width: 400px;
+}
+.form-header-text{
+    color: white;
+    font-size: 2.2rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+// Form css
+form {
+    display: flex;
+    flex-direction: column;
+   gap: 5px;
+  
+  }
+  .input-details{
+    background-color: #2A374A;
+  }
+  
+  .input-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    border: 1px solid #2A374A;
+    padding: 0.5rem;
+    border-radius: 5px;
+    background-color: #2A374A;
+  
+  }
+  
+  .input-group .icon {
+    margin-right: 0.5rem;
+  }
+  
+  .input-group input {
+    flex: 1;
+    border: none;
+    outline: none;
+  }
+  
+  button {
+    padding: 10px 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #3498db;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  button:hover {
+    background-color: #2980b9;
+  }
+  .form-text{
+    display: flex;
+    font-size: 0.8rem;
+    color: red;
+  }
+  .button-text-div{
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+  .form-button-div{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+  }
+  .form-link a{
+    text-decoration: none;
+    color: #1C9CA7;
+  }
+  .form-link-i{
+    text-decoration: none;
+    color: white;
+  }
+  .button-1{
+    background-color: transparent;
+    border: 2px solid white;
+  }
+  .login-help-div{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    gap: 5px;
+  }
+  .login-hepl-image{
+    display: flex;
+  }
+  .login-help-link a{
+    text-decoration: none;
+    color: #1C9CA7;
+  }
+
+  

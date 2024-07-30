@@ -1,0 +1,86 @@
+.main-container-create-dashboard-modals-I{
+    width: 100%;
+    background-color: #1B2534;
+}
+.header-create-dashboard-I{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 1300px;
+    background-color: #1B2534;
+    margin: auto;
+}
+.container-dashboard-modals-I{
+    display: flex;
+    flex-direction: column;
+    background-color: #1B2534;
+    padding-top: 30px;
+    padding-bottom: 500px;
+    width: 1300px;
+   position: relative;
+   margin: auto;
+}
+.first-row-dashboard-modals-I{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 400;
+}
+.second-row-dashboard-modals-I{
+    position: absolute;
+    left: 90%;
+}
+.third-row-dashboard-modals-I{
+    display: flex;
+    padding-right: 273px;
+}
+.fourth-row-dashboard-modals-I{
+    position: absolute;
+    left: 27.7%;
+}
+.container-cards-dashboard-modal-I{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); // 4 columns
+    gap: 16px;
+    padding: 10px;
+}
+.card-I-dashboard-modal-I{
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+  background-color: #1B2534;
+    border: 5px solid rgba(255, 255, 255, 0.05) ;
+    border-radius: 10px;
+    align-items: center;
+    cursor: pointer;
+    padding-top: 40px;
+}
+.card-I-dashboard-modal-I:hover{
+    border: 5px solid #1C9CA7 ;
+}
+.card-I-dashboard-modal-I-para{
+    font-size: 1rem;
+}
+.card-II-dashboard-modal-I{
+    display: flex;
+    flex-direction: column;
+    background-color: #1B2534;
+    border: 5px solid rgba(255, 255, 255, 0.05) ;
+    border-radius: 10px;
+    align-items: center;
+    cursor: pointer;
+    padding: 10px 0px;
+}
+.card-II-dashboard-modal-I:hover{
+    border: 5px solid #1C9CA7 ;
+}
+.button-dashboard-modal-I{
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 10px;
+    margin-top: 80px;
+}

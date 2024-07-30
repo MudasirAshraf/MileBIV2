@@ -1,0 +1,184 @@
+.main-container-dataset-III{
+    width: 100%;
+    background-color: #1B2534;
+}
+.header-dataset-III{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 1300px;
+    background-color: #1B2534;
+    margin: auto;
+}
+.container-dataset-III{
+    display: flex;
+    flex-direction: column;
+    background-color: #1B2534;
+    padding-top: 30px;
+    padding-bottom: 500px;
+    width: 1300px;
+   position: relative;
+   margin: auto;
+}
+.first-row-dataset-III{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 400;
+}
+.second-row-dataset-III{
+    display: flex;
+    padding-top: 5px;
+    padding-left: 280px;
+}
+.third-row-dataset-III{
+    position: absolute;
+    left: 90%;
+}
+.ring-dataset-III{
+    position: absolute;
+    left: 38.3%;
+    top: 4.9%;
+}
+.ring-i-dataset-III{
+    position: absolute;
+    left: 49.1%;
+    top: 4.9%;
+}
+.container-table-dataset-III{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.main-container-table-dataset-III{
+    display: flex;
+    flex-direction: row;
+}
+.first-row-table-ds-III{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.10);
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+.first-column-ds-III{
+    display: flex;
+    gap: 5px;
+    padding: 0px 10px;
+    color: #1C9CA7;
+    font-size: 0.7rem;
+}
+.second-column-ds-III{
+    display: flex;
+    gap: 5px;
+    padding: 0px 35px;
+    align-items: center;
+}
+.second-row-table-ds-III{
+    padding: 0px 30px;
+    background: rgba(255, 255, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px 70px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+.second-row-table-ds-III table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .second-row-table-ds-III th,
+  .second-row-table-ds-III td {
+    border: 1px solid rgba(255, 255, 255, 0.23);
+    text-align: left;
+  }
+  
+  .second-row-table-ds-III th {
+    color: white;
+    font-weight: bold;
+  }  
+  .second-row-table-ds-III th,
+  .second-row-table-ds-III td {
+    padding: 12px 40px;
+  }
+  
+  .second-row-table-ds-III th:first-child,
+  .second-row-table-ds-III td:first-child {
+    border-left: 2px solid rgba(255, 255, 255, 0.23);
+  }
+  
+  .second-row-table-ds-III th:last-child,
+  .second-row-table-ds-III td:last-child {
+    border-left: 2px solid rgba(255, 255, 255, 0.23);
+  }
+  
+  .second-row-table-ds-III th {
+    white-space: nowrap;
+  }
+  
+  .second-row-table-ds-III td {
+    white-space: nowrap;
+  }
+.average-sale-container-dataset-III{
+    display: flex;
+    gap: 20px;
+    white-space: nowrap;
+    align-items: center;
+    justify-content: center;
+  }
+  .setting-dataset-III{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #1C9CA7;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  .button-dataset-III{
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; 
+    padding-right: 89px;
+    margin-top: 30px;  
+  }
+  .sql-query-ds-III{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .input-data-ds-III{
+    border: 1px solid #2A374A;
+    border-radius: 5px;
+    background-color: #2A374A;
+    margin-top: 30px;
+  }
+  .input-details-ds-III{
+    padding: 50px 480px;
+    background-color: #2A374A;
+    border: 1px solid #2A374A;
+    border-radius: 5px;
+  }
+  .second-column-sql-query-ds-III{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 300px;
+    padding-left: 88px;
+padding-right: 86px;
+margin-top: 10px;
+  }
+  .load-data-btn-ds-III{
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 86px;
+    margin-top: 10px;
+  }

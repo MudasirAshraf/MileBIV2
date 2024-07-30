@@ -1,0 +1,28 @@
+.main-container-published{
+    width: 100%;
+}
+.container-published{
+    // max-width: 1280px;
+    display: flex;
+    flex-direction: column;
+}
+.published-header{
+    display: flex;
+    padding: 15px;
+    gap: 10px;
+    align-items: center;
+}
+.published p{
+    font-size: 2rem;
+    font-weight: 300;
+}
+.published-circle-div{
+    display: flex;
+    background-color: #1C9CA7;
+    padding: 3px;
+    border-radius: 6px;
+    align-items: center;
+    justify-content: center;
+    height: 16px;
+
+}

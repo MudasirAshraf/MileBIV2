@@ -1,0 +1,75 @@
+.main-container-dataset-II{
+    width: 100%;
+    background-color: #1B2534;
+}
+.header-dataset-II{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 1300px;
+    background-color: #1B2534;
+    margin: auto;
+}
+.container-dataset-II{
+    display: flex;
+    flex-direction: column;
+    background-color: #1B2534;
+    padding-top: 30px;
+    padding-bottom: 500px;
+    width: 1300px;
+   position: relative;
+   margin: auto;
+}
+.first-row-dataset-II{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 400;
+}
+.second-row-dataset-II{
+    display: flex;
+    padding-top: 5px;
+}
+.third-row-dataset-II{
+    position: absolute;
+    left: 90%;
+}
+.ring-dataset-II{
+    position: absolute;
+    left: 38.45%;
+    top: 8.3%;
+}
+.form-container-dataset-II{
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    padding: 40px 90px;
+}
+.input-group-sign-in-row-I-dataset-II{
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    border: 1px solid #2A374A;
+    padding:13.5px 5px;
+    width: 350px;
+    border-radius: 5px;
+    background-color: #2A374A;
+}
+.input-details-sign-in-row-I-dataset-II{
+    background-color: #2A374A;
+  }
+  .input-group-sign-in-row-I-dataset-II input {
+    flex: 1;
+    border: none;
+    outline: none;
+  }
+  .button-dataset-II{
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 90px;
+    margin-top: 80px; 
+  }
