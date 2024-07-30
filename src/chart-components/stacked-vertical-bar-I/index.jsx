@@ -2,7 +2,7 @@ import React from 'react';
 import Chart from 'react-apexcharts';
 
 const StackedVerticalBarChartI = ({
-  title = 'Stacked Vertical Bar Chart',
+  title = '100% Stacked Vertical Bar Chart',
   backgroundColor = '#fff',
   showLegend = true,
   legendPosition = 'right',

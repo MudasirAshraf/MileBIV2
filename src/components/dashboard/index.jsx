@@ -55,7 +55,7 @@ const defaultChartOptions = {
     borderRadius: 10,
     borderRadiusApplication: 'end',
   },
-  'Stacked Horizontal Bar': {
+  'Stacked Horizontal Bar Chart': {
     title: '',
     backgroundColor: '#ffffff',
     showLegend: true,
@@ -63,7 +63,7 @@ const defaultChartOptions = {
     xaxisTitle: 'Years',
     yaxisTitle: 'Values',
   },
-  'Stacked Vertical Bar':{
+  'Stacked Vertical Bar Chart':{
     title: '',
     backgroundColor: '#ffffff',
     showLegend: true,
@@ -71,7 +71,15 @@ const defaultChartOptions = {
     xaxisTitle: 'Years',
     yaxisTitle: 'Values',
   },
-  'Stacked Vertical Bar I':{
+  '100% Stacked Horizontal Bar Chart':{
+    title: '',
+    backgroundColor: '#ffffff',
+    showLegend: true,
+    legendPosition: 'top',
+    xaxisTitle: 'Years',
+    yaxisTitle: 'Values',
+  },
+  '100% Stacked Vertical Bar Chart':{
     title: '',
     backgroundColor: '#ffffff',
     showLegend: true,
@@ -80,6 +88,11 @@ const defaultChartOptions = {
     yaxisTitle: 'Values',
   },
   'Pie Chart': {
+    title: '',
+    backgroundColor: '#ffffff',
+    legendPosition: 'bottom',
+  },
+  'Donut Chart': {
     title: '',
     backgroundColor: '#ffffff',
     legendPosition: 'bottom',
@@ -348,7 +361,7 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
           </>
         )}
         {/* STACKED Horizontal BAR CHART */}
-        {selectedChart === "Stacked Horizontal Bar" && (
+        {selectedChart === "Stacked Horizontal Bar Chart" && (
           <>
         {/* Title */}
         <label className='chart-properties-labels'>
@@ -417,7 +430,7 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
           </>
         )}
             {/* STACKED Vertical BAR CHART */}
-            {selectedChart === "Stacked Vertical Bar" && (
+            {selectedChart === "Stacked Vertical Bar Chart" && (
           <>
         {/* Title */}
         <label className='chart-properties-labels'>
@@ -486,7 +499,76 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
           </>
         )}
          {/* STACKED Horizontal BAR CHART I */}
-         {selectedChart === "Stacked Horizontal Bar I" && (
+         {selectedChart === "100% Stacked Horizontal Bar Chart" && (
+          <>
+        {/* Title */}
+        <label className='chart-properties-labels'>
+          Title:
+          <input
+            type='text'
+            name='title'
+            value={properties.title || ''}
+            onChange={handlePropertyChange}
+          />
+        </label>
+        {/* Background-color */}
+        <label className='chart-properties-labels'>
+          Background Color:
+          <input
+            type='color'
+            name='backgroundColor'
+            value={properties.backgroundColor || '#ffffff'}
+            onChange={handlePropertyChange}
+          />
+        </label>
+        {/* Show-legends */}
+        <label className='chart-properties-labels'>
+          Show Legend:
+          <input
+            type='checkbox'
+            name='showLegend'
+            checked={properties.showLegend || true}
+            onChange={handlePropertyChange}
+          />
+        </label>
+        {/* Legend-position */}
+        <label className='chart-properties-labels'>
+          Legend Position:
+          <select
+            name='legendPosition'
+            value={properties.legendPosition || 'top'}
+            onChange={handlePropertyChange}
+          >
+            <option value='top'>Top</option>
+            <option value='bottom'>Bottom</option>
+            <option value='left'>Left</option>
+            <option value='right'>Right</option>
+          </select>
+        </label>
+        {/* X-axis-Title */}
+        <label className='chart-properties-labels'>
+          X-Axis Title:
+          <input
+            type='text'
+            name='xaxisTitle'
+            value={properties.xaxisTitle || ''}
+            onChange={handlePropertyChange}
+          />
+        </label>
+        {/* Y-axis-Title */}
+        <label className='chart-properties-labels'>
+          Y-Axis Title:
+          <input
+            type='text'
+            name='yaxisTitle'
+            value={properties.yaxisTitle || ''}
+            onChange={handlePropertyChange}
+          />
+        </label>
+          </>
+        )}
+         {/* STACKED Vertical BAR CHART I */}
+         {selectedChart === "100% Stacked Vertical Bar Chart" && (
           <>
         {/* Title */}
         <label className='chart-properties-labels'>
@@ -556,6 +638,45 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
         )}
         {/* PIE CHART */}
         {selectedChart === 'Pie Chart' && ( 
+          <>
+          {/* Title */}
+            <label className='chart-properties-labels'>
+              Title:
+              <input
+                type='text'
+                name='title'
+                value={properties.title || ''}
+                onChange={handlePropertyChange}
+              />
+            </label>
+            {/* Background-color */}
+            <label className='chart-properties-labels'>
+              Background Color:
+              <input
+                type='color'
+                name='backgroundColor'
+                value={properties.backgroundColor || '#ffffff'}
+                onChange={handlePropertyChange}
+              />
+            </label>
+            {/* Legend-position */}
+            <label className='chart-properties-labels'>
+              Legend Position:
+              <select
+                name='legendPosition'
+                value={properties.legendPosition || 'bottom'}
+                onChange={handlePropertyChange}
+              >
+                <option value='top'>Top</option>
+                <option value='bottom'>Bottom</option>
+                <option value='left'>Left</option>
+                <option value='right'>Right</option>
+              </select>
+            </label>
+          </>
+        )}
+         {/* Donut CHART */}
+         {selectedChart === 'Donut Chart' && ( 
           <>
           {/* Title */}
             <label className='chart-properties-labels'>
@@ -668,7 +789,7 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
                      {/* Stacked Horizontal Bar Chart */}
                      <div
                     className='b-chart'
-                    onClick={() => handleChartSelection('Stacked Horizontal Bar')}
+                    onClick={() => handleChartSelection('Stacked Horizontal Bar Chart')}
                   >
                     <img src={W3} alt='logo' />
                     <p>Stacked Horizontal Bar</p>
@@ -676,7 +797,7 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
                   {/* Stacked Vertical Bar Chart */}
                   <div
                     className='b-chart'
-                    onClick={() => handleChartSelection('Stacked Vertical Bar')}
+                    onClick={() => handleChartSelection('Stacked Vertical Bar Chart')}
                   >
                     <img src={W3} alt='logo' />
                     <p>Stacked Vertical Bar</p>
@@ -684,10 +805,18 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
                       {/* Stacked Horizontal Bar Chart I */}
                       <div
                     className='b-chart'
-                    onClick={() => handleChartSelection('Stacked Horizontal Bar I')}
+                    onClick={() => handleChartSelection('100% Stacked Horizontal Bar Chart')}
                   >
                     <img src={W3} alt='logo' />
-                    <p>100% Stacked Bar</p>
+                    <p>100% Stacked Horizontal</p>
+                  </div>
+                  {/* Stacked Vertical Bar Chart I */}
+                  <div
+                  className='b-chart'
+                    onClick={() => handleChartSelection('100% Stacked Vertical Bar Chart')}
+                  >
+                    <img src={W3} alt='logo' />
+                    <p>100% Stacked Vertical</p>
                   </div>
                   {/* Pie Chart */}
                   <div
@@ -696,6 +825,14 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
                   >
                     <img src={W1} alt='logo' />
                     <p>Pie Chart</p>
+                  </div>
+                         {/* Donut Chart */}
+                         <div
+                    className='b-chart'
+                    onClick={() => handleChartSelection('Donut Chart')}
+                  >
+                    <img src={W1} alt='logo' />
+                    <p>Donut Chart</p>
                   </div>
                 </div>
               )}

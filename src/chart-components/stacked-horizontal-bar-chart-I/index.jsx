@@ -2,7 +2,7 @@ import React from 'react';
 import Chart from 'react-apexcharts';
 
 const StackedHorizontalBarChartI = ({
-  title = '100% Stacked Bar',
+  title = '100% Stacked Horizontal Bar Chart',
   backgroundColor = '#fff',
   height = 290,
   showLegend = true,
