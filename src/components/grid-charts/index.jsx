@@ -13,6 +13,7 @@ import AreaChart from '../../chart-components/area-chart';
 import ScatterChart from '../../chart-components/scatter-chart';
 import BubbleChart from '../../chart-components/bubble-chart';
 import BubbleChart3D from '../../chart-components/3d-bubble-chart';
+import GanttChart from '../../chart-components/gantt-chart';
 
 
 
@@ -37,6 +38,7 @@ const Grid = ({ chart, chartOptions, onSelect, isSelected }) => {
             {chart === 'Scatter Chart' && <ScatterChart {...chartOptions}/>}
             {chart === 'Bubble Chart' && <BubbleChart {...chartOptions}/>}
             {chart === '3D Bubble Chart' && <BubbleChart3D {...chartOptions}/>}
+            {chart === 'Gantt Chart' && <GanttChart {...chartOptions}/>}
           </div>
         ) : (
           <div className='empty-grid'></div>

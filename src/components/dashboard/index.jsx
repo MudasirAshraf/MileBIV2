@@ -138,6 +138,15 @@ const defaultChartOptions = {
     showLegend: true,
     legendPosition: 'bottom'
   },
+  'Gantt Chart': {
+    title: '',
+    backgroundColor: '#ffffff',
+    borderRadius: 4,
+    showLegend: true,
+    legendPosition: 'bottom',
+    xaxisTitle: '',
+    yaxisTitle: '',
+  },
 };
 const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDeleteChart, onUpdateChartOptions }) => {
   const [activeTab, setActiveTab] = useState('Grids');
@@ -1243,6 +1252,129 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
     </label>
   </>
 )}
+{selectedChart === 'Gantt Chart' && (
+  <>
+    {/* Title */}
+    <label className='chart-properties-labels'>
+      Title:
+      <input
+        type='text'
+        name='title'
+        value={properties.title || ''}
+        onChange={handlePropertyChange}
+      />
+    </label>
+    {/* Background Color */}
+    <label className='chart-properties-labels'>
+      Background Color:
+      <input
+        type='color'
+        name='backgroundColor'
+        value={properties.backgroundColor || '#ffffff'}
+        onChange={handlePropertyChange}
+      />
+    </label>
+  {/* Bar Colors */}
+  <label className='chart-properties-labels'>
+      Bar Colors:
+      <input
+        type='color'
+        name='barColors1'
+        value={properties.barColors ? properties.barColors[0] : '#008FFB'}
+        onChange={e => handlePropertyChange({ target: { name: 'barColors', value: [e.target.value, properties.barColors ? properties.barColors[1] : '#00E396', properties.barColors ? properties.barColors[2] : '#775DD0', properties.barColors ? properties.barColors[3] : '#FEB019', properties.barColors ? properties.barColors[4] : '#FF4560'] } })}
+      />
+      <input
+        type='color'
+        name='barColors2'
+        value={properties.barColors ? properties.barColors[1] : '#00E396'}
+        onChange={e => handlePropertyChange({ target: { name: 'barColors', value: [properties.barColors ? properties.barColors[0] : '#008FFB', e.target.value, properties.barColors ? properties.barColors[2] : '#775DD0', properties.barColors ? properties.barColors[3] : '#FEB019', properties.barColors ? properties.barColors[4] : '#FF4560'] } })}
+      />
+      <input
+        type='color'
+        name='barColors3'
+        value={properties.barColors ? properties.barColors[2] : '#775DD0'}
+        onChange={e => handlePropertyChange({ target: { name: 'barColors', value: [properties.barColors ? properties.barColors[0] : '#008FFB', properties.barColors ? properties.barColors[1] : '#00E396', e.target.value, properties.barColors ? properties.barColors[3] : '#FEB019', properties.barColors ? properties.barColors[4] : '#FF4560'] } })}
+      />
+      <input
+        type='color'
+        name='barColors4'
+        value={properties.barColors ? properties.barColors[3] : '#FEB019'}
+        onChange={e => handlePropertyChange({ target: { name: 'barColors', value: [properties.barColors ? properties.barColors[0] : '#008FFB', properties.barColors ? properties.barColors[1] : '#00E396', properties.barColors ? properties.barColors[2] : '#775DD0', e.target.value, properties.barColors ? properties.barColors[4] : '#FF4560'] } })}
+      />
+      <input
+        type='color'
+        name='barColors5'
+        value={properties.barColors ? properties.barColors[4] : '#FF4560'}
+        onChange={e => handlePropertyChange({ target: { name: 'barColors', value: [properties.barColors ? properties.barColors[0] : '#008FFB', properties.barColors ? properties.barColors[1] : '#00E396', properties.barColors ? properties.barColors[2] : '#775DD0', properties.barColors ? properties.barColors[3] : '#FEB019', e.target.value] } })}
+      />
+    </label>
+    {/* Border Radius */}
+    <label className='chart-properties-labels'>
+      Border Radius:
+      <input
+        type='number'
+        name='borderRadius'
+        value={properties.borderRadius || 4}
+        onChange={handlePropertyChange}
+      />
+    </label>
+    {/* Show Legend */}
+    <label className='chart-properties-labels'>
+      Show Legend:
+      <input
+        type='checkbox'
+        name='showLegend'
+        checked={properties.showLegend || true}
+        onChange={e => handlePropertyChange({ target: { name: 'showLegend', value: e.target.checked } })}
+      />
+    </label>
+    {/* Legend Position */}
+    <label className='chart-properties-labels'>
+      Legend Position:
+      <select
+        name='legendPosition'
+        value={properties.legendPosition || 'bottom'}
+        onChange={handlePropertyChange}
+      >
+        <option value='top'>Top</option>
+        <option value='bottom'>Bottom</option>
+        <option value='left'>Left</option>
+        <option value='right'>Right</option>
+      </select>
+    </label>
+    {/* X-Axis Title */}
+    <label className='chart-properties-labels'>
+      X-Axis Title:
+      <input
+        type='text'
+        name='xaxisTitle'
+        value={properties.xaxisTitle || 'Dates'}
+        onChange={handlePropertyChange}
+      />
+    </label>
+    {/* Y-Axis Title */}
+    <label className='chart-properties-labels'>
+      Y-Axis Title:
+      <input
+        type='text'
+        name='yaxisTitle'
+        value={properties.yaxisTitle || 'Tasks'}
+        onChange={handlePropertyChange}
+      />
+    </label>
+    {/* Show Tooltip */}
+    <label className='chart-properties-labels'>
+      Show Tooltip:
+      <input
+        type='checkbox'
+        name='showTooltip'
+        checked={properties.showTooltip || true}
+        onChange={e => handlePropertyChange({ target: { name: 'showTooltip', value: e.target.checked } })}
+      />
+    </label>
+  </>
+)}
+
         {/* Add more chart types and their properties here */}
       </div>
     );
@@ -1402,6 +1534,14 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
                   >
                     <img src={W1} alt='logo' />
                     <p>3D Bubble Chart</p>
+                  </div>
+                    {/* Gantt Chart */}
+                    <div
+                    className='b-chart'
+                    onClick={() => handleChartSelection('Gantt Chart')}
+                  >
+                    <img src={W1} alt='logo' />
+                    <p>Gantt Chart</p>
                   </div>
                   {/* Add more charts */}
                 </div>
