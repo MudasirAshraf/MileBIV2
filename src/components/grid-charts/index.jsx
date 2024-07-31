@@ -8,6 +8,12 @@ import StackedHorizontalBarChartI from '../../chart-components/stacked-horizonta
 import StackedVerticalBarChartI from '../../chart-components/stacked-vertical-bar-I';
 import PieChart from '../../chart-components/pie-chart';
 import DonutChart from '../../chart-components/donut-chart';
+import LineChart from '../../chart-components/line-chart';
+import AreaChart from '../../chart-components/area-chart';
+import ScatterChart from '../../chart-components/scatter-chart';
+import BubbleChart from '../../chart-components/bubble-chart';
+import BubbleChart3D from '../../chart-components/3d-bubble-chart';
+
 
 
 
@@ -26,7 +32,11 @@ const Grid = ({ chart, chartOptions, onSelect, isSelected }) => {
             {chart === '100% Stacked Vertical Bar Chart' && <StackedVerticalBarChartI {...chartOptions}/>}
             {chart === 'Pie Chart' && <PieChart {...chartOptions} />}
             {chart === 'Donut Chart' && <DonutChart {...chartOptions} />}
-         
+            {chart === 'line chart' && <LineChart {...chartOptions}/>}
+            {chart === 'Area Chart' && <AreaChart {...chartOptions}/>}
+            {chart === 'Scatter Chart' && <ScatterChart {...chartOptions}/>}
+            {chart === 'Bubble Chart' && <BubbleChart {...chartOptions}/>}
+            {chart === '3D Bubble Chart' && <BubbleChart3D {...chartOptions}/>}
           </div>
         ) : (
           <div className='empty-grid'></div>

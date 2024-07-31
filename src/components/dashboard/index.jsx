@@ -48,7 +48,7 @@ const defaultChartOptions = {
     title: '',
     backgroundColor: '#ffffff',
     showLegend: true,
-    legendPosition: 'top',
+    legendPosition: 'top', 
     xaxisTitle: 'Months',
     yaxisTitle: 'Percentage',
     barColor: '#008FFB',
@@ -97,8 +97,48 @@ const defaultChartOptions = {
     backgroundColor: '#ffffff',
     legendPosition: 'bottom',
   },
+  'line chart' : {
+    title: '',
+    backgroundColor: '#ffffff',
+    lineColor: '#008FFB',
+    showLegend: true,
+    legendPosition: 'bottom',
+    xaxisTitle: '',
+    yaxisTitle: '',
+  },
+  'Area Chart' : {
+    title: 'Area Chart',
+    backgroundColor: '#ffffff',
+    xaxisTitle: 'Date Time',
+    yaxisTitle: 'Values',
+    showLegend: true,
+    legendPosition: 'bottom'
+  },
+  'Scatter Chart' : {
+    title: 'Scatter Chart',
+    backgroundColor: '#ffffff',
+    xaxisTitle: '',
+    yaxisTitle: '',
+    showLegend: true,
+    legendPosition: 'bottom'
+  },
+  'Bubble Chart' : {
+    title: 'Bubble Chart',
+    backgroundColor: '#ffffff',
+    xaxisTitle: '',
+    yaxisTitle: '',
+    showLegend: true,
+    legendPosition: 'bottom'
+  },
+  '3D Bubble Chart' : {
+    title: '3D Bubble Chart',
+    backgroundColor: '#ffffff',
+    xaxisTitle: '',
+    yaxisTitle: '',
+    showLegend: true,
+    legendPosition: 'bottom'
+  },
 };
-
 const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDeleteChart, onUpdateChartOptions }) => {
   const [activeTab, setActiveTab] = useState('Grids');
   const [selectedComponent, setSelectedComponent] = useState(null);
@@ -714,6 +754,495 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
             </label>
           </>
         )}
+         {/* Line Chart */}
+         {selectedChart === 'line chart' && (
+          <>
+          {/* Title */}
+            <label className='chart-properties-labels'>
+              Title:
+              <input
+                type='text'
+                name='title'
+                value={properties.title || ''}
+                onChange={handlePropertyChange}
+              />
+            </label>
+            {/* Background-color */}
+            <label className='chart-properties-labels'>
+              Background Color:
+              <input
+                type='color'
+                name='backgroundColor'
+                value={properties.backgroundColor || '#ffffff'}
+                onChange={handlePropertyChange}
+              />
+            </label>
+            {/* Line Color */}
+            <label className='chart-properties-labels'>
+              Line Color:
+              <input
+                type='color'
+                name='lineColor'
+                value={properties.lineColor || '#008FFB'}
+                onChange={handlePropertyChange}
+              />
+            </label>
+            {/* X-axis */}
+            <label className='chart-properties-labels'>
+          X-Axis Title:
+          <input
+            type='text'
+            name='xaxisTitle'
+            value={properties.xaxisTitle || ''}
+            onChange={handlePropertyChange}
+          />
+        </label>
+        {/* Y-axis */}
+        <label className='chart-properties-labels'>
+          Y-Axis Title:
+          <input
+            type='text'
+            name='yaxisTitle'
+            value={properties.yaxisTitle || ''}
+            onChange={handlePropertyChange}
+          />
+        </label>
+            {/* Show-Legends */}
+            <label className='chart-properties-labels'>
+              Show Legend:
+              <input
+                type='checkbox'
+                name='showLegend'
+                checked={properties.showLegend || true}
+                onChange={e => handlePropertyChange({ target: { name: 'showLegend', value: e.target.checked } })}
+              />
+            </label>
+            {/* Legend-Position */}
+            <label className='chart-properties-labels'>
+              Legend Position:
+              <select
+                name='legendPosition'
+                value={properties.legendPosition || 'bottom'}
+                onChange={handlePropertyChange}
+              >
+                <option value='top'>Top</option>
+                <option value='bottom'>Bottom</option>
+                <option value='left'>Left</option>
+                <option value='right'>Right</option>
+              </select>
+            </label>
+          </>
+        )}
+        {selectedChart === 'Area Chart' && (
+             <>
+             {/* Title */}
+             <label className='chart-properties-labels'>
+               Title:
+               <input
+                 type='text'
+                 name='title'
+                 value={properties.title || ''}
+                 onChange={handlePropertyChange}
+               />
+             </label>
+             
+             {/* Background Color */}
+             <label className='chart-properties-labels'>
+               Background Color:
+               <input
+                 type='color'
+                 name='backgroundColor'
+                 value={properties.backgroundColor || '#ffffff'}
+                 onChange={handlePropertyChange}
+               />
+             </label>
+             {/* Line Colors */}
+             <label className='chart-properties-labels'>
+  Line Colors:
+  <input
+    type='color'
+    name='lineColors1'
+    value={properties.lineColors ? properties.lineColors[0] : '#008FFB'}
+    onChange={e => handlePropertyChange({ target: { name: 'lineColors', value: [e.target.value, properties.lineColors ? properties.lineColors[1] : '#FF4560'] } })}
+  />
+  <input
+    type='color'
+    name='lineColors2'
+    value={properties.lineColors ? properties.lineColors[1] : '#FF4560'}
+    onChange={e => handlePropertyChange({ target: { name: 'lineColors', value: [properties.lineColors ? properties.lineColors[0] : '#008FFB', e.target.value] } })}
+  />
+</label>
+             {/* X-axis Title */}
+             <label className='chart-properties-labels'>
+               X-Axis Title:
+               <input
+                 type='text'
+                 name='xaxisTitle'
+                 value={properties.xaxisTitle || ''}
+                 onChange={handlePropertyChange}
+               />
+             </label>
+             
+             {/* Y-axis Title */}
+             <label className='chart-properties-labels'>
+               Y-Axis Title:
+               <input
+                 type='text'
+                 name='yaxisTitle'
+                 value={properties.yaxisTitle || ''}
+                 onChange={handlePropertyChange}
+               />
+             </label>
+             {/* Show Legend */}
+             <label className='chart-properties-labels'>
+               Show Legend:
+               <input
+                 type='checkbox'
+                 name='showLegend'
+                 checked={properties.showLegend || true}
+                 onChange={e => handlePropertyChange({ target: { name: 'showLegend', value: e.target.checked } })}
+               />
+             </label>
+             {/* Legend Position */}
+             <label className='chart-properties-labels'>
+               Legend Position:
+               <select
+                 name='legendPosition'
+                 value={properties.legendPosition || 'bottom'}
+                 onChange={handlePropertyChange}
+               >
+                 <option value='top'>Top</option>
+                 <option value='bottom'>Bottom</option>
+                 <option value='left'>Left</option>
+                 <option value='right'>Right</option>
+               </select>
+             </label>
+           </>
+        )}
+        {/* Scatter Chart */}
+        {selectedChart === 'Scatter Chart' && (
+  <>
+    {/* Title */}
+    <label className='chart-properties-labels'>
+      Title:
+      <input
+        type='text'
+        name='title'
+        value={properties.title || ''}
+        onChange={handlePropertyChange}
+      />
+    </label>
+
+    {/* Background Color */}
+    <label className='chart-properties-labels'>
+      Background Color:
+      <input
+        type='color'
+        name='backgroundColor'
+        value={properties.backgroundColor || '#ffffff'}
+        onChange={handlePropertyChange}
+      />
+    </label>
+    {/* Scatter Colors */}
+    <label className='chart-properties-labels'>
+      Scatter Colors:
+      <input
+        type='color'
+        name='scatterColors1'
+        value={properties.scatterColors ? properties.scatterColors[0] : '#008FFB'}
+        onChange={e => handlePropertyChange({ target: { name: 'scatterColors', value: [e.target.value, properties.scatterColors ? properties.scatterColors[1] : '#FF4560', properties.scatterColors ? properties.scatterColors[2] : '#00E396'] } })}
+      />
+      <input
+        type='color'
+        name='scatterColors2'
+        value={properties.scatterColors ? properties.scatterColors[1] : '#FF4560'}
+        onChange={e => handlePropertyChange({ target: { name: 'scatterColors', value: [properties.scatterColors ? properties.scatterColors[0] : '#008FFB', e.target.value, properties.scatterColors ? properties.scatterColors[2] : '#00E396'] } })}
+      />
+      <input
+        type='color'
+        name='scatterColors3'
+        value={properties.scatterColors ? properties.scatterColors[2] : '#00E396'}
+        onChange={e => handlePropertyChange({ target: { name: 'scatterColors', value: [properties.scatterColors ? properties.scatterColors[0] : '#008FFB', properties.scatterColors ? properties.scatterColors[1] : '#FF4560', e.target.value] } })}
+      />
+    </label>
+
+    {/* X-axis Title */}
+    <label className='chart-properties-labels'>
+      X-Axis Title:
+      <input
+        type='text'
+        name='xaxisTitle'
+        value={properties.xaxisTitle || ''}
+        onChange={handlePropertyChange}
+      />
+    </label>
+
+    {/* Y-axis Title */}
+    <label className='chart-properties-labels'>
+      Y-Axis Title:
+      <input
+        type='text'
+        name='yaxisTitle'
+        value={properties.yaxisTitle || ''}
+        onChange={handlePropertyChange}
+      />
+    </label>
+
+    {/* Show Legend */}
+    <label className='chart-properties-labels'>
+      Show Legend:
+      <input
+        type='checkbox'
+        name='showLegend'
+        checked={properties.showLegend || true}
+        onChange={e => handlePropertyChange({ target: { name: 'showLegend', value: e.target.checked } })}
+      />
+    </label>
+
+    {/* Legend Position */}
+    <label className='chart-properties-labels'>
+      Legend Position:
+      <select
+        name='legendPosition'
+        value={properties.legendPosition || 'bottom'}
+        onChange={handlePropertyChange}
+      >
+        <option value='top'>Top</option>
+        <option value='bottom'>Bottom</option>
+        <option value='left'>Left</option>
+        <option value='right'>Right</option>
+      </select>
+    </label>
+  </>
+)}
+{/* Bubble Chart */}
+{selectedChart === 'Bubble Chart' && (
+  <>
+    {/* Title */}
+    <label className='chart-properties-labels'>
+      Title:
+      <input
+        type='text'
+        name='title'
+        value={properties.title || ''}
+        onChange={handlePropertyChange}
+      />
+    </label>
+
+    {/* Background Color */}
+    <label className='chart-properties-labels'>
+      Background Color:
+      <input
+        type='color'
+        name='backgroundColor'
+        value={properties.backgroundColor || '#ffffff'}
+        onChange={handlePropertyChange}
+      />
+    </label>
+
+    {/* Bubble Colors */}
+    <label className='chart-properties-labels'>
+      Bubble Colors:
+      <input
+        type='color'
+        name='bubbleColors1'
+        value={properties.bubbleColors ? properties.bubbleColors[0] : '#008FFB'}
+        onChange={e => handlePropertyChange({ target: { name: 'bubbleColors', value: [e.target.value, properties.bubbleColors ? properties.bubbleColors[1] : '#FF4560', properties.bubbleColors ? properties.bubbleColors[2] : '#00E396', properties.bubbleColors ? properties.bubbleColors[3] : '#775DD0'] } })}
+      />
+      <input
+        type='color'
+        name='bubbleColors2'
+        value={properties.bubbleColors ? properties.bubbleColors[1] : '#FF4560'}
+        onChange={e => handlePropertyChange({ target: { name: 'bubbleColors', value: [properties.bubbleColors ? properties.bubbleColors[0] : '#008FFB', e.target.value, properties.bubbleColors ? properties.bubbleColors[2] : '#00E396', properties.bubbleColors ? properties.bubbleColors[3] : '#775DD0'] } })}
+      />
+      <input
+        type='color'
+        name='bubbleColors3'
+        value={properties.bubbleColors ? properties.bubbleColors[2] : '#00E396'}
+        onChange={e => handlePropertyChange({ target: { name: 'bubbleColors', value: [properties.bubbleColors ? properties.bubbleColors[0] : '#008FFB', properties.bubbleColors ? properties.bubbleColors[1] : '#FF4560', e.target.value, properties.bubbleColors ? properties.bubbleColors[3] : '#775DD0'] } })}
+      />
+      <input
+        type='color'
+        name='bubbleColors4'
+        value={properties.bubbleColors ? properties.bubbleColors[3] : '#775DD0'}
+        onChange={e => handlePropertyChange({ target: { name: 'bubbleColors', value: [properties.bubbleColors ? properties.bubbleColors[0] : '#008FFB', properties.bubbleColors ? properties.bubbleColors[1] : '#FF4560', properties.bubbleColors ? properties.bubbleColors[2] : '#00E396', e.target.value] } })}
+      />
+    </label>
+
+    {/* X-axis Title */}
+    <label className='chart-properties-labels'>
+      X-Axis Title:
+      <input
+        type='text'
+        name='xaxisTitle'
+        value={properties.xaxisTitle || ''}
+        onChange={handlePropertyChange}
+      />
+    </label>
+
+    {/* Y-axis Title */}
+    <label className='chart-properties-labels'>
+      Y-Axis Title:
+      <input
+        type='text'
+        name='yaxisTitle'
+        value={properties.yaxisTitle || ''}
+        onChange={handlePropertyChange}
+      />
+    </label>
+
+    {/* Max Y-axis */}
+    <label className='chart-properties-labels'>
+      Max Y-Axis:
+      <input
+        type='number'
+        name='maxYAxis'
+        value={properties.maxYAxis || 70}
+        onChange={handlePropertyChange}
+      />
+    </label>
+
+    {/* Show Legend */}
+    <label className='chart-properties-labels'>
+      Show Legend:
+      <input
+        type='checkbox'
+        name='showLegend'
+        checked={properties.showLegend !== undefined ? properties.showLegend : true}
+        onChange={e => handlePropertyChange({ target: { name: 'showLegend', value: e.target.checked } })}
+      />
+    </label>
+
+    {/* Legend Position */}
+    <label className='chart-properties-labels'>
+      Legend Position:
+      <select
+        name='legendPosition'
+        value={properties.legendPosition || 'bottom'}
+        onChange={handlePropertyChange}
+      >
+        <option value='top'>Top</option>
+        <option value='bottom'>Bottom</option>
+        <option value='left'>Left</option>
+        <option value='right'>Right</option>
+      </select>
+    </label>
+  </>
+)}
+{/* 3D Bubble Chart */}
+{selectedChart === '3D Bubble Chart' && (
+  <>
+    {/* Title */}
+    <label className='chart-properties-labels'>
+      Title:
+      <input
+        type='text'
+        name='title'
+        value={properties.title || ''}
+        onChange={handlePropertyChange}
+      />
+    </label>
+
+    {/* Background Color */}
+    <label className='chart-properties-labels'>
+      Background Color:
+      <input
+        type='color'
+        name='backgroundColor'
+        value={properties.backgroundColor || '#ffffff'}
+        onChange={handlePropertyChange}
+      />
+    </label>
+
+    {/* Bubble Colors */}
+    <label className='chart-properties-labels'>
+      Bubble Colors:
+      <input
+        type='color'
+        name='bubbleColors1'
+        value={properties.bubbleColors ? properties.bubbleColors[0] : '#008FFB'}
+        onChange={e => handlePropertyChange({ target: { name: 'bubbleColors', value: [e.target.value, properties.bubbleColors ? properties.bubbleColors[1] : '#FF4560', properties.bubbleColors ? properties.bubbleColors[2] : '#00E396', properties.bubbleColors ? properties.bubbleColors[3] : '#775DD0'] } })}
+      />
+      <input
+        type='color'
+        name='bubbleColors2'
+        value={properties.bubbleColors ? properties.bubbleColors[1] : '#FF4560'}
+        onChange={e => handlePropertyChange({ target: { name: 'bubbleColors', value: [properties.bubbleColors ? properties.bubbleColors[0] : '#008FFB', e.target.value, properties.bubbleColors ? properties.bubbleColors[2] : '#00E396', properties.bubbleColors ? properties.bubbleColors[3] : '#775DD0'] } })}
+      />
+      <input
+        type='color'
+        name='bubbleColors3'
+        value={properties.bubbleColors ? properties.bubbleColors[2] : '#00E396'}
+        onChange={e => handlePropertyChange({ target: { name: 'bubbleColors', value: [properties.bubbleColors ? properties.bubbleColors[0] : '#008FFB', properties.bubbleColors ? properties.bubbleColors[1] : '#FF4560', e.target.value, properties.bubbleColors ? properties.bubbleColors[3] : '#775DD0'] } })}
+      />
+      <input
+        type='color'
+        name='bubbleColors4'
+        value={properties.bubbleColors ? properties.bubbleColors[3] : '#775DD0'}
+        onChange={e => handlePropertyChange({ target: { name: 'bubbleColors', value: [properties.bubbleColors ? properties.bubbleColors[0] : '#008FFB', properties.bubbleColors ? properties.bubbleColors[1] : '#FF4560', properties.bubbleColors ? properties.bubbleColors[2] : '#00E396', e.target.value] } })}
+      />
+    </label>
+
+    {/* X-axis Title */}
+    <label className='chart-properties-labels'>
+      X-Axis Title:
+      <input
+        type='text'
+        name='xaxisTitle'
+        value={properties.xaxisTitle || ''}
+        onChange={handlePropertyChange}
+      />
+    </label>
+
+    {/* Y-axis Title */}
+    <label className='chart-properties-labels'>
+      Y-Axis Title:
+      <input
+        type='text'
+        name='yaxisTitle'
+        value={properties.yaxisTitle || ''}
+        onChange={handlePropertyChange}
+      />
+    </label>
+
+    {/* Max Y-axis */}
+    <label className='chart-properties-labels'>
+      Max Y-Axis:
+      <input
+        type='number'
+        name='maxYAxis'
+        value={properties.maxYAxis || 70}
+        onChange={handlePropertyChange}
+      />
+    </label>
+
+    {/* Show Legend */}
+    <label className='chart-properties-labels'>
+      Show Legend:
+      <input
+        type='checkbox'
+        name='showLegend'
+        checked={properties.showLegend !== undefined ? properties.showLegend : true}
+        onChange={e => handlePropertyChange({ target: { name: 'showLegend', value: e.target.checked } })}
+      />
+    </label>
+
+    {/* Legend Position */}
+    <label className='chart-properties-labels'>
+      Legend Position:
+      <select
+        name='legendPosition'
+        value={properties.legendPosition || 'bottom'}
+        onChange={handlePropertyChange}
+      >
+        <option value='top'>Top</option>
+        <option value='bottom'>Bottom</option>
+        <option value='left'>Left</option>
+        <option value='right'>Right</option>
+      </select>
+    </label>
+  </>
+)}
         {/* Add more chart types and their properties here */}
       </div>
     );
@@ -834,6 +1363,47 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
                     <img src={W1} alt='logo' />
                     <p>Donut Chart</p>
                   </div>
+                  {/* Line Chart */}
+                  <div
+                    className='b-chart'
+                    onClick={() => handleChartSelection('line chart')}
+                  >
+                    <img src={W1} alt='logo' />
+                    <p>Line Chart</p>
+                  </div>
+                   {/* Area Chart */}
+                   <div
+                    className='b-chart'
+                    onClick={() => handleChartSelection('Area Chart')}
+                  >
+                    <img src={W1} alt='logo' />
+                    <p>Area Chart</p>
+                  </div>
+                     {/* Scatter Chart */}
+                     <div
+                    className='b-chart'
+                    onClick={() => handleChartSelection('Scatter Chart')}
+                  >
+                    <img src={W1} alt='logo' />
+                    <p>Scatter Chart</p>
+                  </div>
+                   {/* Bubble Chart */}
+                   <div
+                    className='b-chart'
+                    onClick={() => handleChartSelection('Bubble Chart')}
+                  >
+                    <img src={W1} alt='logo' />
+                    <p>Bubble Chart</p>
+                  </div>
+                    {/* 3D Bubble Chart */}
+                    <div
+                    className='b-chart'
+                    onClick={() => handleChartSelection('3D Bubble Chart')}
+                  >
+                    <img src={W1} alt='logo' />
+                    <p>3D Bubble Chart</p>
+                  </div>
+                  {/* Add more charts */}
                 </div>
               )}
             </div>
