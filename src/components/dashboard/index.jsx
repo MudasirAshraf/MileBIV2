@@ -29,7 +29,7 @@ import CustomGrid from '../custom-grid';
 import W1 from '../../assets/svg/W1.svg';
 import W2 from '../../assets/svg/W2.svg';
 import W3 from '../../assets/svg/W3.svg';
-import W4 from '../../assets/svg/W4.svg';
+
 
 
 const defaultChartOptions = {
@@ -146,6 +146,28 @@ const defaultChartOptions = {
     legendPosition: 'bottom',
     xaxisTitle: '',
     yaxisTitle: '',
+  },
+  'Treemap Chart':{
+    title: '',
+    showLegend: true,
+    legendPosition: 'bottom',
+  },
+  'Mixed Chart': {
+    title:" ",
+    backgroundColor:"#f0f0f0",
+    columnColor: "#FF5733",
+    lineColor: "#33FF57",
+    showLegend: true,
+    legendPosition:"bottom",
+    xaxisTitle: "",
+    yaxisTitle1: "",
+    yaxisTitle2: "",
+  },
+  'Gauge Chart' : {
+    title: '',
+    backgroundColor: '#ffffff',
+    barColor: '#008FFB',
+    showLegend: true,
   },
 };
 const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDeleteChart, onUpdateChartOptions }) => {
@@ -1374,12 +1396,235 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
     </label>
   </>
 )}
+{/* TREEMAP CHART */}
+{selectedChart === 'Treemap Chart' && (
+  <>
+    {/* Title */}
+    <label className='chart-properties-labels'>
+      Title:
+      <input
+        type='text'
+        name='title'
+        value={properties.title || ''}
+        onChange={handlePropertyChange}
+      />
+    </label>
+    {/* Bar Colors */}
+    <label className='chart-properties-labels'>
+      Bar Colors:
+      <input
+        type='color'
+        name='barColors1'
+        value={properties.barColors ? properties.barColors[0] : '#008FFB'}
+        onChange={e => handlePropertyChange({ target: { name: 'barColors', value: [e.target.value, properties.barColors ? properties.barColors[1] : '#00E396', properties.barColors ? properties.barColors[2] : '#775DD0', properties.barColors ? properties.barColors[3] : '#FEB019', properties.barColors ? properties.barColors[4] : '#FF4560'] } })}
+      />
+      <input
+        type='color'
+        name='barColors2'
+        value={properties.barColors ? properties.barColors[1] : '#00E396'}
+        onChange={e => handlePropertyChange({ target: { name: 'barColors', value: [properties.barColors ? properties.barColors[0] : '#008FFB', e.target.value, properties.barColors ? properties.barColors[2] : '#775DD0', properties.barColors ? properties.barColors[3] : '#FEB019', properties.barColors ? properties.barColors[4] : '#FF4560'] } })}
+      />
+      <input
+        type='color'
+        name='barColors3'
+        value={properties.barColors ? properties.barColors[2] : '#775DD0'}
+        onChange={e => handlePropertyChange({ target: { name: 'barColors', value: [properties.barColors ? properties.barColors[0] : '#008FFB', properties.barColors ? properties.barColors[1] : '#00E396', e.target.value, properties.barColors ? properties.barColors[3] : '#FEB019', properties.barColors ? properties.barColors[4] : '#FF4560'] } })}
+      />
+      <input
+        type='color'
+        name='barColors4'
+        value={properties.barColors ? properties.barColors[3] : '#FEB019'}
+        onChange={e => handlePropertyChange({ target: { name: 'barColors', value: [properties.barColors ? properties.barColors[0] : '#008FFB', properties.barColors ? properties.barColors[1] : '#00E396', properties.barColors ? properties.barColors[2] : '#775DD0', e.target.value, properties.barColors ? properties.barColors[4] : '#FF4560'] } })}
+      />
+      <input
+        type='color'
+        name='barColors5'
+        value={properties.barColors ? properties.barColors[4] : '#FF4560'}
+        onChange={e => handlePropertyChange({ target: { name: 'barColors', value: [properties.barColors ? properties.barColors[0] : '#008FFB', properties.barColors ? properties.barColors[1] : '#00E396', properties.barColors ? properties.barColors[2] : '#775DD0', properties.barColors ? properties.barColors[3] : '#FEB019', e.target.value] } })}
+      />
+    </label>
+    {/* Show Legend */}
+    <label className='chart-properties-labels'>
+      Show Legend:
+      <input
+        type='checkbox'
+        name='showLegend'
+        checked={properties.showLegend !== undefined ? properties.showLegend : true}
+        onChange={e => handlePropertyChange({ target: { name: 'showLegend', value: e.target.checked } })}
+      />
+    </label>
+    {/* Legend Position */}
+    <label className='chart-properties-labels'>
+      Legend Position:
+      <select
+        name='legendPosition'
+        value={properties.legendPosition || 'bottom'}
+        onChange={handlePropertyChange}
+      >
+        <option value='top'>Top</option>
+        <option value='bottom'>Bottom</option>
+        <option value='left'>Left</option>
+        <option value='right'>Right</option>
+      </select>
+    </label>
+  </>
+)}
+{/* Mixed Chart */}
+{selectedChart === 'Mixed Chart' && (
+  <>
+    {/* Title */}
+    <label className='chart-properties-labels'>
+      Title:
+      <input
+        type='text'
+        name='title'
+        value={properties.title || ''}
+        onChange={handlePropertyChange}
+      />
+    </label>
 
+    {/* Background Color */}
+    <label className='chart-properties-labels'>
+      Background Color:
+      <input
+        type='color'
+        name='backgroundColor'
+        value={properties.backgroundColor || '#ffffff'}
+        onChange={handlePropertyChange}
+      />
+    </label>
+
+    {/* Column Color */}
+    <label className='chart-properties-labels'>
+      Column Color:
+      <input
+        type='color'
+        name='columnColor'
+        value={properties.columnColor || '#008FFB'}
+        onChange={handlePropertyChange}
+      />
+    </label>
+
+    {/* Line Color */}
+    <label className='chart-properties-labels'>
+      Line Color:
+      <input
+        type='color'
+        name='lineColor'
+        value={properties.lineColor || '#00E396'}
+        onChange={handlePropertyChange}
+      />
+    </label>
+
+    {/* Show Legend */}
+    <label className='chart-properties-labels'>
+      Show Legend:
+      <input
+        type='checkbox'
+        name='showLegend'
+        checked={properties.showLegend !== undefined ? properties.showLegend : true}
+        onChange={e => handlePropertyChange({ target: { name: 'showLegend', value: e.target.checked } })}
+      />
+    </label>
+
+    {/* Legend Position */}
+    <label className='chart-properties-labels'>
+      Legend Position:
+      <select
+        name='legendPosition'
+        value={properties.legendPosition || 'bottom'}
+        onChange={handlePropertyChange}
+      >
+        <option value='top'>Top</option>
+        <option value='bottom'>Bottom</option>
+        <option value='left'>Left</option>
+        <option value='right'>Right</option>
+      </select>
+    </label>
+
+    {/* X-Axis Title */}
+    <label className='chart-properties-labels'>
+      X-Axis Title:
+      <input
+        type='text'
+        name='xaxisTitle'
+        value={properties.xaxisTitle || ''}
+        onChange={handlePropertyChange}
+      />
+    </label>
+
+    {/* Y-Axis Title (Column) */}
+    <label className='chart-properties-labels'>
+      Y-Axis Title (Column):
+      <input
+        type='text'
+        name='yaxisTitle1'
+        value={properties.yaxisTitle1 || ''}
+        onChange={handlePropertyChange}
+      />
+    </label>
+
+    {/* Y-Axis Title (Line) */}
+    <label className='chart-properties-labels'>
+      Y-Axis Title (Line):
+      <input
+        type='text'
+        name='yaxisTitle2'
+        value={properties.yaxisTitle2 || ''}
+        onChange={handlePropertyChange}
+      />
+    </label>
+  </>
+)}
+{/* Gauge Chart */}
+{selectedChart === "Gauge Chart" && (
+  <>
+    {/* Title */}
+    <label className='chart-properties-labels'>
+      Title:
+      <input
+        type='text'
+        name='title'
+        value={properties.title || ''}
+        onChange={handlePropertyChange}
+      />
+    </label>
+    {/* Background Color */}
+    <label className='chart-properties-labels'>
+      Background Color:
+      <input
+        type='color'
+        name='backgroundColor'
+        value={properties.backgroundColor || '#ffffff'}
+        onChange={handlePropertyChange}
+      />
+    </label>
+    {/* Bar Color */}
+    <label className='chart-properties-labels'>
+      Bar Color:
+      <input
+        type='color'
+        name='barColor'
+        value={properties.barColor || '#008FFB'}
+        onChange={handlePropertyChange}
+      />
+    </label>
+    {/* Show Legends */}
+    <label className='chart-properties-labels'>
+      Show Legend:
+      <input
+        type='checkbox'
+        name='showLegend'
+        checked={properties.showLegend || true}
+        onChange={handlePropertyChange}
+      />
+    </label>
+  </>
+)}
         {/* Add more chart types and their properties here */}
       </div>
     );
   };
-
   const renderContent = () => {
     switch (activeTab) {
       case 'Grids':
@@ -1542,6 +1787,38 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
                   >
                     <img src={W1} alt='logo' />
                     <p>Gantt Chart</p>
+                  </div>
+                    {/* TreeMap Chart */}
+                    <div
+                    className='b-chart'
+                    onClick={() => handleChartSelection('Treemap Chart')}
+                  >
+                    <img src={W1} alt='logo' />
+                    <p>Treemap Chart</p>
+                  </div>
+                    {/* Mixed Chart */}
+                    <div
+                    className='b-chart'
+                    onClick={() => handleChartSelection('Mixed Chart')}
+                  >
+                    <img src={W1} alt='logo' />
+                    <p>Mixed Chart</p>
+                  </div>
+                         {/* Gauge Chart */}
+                         <div
+                    className='b-chart'
+                    onClick={() => handleChartSelection('Gauge Chart')}
+                  >
+                    <img src={W1} alt='logo' />
+                    <p>Gauge Chart</p>
+                  </div>
+                           {/* Simple Card */}
+                           <div
+                    className='b-chart'
+                    onClick={() => handleChartSelection('Card')}
+                  >
+                    <img src={W1} alt='logo' />
+                    <p>Card</p>
                   </div>
                   {/* Add more charts */}
                 </div>

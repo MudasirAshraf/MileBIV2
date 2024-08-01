@@ -14,9 +14,9 @@ import ScatterChart from '../../chart-components/scatter-chart';
 import BubbleChart from '../../chart-components/bubble-chart';
 import BubbleChart3D from '../../chart-components/3d-bubble-chart';
 import GanttChart from '../../chart-components/gantt-chart';
-
-
-
+import TreemapChart from '../../chart-components/treemap-chart';
+import MixedChart from '../../chart-components/mixed-chart';
+import GaugeChart from '../../chart-components/gauge-chart';
 
 
 const Grid = ({ chart, chartOptions, onSelect, isSelected }) => {
@@ -39,6 +39,9 @@ const Grid = ({ chart, chartOptions, onSelect, isSelected }) => {
             {chart === 'Bubble Chart' && <BubbleChart {...chartOptions}/>}
             {chart === '3D Bubble Chart' && <BubbleChart3D {...chartOptions}/>}
             {chart === 'Gantt Chart' && <GanttChart {...chartOptions}/>}
+            {chart === 'Treemap Chart' && <TreemapChart{...chartOptions}/>}
+            {chart === 'Mixed Chart' && <MixedChart {...chartOptions}/>}
+            {chart === 'Gauge Chart' && <GaugeChart {...chartOptions}/>}
           </div>
         ) : (
           <div className='empty-grid'></div>
