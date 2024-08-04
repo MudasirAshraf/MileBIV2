@@ -17,6 +17,12 @@ import GanttChart from '../../chart-components/gantt-chart';
 import TreemapChart from '../../chart-components/treemap-chart';
 import MixedChart from '../../chart-components/mixed-chart';
 import GaugeChart from '../../chart-components/gauge-chart';
+// Component Data
+import Image from '../../chart-components/image';
+import Card from '../../chart-components/card';
+import SimpleTable from '../../chart-components/table';
+// Typography 
+import Typography from '../../chart-components/typography';
 
 
 const Grid = ({ chart, chartOptions, onSelect, isSelected }) => {
@@ -42,6 +48,11 @@ const Grid = ({ chart, chartOptions, onSelect, isSelected }) => {
             {chart === 'Treemap Chart' && <TreemapChart{...chartOptions}/>}
             {chart === 'Mixed Chart' && <MixedChart {...chartOptions}/>}
             {chart === 'Gauge Chart' && <GaugeChart {...chartOptions}/>}
+            {chart === 'Card' && <Card {...chartOptions}/>}
+            {chart === 'Table' && <SimpleTable {...chartOptions}/>}
+            {chart === 'Image' && <Image {...chartOptions}/>}
+            {chart === 'Typography' && <Typography {...chartOptions}/>}
+            
           </div>
         ) : (
           <div className='empty-grid'></div>

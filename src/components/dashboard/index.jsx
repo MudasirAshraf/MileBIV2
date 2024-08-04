@@ -29,6 +29,12 @@ import CustomGrid from '../custom-grid';
 import W1 from '../../assets/svg/W1.svg';
 import W2 from '../../assets/svg/W2.svg';
 import W3 from '../../assets/svg/W3.svg';
+import M1 from "../../assets/svg/m1.svg";
+import M2 from "../../assets/svg/m2.svg";
+import M3 from "../../assets/svg/m3.svg";
+import M4 from "../../assets/svg/m4.svg";
+import M5 from "../../assets/svg/m5.svg";
+import M6 from "../../assets/svg/m6.svg";
 
 
 
@@ -169,12 +175,39 @@ const defaultChartOptions = {
     barColor: '#008FFB',
     showLegend: true,
   },
+  'Card': {
+    title:"",
+    subtitle:"",
+  },
+  'Table': {
+    title: '',
+    headers: { text: '', sum: '', price: '', date: '' },
+    data: [
+      { text: 'Item A', sum: 4, price: 40.00, date: '24-08-2000' },
+      { text: 'Item B', sum: 4, price: 40.00, date: '24-08-2000' },
+      { text: 'Item C', sum: 4, price: 40.00, date: '24-08-2000' },
+      { text: 'Item D', sum: 4, price: 40.00, date: '24-08-2000' },
+    ],
+  },
+  'Image':{
+    title:"",
+  },
+  'Typography':{
+    title:"",
+    subtitle:"",
+    para:"",
+    subtitleI:"",
+    paraI:"",
+    subtitleII:"",
+    paraII:"",
+  },
 };
 const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDeleteChart, onUpdateChartOptions }) => {
   const [activeTab, setActiveTab] = useState('Grids');
   const [selectedComponent, setSelectedComponent] = useState(null);
   const [showChartList, setShowChartList] = useState(false);
   const [chartOptions, setChartOptions] = useState(defaultChartOptions);
+  
 
   const handleSaveChart = () => {
     // Access updated chart options from state
@@ -205,8 +238,7 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
 
   const handleDeleteChart = () => {
     onDeleteChart();
-  };
-
+  };  
   const handlePropertyChange = (e) => {
     const { name, value } = e.target;
     const updatedOptions = {
@@ -1621,6 +1653,193 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
     </label>
   </>
 )}
+{selectedChart === "Card" && (
+  <>
+    {/* Title */}
+    <label className='chart-properties-labels'>
+              Title:
+              <input
+                type='text'
+                name='title'
+                value={properties.title || ''}
+                onChange={handlePropertyChange}
+              />
+            </label>
+            {/* Subtitle */}
+            <label className='chart-properties-labels'>
+              Subtitle:
+              <input
+                type='text'
+                name='subtitle'
+                value={properties.subtitle || ''}
+                onChange={handlePropertyChange}
+              />
+            </label>
+  </>
+)}
+{/* Table */}
+{selectedChart === 'Table' && (
+  <>
+    {/* Title */}
+    <label className='chart-properties-labels'>
+      Title:
+      <input
+        type='text'
+        name='title'
+        value={properties.title || ''}
+        onChange={handlePropertyChange}
+      />
+    </label>
+
+    {/* Header Labels */}
+    <label className='chart-properties-labels'>
+      Text Header:
+      <input
+        type='text'
+        name='headerText'
+        value={properties.headers ? properties.headers.text : 'Text'}
+        onChange={e => handlePropertyChange({ target: { name: 'headers', value: { ...properties.headers, text: e.target.value } } })}
+      />
+    </label>
+    <label className='chart-properties-labels'>
+      Sum Header:
+      <input
+        type='text'
+        name='headerSum'
+        value={properties.headers ? properties.headers.sum : 'Sum'}
+        onChange={e => handlePropertyChange({ target: { name: 'headers', value: { ...properties.headers, sum: e.target.value } } })}
+      />
+    </label>
+    <label className='chart-properties-labels'>
+      Price Header:
+      <input
+        type='text'
+        name='headerPrice'
+        value={properties.headers ? properties.headers.price : 'Price'}
+        onChange={e => handlePropertyChange({ target: { name: 'headers', value: { ...properties.headers, price: e.target.value } } })}
+      />
+    </label>
+    <label className='chart-properties-labels'>
+      Date Header:
+      <input
+        type='text'
+        name='headerDate'
+        value={properties.headers ? properties.headers.date : 'Date'}
+        onChange={e => handlePropertyChange({ target: { name: 'headers', value: { ...properties.headers, date: e.target.value } } })}
+      />
+    </label>
+        {/* Data Editing */}
+        {/* {properties.data && properties.data.map((row, rowIndex) => (
+        <div key={rowIndex} className="data-row">
+          {['text', 'sum', 'price', 'date'].map((field, index) => (
+            <label className='chart-properties-labels' key={index}>
+              {`Item ${rowIndex + 1} ${field.charAt(0).toUpperCase() + field.slice(1)}:`}
+              <input
+                type={field === 'date' ? 'date' : field === 'price' ? 'number' : 'text'}
+                step={field === 'price' ? '0.01' : undefined}
+                name={`data${field.charAt(0).toUpperCase() + field.slice(1)}${rowIndex}`}
+                value={row[field] || ''}
+                onChange={e => handlePropertyChange(rowIndex, field, e.target.value)}
+              />
+            </label>
+          ))}
+        </div>
+      ))} */}
+  </>
+)}
+{/* Image */}
+{selectedChart === 'Image' && (
+  <>
+    {/* Title */}
+    <label className='chart-properties-labels'>
+              Title:
+              <input
+                type='text'
+                name='title'
+                value={properties.title || ''}
+                onChange={handlePropertyChange}
+              />
+            </label>
+  </>
+)}
+{/* Typography */}
+{selectedChart === 'Typography' && (
+  <>
+   {/* Title */}
+   <label className='chart-properties-labels'>
+        Title:
+        <input
+          type='text'
+          name='title'
+          value={properties.title || ''}
+          onChange={handlePropertyChange}
+        />
+      </label>
+      
+      {/* Subtitle */}
+      <label className='chart-properties-labels'>
+        Subtitle:
+        <input
+          type='text'
+          name='subtitle'
+          value={properties.subtitle || ''}
+          onChange={handlePropertyChange}
+        />
+      </label>
+      
+      {/* Paragraph */}
+      <label className='chart-properties-labels'>
+        Paragraph:
+        <textarea
+          name='para'
+          value={properties.para || ''}
+          onChange={handlePropertyChange}
+        />
+      </label>
+      
+      {/* Subtitle I */}
+      <label className='chart-properties-labels'>
+        Subtitle I:
+        <input
+          type='text'
+          name='subtitleI'
+          value={properties.subtitleI || ''}
+          onChange={handlePropertyChange}
+        />
+      </label>
+      
+      {/* Paragraph I */}
+      <label className='chart-properties-labels'>
+        Paragraph I:
+        <textarea
+          name='paraI'
+          value={properties.paraI || ''}
+          onChange={handlePropertyChange}
+        />
+      </label>
+      
+      {/* Subtitle II */}
+      <label className='chart-properties-labels'>
+        Subtitle II:
+        <input
+          type='text'
+          name='subtitleII'
+          value={properties.subtitleII || ''}
+          onChange={handlePropertyChange}
+        />
+      </label>
+      
+      {/* Paragraph II */}
+      <label className='chart-properties-labels'>
+        Paragraph II:
+        <textarea
+          name='paraII'
+          value={properties.paraII || ''}
+          onChange={handlePropertyChange}
+        />
+      </label>
+  </>
+)}
         {/* Add more chart types and their properties here */}
       </div>
     );
@@ -1673,6 +1892,7 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
               >
                 <img src={Rarrow} alt='logo' />
                 <p>Charts</p>
+                <div className='grid-data-circle'>17</div>
               </div>
               {selectedComponent === 'Charts' && showChartList && (
                 <div className='chart-list'>
@@ -1812,14 +2032,6 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
                     <img src={W1} alt='logo' />
                     <p>Gauge Chart</p>
                   </div>
-                           {/* Simple Card */}
-                           <div
-                    className='b-chart'
-                    onClick={() => handleChartSelection('Card')}
-                  >
-                    <img src={W1} alt='logo' />
-                    <p>Card</p>
-                  </div>
                   {/* Add more charts */}
                 </div>
               )}
@@ -1830,9 +2042,35 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
             >
               <img src={Rarrow} alt='logo' />
               <p>Components</p>
-              <div className='grid-data-circle'>10</div>
+              <div className='grid-data-circle'>4</div>
             </div>
-            {selectedComponent === 'Components' && <div>Component Content</div>}
+            {selectedComponent === 'Components' && <div className='chart-list'>
+                {/* Image*/}
+                <div
+                    className='b-chart'
+                    onClick={() => handleChartSelection('Image')}
+                  >
+                    <img src={W1} alt='logo' />
+                    <p>Image</p>
+                  </div>
+                {/* Simple Card */}
+                <div
+                    className='b-chart'
+                    onClick={() => handleChartSelection('Card')}
+                  >
+                    <img src={W1} alt='logo' />
+                    <p>Card</p>
+                  </div>
+                    {/* Table */}
+                    <div
+                    className='b-chart'
+                    onClick={() => handleChartSelection('Table')}
+                  >
+                    <img src={W1} alt='logo' />
+                    <p>Table</p>
+                  </div>
+              </div>
+              }
             <div
               className='cd-I'
               onClick={() => setSelectedComponent(selectedComponent === 'Typography' ? null : 'Typography')}
@@ -1841,7 +2079,16 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
               <p>Typography</p>
               <div className='grid-data-circle'>10</div>
             </div>
-            {selectedComponent === 'Typography' && <div>Typography Content</div>}
+            {selectedComponent === 'Typography' && <div className='chart-list'>
+               {/* Typography */}
+               <div
+                    className='b-chart'
+                    onClick={() => handleChartSelection('Typography')}
+                  >
+                    <img src={W1} alt='logo' />
+                    <p>Typography</p>
+                  </div>
+              </div>}
           </div>
         );
         case 'Editor':
@@ -1949,10 +2196,10 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
               </div>
               <div className='sr-CDB-III'>
                 <div className='sr-CDB-I'>
-                  <img src={S3} alt='logo' />
+                  <img src={M2} alt='logo' />
                 </div>
                 <div className='sr-CDB-I'>
-                  <img src={S3} alt='logo' />
+                  <img src={M1} alt='logo' />
                 </div>
               </div>
               <div>
@@ -1960,7 +2207,7 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
               </div>
               <div className='sr-CDB-III'>
                 <div className='sr-CDB-I'>
-                  <img src={S3} alt='logo' />
+                  <img src={M3} alt='logo' />
                 </div>
                 <div className='sr-CDB-I'>
                   <img src={S6} alt='logo' />
@@ -1971,10 +2218,10 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
               </div>
               <div className='sr-CDB-III'>
                 <div className='sr-CDB-I'>
-                  <img src={S3} alt='logo' />
+                  <img src={M4} alt='logo' />
                 </div>
                 <div className='sr-CDB-I'>
-                  <img src={S3} alt='logo' />
+                  <img src={M5} alt='logo' />
                 </div>
               </div>
               <div>
@@ -1988,7 +2235,7 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
                   <img src={S7} alt='logo' />
                 </div>
                 <div className='sr-btn-I'>
-                  <img src={S8} alt='logo' className='sr-img' />
+                  <img src={M6} alt='logo' className='sr-img' />
                 </div>
               </div>
             </div>
