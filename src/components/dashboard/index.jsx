@@ -35,9 +35,7 @@ import M3 from "../../assets/svg/m3.svg";
 import M4 from "../../assets/svg/m4.svg";
 import M5 from "../../assets/svg/m5.svg";
 import M6 from "../../assets/svg/m6.svg";
-
-
-
+//  Chart Default Options Data
 const defaultChartOptions = {
   'Horizontal Bar Chart': {
     title: '',
@@ -202,6 +200,7 @@ const defaultChartOptions = {
     paraII:"",
   },
 };
+
 const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDeleteChart, onUpdateChartOptions }) => {
   const [activeTab, setActiveTab] = useState('Grids');
   const [selectedComponent, setSelectedComponent] = useState(null);
@@ -230,15 +229,16 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
       }));
     }
   }, [selectedChart]);
-
+// Handle Selection of Charts
   const handleChartSelection = (chartName) => {
     onSelectChart(chartName);
     setShowChartList(false);
   };
-
+//  Delete Charts
   const handleDeleteChart = () => {
     onDeleteChart();
   };  
+  // Change Chart Properties
   const handlePropertyChange = (e) => {
     const { name, value } = e.target;
     const updatedOptions = {
@@ -251,7 +251,7 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
     setChartOptions(updatedOptions);
     onUpdateChartOptions(updatedOptions);
   };
-  
+  // Render Charts
   const renderProperties = () => {
     if (!selectedChart) return null;
 
@@ -1675,9 +1675,9 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
                 onChange={handlePropertyChange}
               />
             </label>
-  </>
+             </>
 )}
-{/* Table */}
+                {/* TABLE */}
 {selectedChart === 'Table' && (
   <>
     {/* Title */}
@@ -1728,23 +1728,6 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
         onChange={e => handlePropertyChange({ target: { name: 'headers', value: { ...properties.headers, date: e.target.value } } })}
       />
     </label>
-        {/* Data Editing */}
-        {/* {properties.data && properties.data.map((row, rowIndex) => (
-        <div key={rowIndex} className="data-row">
-          {['text', 'sum', 'price', 'date'].map((field, index) => (
-            <label className='chart-properties-labels' key={index}>
-              {`Item ${rowIndex + 1} ${field.charAt(0).toUpperCase() + field.slice(1)}:`}
-              <input
-                type={field === 'date' ? 'date' : field === 'price' ? 'number' : 'text'}
-                step={field === 'price' ? '0.01' : undefined}
-                name={`data${field.charAt(0).toUpperCase() + field.slice(1)}${rowIndex}`}
-                value={row[field] || ''}
-                onChange={e => handlePropertyChange(rowIndex, field, e.target.value)}
-              />
-            </label>
-          ))}
-        </div>
-      ))} */}
   </>
 )}
 {/* Image */}
@@ -1840,7 +1823,7 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
       </label>
   </>
 )}
-        {/* Add more chart types and their properties here */}
+{/* Add More Charts here */}
       </div>
     );
   };
@@ -2268,9 +2251,11 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
           {renderContent()}
         </div>
         <div className='main-container-CDB-II'>
+          {/* Horizontal Slider */}
           <div>
             <img src={Slider} alt='logo' />
           </div>
+          {/* Vertical Slider */}
           <div>
             <img src={Ver} alt='logo' />
           </div>

@@ -39,7 +39,7 @@ const ForgetPasswordI = () => {
          </div>
          </div>
         <div className='container-sign-in-page-I'>
-            {/* adding Logo to the page */}
+            {/* adding Side logo to the page */}
          <div>
           <img src={Logo} alt='logo'/>
          </div>
@@ -100,7 +100,6 @@ const ForgetPasswordI = () => {
           </div>
           {/* Form */}
           <div>
-           
             <div className="input-group-fp-I">
         <img src={Message} alt="userlogo"/>
         <input type="email" placeholder="Email" name="email" className='input-details-sign-in' required />
