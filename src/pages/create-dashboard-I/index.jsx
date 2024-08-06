@@ -20,7 +20,6 @@ const CreateDashboardModalI = () => {
     navigate('/create-dashboard-modals');
   };
 
-
   const handleDashboardII = () => {
     navigate('/create-dashboard-II');
   };
