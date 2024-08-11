@@ -38,18 +38,9 @@ const CreateDashboard = () => {
   ];
 
   const cardsDataI = [
-    { title: "Template 1", image: TI },
-    { title: "Template 2", image: TII },
-    { title: "Template 3", image: TIII },
-    { title: "Template 1", image: TI },
-    { title: "Template 2", image: TII },
-    { title: "Template 3", image: TIII },
-    { title: "Template 1", image: TI },
-    { title: "Template 2", image: TII },
-    { title: "Template 3", image: TIII },
-    { title: "Template 1", image: TI },
-    { title: "Template 2", image: TII },
-    { title: "Template 3", image: TIII },
+    { id: 1, title: "Template 1", image: TI },
+    { id: 2, title: "Template 2", image: TII },
+    { id: 3, title: "Template 3", image: TIII },
   ];
 
   const cardsDataII = [
@@ -112,6 +103,7 @@ const CreateDashboard = () => {
           <div>
             <img src={Hline} alt="logo" />
           </div>
+          {/* Create Dashboard */}
           {activeTab === 'create-dashboards' && (
             <div className="main-container-create-dashboard-card-component">
               {cardsData.slice((page - 1) * itemsPerPage, page * itemsPerPage).map((card, index) => (
@@ -125,6 +117,7 @@ const CreateDashboard = () => {
               ))}
             </div>
           )}
+          {/* Available Templates */}
           {activeTab === 'available-templates' && (
             <div className='main-container-available-templates'>
               {cardsDataI.slice((page - 1) * itemsPerPage, page * itemsPerPage).map((card, index) => (
@@ -132,10 +125,12 @@ const CreateDashboard = () => {
                   key={index}
                   image={card.image}
                   title={card.title}
+                  id={card.id}
                 />
               ))}
             </div>
           )}
+          {/* Datasets */}
           {activeTab === 'datasets' && (
             <div className='main-container-datasets'>
               {cardsDataII.slice((page - 1) * itemsPerPage, page * itemsPerPage).map((card, index) => (
@@ -147,7 +142,7 @@ const CreateDashboard = () => {
             </div>
           )}
 
-          {/* Pagination controls */}
+          {/* Pagination controls for Create Dashboard, Available Templates, Data Sets */}
           <div className="pagination">
             <button onClick={() => handlePageChange(page - 1)} disabled={page === 1}>{"<"}</button>
             {visiblePages.map((pageNumber) => (

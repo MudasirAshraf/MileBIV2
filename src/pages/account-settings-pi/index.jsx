@@ -23,7 +23,6 @@ const AccountSettingsPI = () => {
       reader.readAsDataURL(file);
     }
   };
-
   const handleClick = () => {
     document.getElementById('imageUploadInput').click();
   };

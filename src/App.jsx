@@ -29,10 +29,12 @@ import DatasetII from './pages/create-dataset-II';
 import DatasetIII from './pages/create-dataset-III';
 import DatasetIV from './pages/create-dataset-IV';
 import Grids from './pages/grids';
+import TemplateI from './pages/template-I';
+import TemplateII from './pages/template-II';
+import TemplateIII from './pages/template-III';
 
 
 function App() {
-
   return (
     <div id="root" className='App'>
       <Router>
@@ -66,6 +68,10 @@ function App() {
         <Route path="/create-dashboard-III" element={<CreateDashboardModalIII/>}/>
         <Route path="/create-dashboard-IV" element={<CreateDashboardModalIV/>}/>
         <Route path="/create-dashboard-V" element={<CreateDashboardModalV/>}/>
+        {/* View Templates */}
+        <Route path="/template-I" element={<TemplateI/>}/>
+        <Route path="/template-II" element={<TemplateII/>}/>
+        <Route path="/template-III" element={<TemplateIII/>}/>
         {/* Dataset Modals */}
         <Route path="/create-dataset-I" element={<DatasetI/>}/>
         <Route path="/create-dataset-II" element={<DatasetII/>}/>
@@ -73,9 +79,6 @@ function App() {
         <Route path="/create-dataset-IV" element={<DatasetIV/>}/>
       {/* Grid Wrapper */}
       <Route path="/grids" element={<Grids/>}/>
-
-      
-
         </Routes>
       </Router>
     </div>

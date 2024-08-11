@@ -29,12 +29,17 @@ import CustomGrid from '../custom-grid';
 import W1 from '../../assets/svg/W1.svg';
 import W2 from '../../assets/svg/W2.svg';
 import W3 from '../../assets/svg/W3.svg';
+import Treemap from "../../assets/svg/treemap.svg";
+import ScatterChart from "../../assets/svg/scatter-chart.svg";
+import GanttChart from "../../assets/svg/gantt-chart.svg";
+import BubbleChart from "../../assets/svg/bubble-chart.svg";
 import M1 from "../../assets/svg/m1.svg";
 import M2 from "../../assets/svg/m2.svg";
 import M3 from "../../assets/svg/m3.svg";
 import M4 from "../../assets/svg/m4.svg";
 import M5 from "../../assets/svg/m5.svg";
 import M6 from "../../assets/svg/m6.svg";
+
 //  Chart Default Options Data
 const defaultChartOptions = {
   'Horizontal Bar Chart': {
@@ -1948,7 +1953,7 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
                     className='b-chart'
                     onClick={() => handleChartSelection('line chart')}
                   >
-                    <img src={W1} alt='logo' />
+                    <img src={W3} alt='logo' />
                     <p>Line Chart</p>
                   </div>
                    {/* Area Chart */}
@@ -1964,7 +1969,7 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
                     className='b-chart'
                     onClick={() => handleChartSelection('Scatter Chart')}
                   >
-                    <img src={W1} alt='logo' />
+                    <img src={ScatterChart} alt='logo' />
                     <p>Scatter Chart</p>
                   </div>
                    {/* Bubble Chart */}
@@ -1972,7 +1977,7 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
                     className='b-chart'
                     onClick={() => handleChartSelection('Bubble Chart')}
                   >
-                    <img src={W1} alt='logo' />
+                    <img src={BubbleChart} alt='logo' />
                     <p>Bubble Chart</p>
                   </div>
                     {/* 3D Bubble Chart */}
@@ -1988,7 +1993,7 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
                     className='b-chart'
                     onClick={() => handleChartSelection('Gantt Chart')}
                   >
-                    <img src={W1} alt='logo' />
+                    <img src={GanttChart} alt='logo' />
                     <p>Gantt Chart</p>
                   </div>
                     {/* TreeMap Chart */}
@@ -1996,7 +2001,7 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
                     className='b-chart'
                     onClick={() => handleChartSelection('Treemap Chart')}
                   >
-                    <img src={W1} alt='logo' />
+                    <img src={Treemap} alt='logo' />
                     <p>Treemap Chart</p>
                   </div>
                     {/* Mixed Chart */}
