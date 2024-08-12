@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import "./sign-page-I.scss";
 import Logo from "../../assets/svg/logo.svg";
@@ -19,7 +19,6 @@ import Phone from "../../assets/svg/Phone_light.svg";
 import LineI from "../../assets/svg/line1.svg";
 import Question from "../../assets/svg/Question_light.svg";
 
-
 const SignpageI = () => {
   const navigate = useNavigate();
 
@@ -27,148 +26,202 @@ const SignpageI = () => {
     navigate('/');
   };
 
-  const handleProceed = (e) => {
-    e.preventDefault();
-    // Add form validation here if needed
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phoneNumber: "",
+    CreatePassword: "",
+    ConfirmPassword: "",
+  });
+
+  const handleChangeName = (event) => {
+    const fieldValue = event.target.name;
+    const newValue = event.target.value;
+    setFormData((currData) => ({
+      ...currData,
+      [fieldValue]: newValue
+    }));
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    console.log(formData);
     navigate('/sign-up-page-II');
   };
+
   return (
     <div className='main-container-sign-in-page-I'>
-             <div className='header-details-sign-in-page-I'>
-          <div>
-            <img src={Back} alt="backlogo" className='image-sign-up' onClick={handleLoginPage}/>
-          </div>
-            {/* adding select option */}
-       <div className='login-page-select-option'>
+      <div className='header-details-sign-in-page-I'>
+        <div>
+          <img src={Back} alt="backlogo" className='image-sign-up' onClick={handleLoginPage} />
+        </div>
+        <div className='login-page-select-option'>
           <select className='select-option'>
             <option>English</option>
             <option>Arabic</option>
           </select>
-         </div>
-         </div>
-        <div className='container-sign-in-page-I'>
-            {/* adding Logo to the page */}
-         <div>
-          <img src={Logo} alt='logo'/>
-         </div>
-         {/* adding form container */}
-         <div className='form-container-sign-in-page-I'>
-            <div className='header-container-sign-in-page'>
-             {/* header */}
-          <div className='form-header-sign-in-page'>
-            <div className='form-header-text-sign-in-page-div'><h1 className='form-header-text-sign-in-page'>Sign Up</h1></div>
-            {/* Progress bar */}
-            <div className='progress-bar-sign-in-page-I'>
+        </div>
+      </div>
+      <div className='container-sign-in-page-I'>
+        <div>
+          <img src={Logo} alt='logo' />
+        </div>
+        <div className='form-container-sign-in-page-I'>
+          <div className='header-container-sign-in-page'>
+            <div className='form-header-sign-in-page'>
+              <div className='form-header-text-sign-in-page-div'>
+                <h1 className='form-header-text-sign-in-page'>Sign Up</h1>
+              </div>
+              <div className='progress-bar-sign-in-page-I'>
                 <div className='progress-I'>
-                    <div className='progress-I-image-I'><img src={I} alt=""/></div>
-                    <div><img src={EllipseI} alt=""/></div>
-                    <div className="progress-I-image-III"><img src={Polygon} alt=""/></div>
+                  <div className='progress-I-image-I'><img src={I} alt="" /></div>
+                  <div><img src={EllipseI} alt="" /></div>
+                  <div className="progress-I-image-III"><img src={Polygon} alt="" /></div>
                 </div>
                 <div className='progress-II'>
-                    <img src={Union} alt="" className='progress-II-image-I'/>
-                    
+                  <img src={Union} alt="" className='progress-II-image-I' />
                 </div>
                 <div className='progress-III'>
-                
-                    <div className='progress-III-image-I'>
-                        <img src={EllipseII} alt=""/>
-                    </div>
-                    <div className='progress-III-image-II'>
-                        <img src={II} alt=""/>
-                    </div>
-               
+                  <div className='progress-III-image-I'>
+                    <img src={EllipseII} alt="" />
+                  </div>
+                  <div className='progress-III-image-II'>
+                    <img src={II} alt="" />
+                  </div>
                 </div>
                 <div className='progress-IV'>
-                    <div className='progress-IV-image-I'><img src={UnionI} alt=""/></div>
-                    
+                  <div className='progress-IV-image-I'><img src={UnionI} alt="" /></div>
                 </div>
-               <div className='progress-V'>
-               <div className='progress-V-image-I'>
-                        <img src={EllipseII} alt=""/>
-                    </div>
-                    <div className='progress-V-image-II'>
-                        <img src={III} alt=""/>
-                    </div>
-               </div>
+                <div className='progress-V'>
+                  <div className='progress-V-image-I'>
+                    <img src={EllipseII} alt="" />
+                  </div>
+                  <div className='progress-V-image-II'>
+                    <img src={III} alt="" />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className='side-logo-sign-in-page'>
+              <img src={One} alt="logo" />
             </div>
           </div>
-          {/* Adding side logo */}
-          <div className='side-logo-sign-in-page'>
-            <img src={One} alt="logo"/>
-          </div>
-          </div>
-          {/* adding text */}
           <div className='sub-header-sign-in-page-I'>
-             <div className='sub-header-sign-in-page-I-text'>
+            <div className='sub-header-sign-in-page-I-text'>
               <p>Personal Info</p>
-             </div>
-             <div>
-              <img src={Line} alt=""/>
-             </div>
+            </div>
+            <div>
+              <img src={Line} alt="" />
+            </div>
           </div>
-          {/* Form */}
           <div>
-            <form>
+            <form onSubmit={handleSubmit}>
               <div className='form-column-details'></div>
-                 {/* first column */}
-                 <div className='first-column-details'>
-                 <div className="input-group-sign-in-row-I">
-        {/* <img src={User} alt="userlogo"/> */}
-          <input type="text" placeholder="First Name" name="username"  className='input-details-sign-in-row-I' required />
-        </div>
-         <div className="input-group-sign-in-row-I">
-         {/* <img src={Password} alt="passlogo"/> */}
-         <input type="text" placeholder="Last Name" name="username"  className='input-details-sign-in-row-I' required />
-        </div>
-                 </div>
-                 {/* Second column */}
-                 <div className='second-column-details'>
-                 <div className="input-group-sign-in">
-        <img src={Message} alt="userlogo"/>
-        <input type="email" placeholder="Email" name="email" className='input-details-sign-in' required />
-        </div>
-         <div className="input-group-sign-in">
-         <img src={Phone} alt="passlogo"/>
-         <input type="tel" placeholder="Phone Number" name="phone" className='input-details-sign-in' required />
-        </div>
-</div>
-                 {/* third column */} 
-                  <div className='third-column-details'>
-                  <div className="input-group-sign-in">
-        <img src={Password} alt="userlogo"/>
-        <input type="password" placeholder="Create a Password" name="password" className='input-details-sign-in' required />
-        </div>
-         <div className="input-group-sign-in">
-         <img src={Password} alt="passlogo"/>
-          <input type="password" placeholder="Confirm Password" name="password" className='input-details-sign-in' required />
-        </div>
-                 </div>
+              <div className='first-column-details'>
+                <div className="input-group-sign-in-row-I">
+                  <input
+                    className='input-details-sign-in-row-I'
+                    type="text"
+                    placeholder="First Name"
+                    name="firstName"
+                    id='firstName'
+                    value={formData.firstName}
+                    onChange={handleChangeName}
+                    required
+                  />
+                </div>
+                <div className="input-group-sign-in-row-I">
+                  <input
+                    className='input-details-sign-in-row-I'
+                    type="text"
+                    placeholder="Last Name"
+                    name="lastName"
+                    id='lastName'
+                    value={formData.lastName}
+                    onChange={handleChangeName}
+                    required
+                  />
+                </div>
+              </div>
+              <div className='second-column-details'>
+                <div className="input-group-sign-in">
+                  <img src={Message} alt="userlogo" />
+                  <input
+                    className='input-details-sign-in'
+                    type="email"
+                    placeholder="Email"
+                    name="email"
+                    id='email'
+                    value={formData.email}
+                    onChange={handleChangeName}
+                    required
+                  />
+                </div>
+                <div className="input-group-sign-in">
+                  <img src={Phone} alt="passlogo" />
+                  <input
+                    className='input-details-sign-in'
+                    type="tel"
+                    placeholder="Phone Number"
+                    name="phoneNumber"
+                    id='phoneNumber'
+                    value={formData.phoneNumber}
+                    onChange={handleChangeName}
+                    required
+                  />
+                </div>
+              </div>
+              <div className='third-column-details'>
+                <div className="input-group-sign-in">
+                  <img src={Password} alt="userlogo" />
+                  <input
+                    className='input-details-sign-in'
+                    type="password"
+                    placeholder="Create a Password"
+                    name="CreatePassword"
+                    value={formData.CreatePassword}
+                    id='CreatePassword'
+                    onChange={handleChangeName}
+                    required
+                  />
+                </div>
+                <div className="input-group-sign-in">
+                  <img src={Password} alt="passlogo" />
+                  <input
+                    className='input-details-sign-in'
+                    type="password"
+                    placeholder="Confirm Password"
+                    name="ConfirmPassword"
+                    value={formData.ConfirmPassword}
+                    id='ConfirmPassword'
+                    onChange={handleChangeName}
+                    required
+                  />
+                </div>
+              </div>
+              <div className='form-sign-in-page-button'>
+            <button type='submit'>Proceed</button>
+          </div>
             </form>
           </div>
-          {/* adding button */}
-          <div className='form-sign-in-page-button'>
-           <button onClick={handleProceed} type='submit'>Proceed</button>
-          </div>
-          {/* adding center line */}
           <div>
-            <img src={LineI} alt=''/>
+            <img src={LineI} alt='' />
           </div>
-          {/* adding another div */}
           <div className='form-sign-in-button-div'>
-         <div><a href="" className='form-sign-in-link-i'>Already have an account ?</a></div>
-         <div><button className='button-1' onClick={handleLoginPage}>Sign In</button></div>
-        </div>
-         </div>
-         <div className='login-help-div'>
-          <div className='login-hepl-image'>
-            <img src={Question} alt='logo'/>
+            <div><a href="" className='form-sign-in-link-i'>Already have an account?</a></div>
+            <div><button className='button-1' onClick={handleLoginPage}>Sign In</button></div>
           </div>
-          <div className='login-help-link'><a href=''>Need Help ?</a></div>
-          
-         </div>
-         </div>
+        </div>
+        <div className='login-help-div'>
+          <div className='login-help-image'>
+            <img src={Question} alt='logo' />
+          </div>
+          <div className='login-help-link'><a href=''>Need Help?</a></div>
+        </div>
+      </div>
     </div>
-  )
+  );
 }
 
 export default SignpageI;
