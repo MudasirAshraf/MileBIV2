@@ -14,7 +14,6 @@ import S4 from '../../assets/svg/s4.svg';
 import S5 from '../../assets/svg/s5.svg';
 import S6 from '../../assets/svg/s6.svg';
 import S7 from '../../assets/svg/s7.svg';
-import S8 from '../../assets/svg/s8.svg';
 import L1 from '../../assets/svg/l1.svg';
 import Ver from '../../assets/svg/Snap Horizontal.svg';
 import Slider from '../../assets/svg/Expand Sidebar.svg';
@@ -33,6 +32,8 @@ import Treemap from "../../assets/svg/treemap.svg";
 import ScatterChart from "../../assets/svg/scatter-chart.svg";
 import GanttChart from "../../assets/svg/gantt-chart.svg";
 import BubbleChart from "../../assets/svg/bubble-chart.svg";
+import Table from "../../assets/svg/table.svg";
+import Typo from "../../assets/svg/typography.svg";
 import M1 from "../../assets/svg/m1.svg";
 import M2 from "../../assets/svg/m2.svg";
 import M3 from "../../assets/svg/m3.svg";
@@ -2054,7 +2055,7 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
                     className='b-chart'
                     onClick={() => handleChartSelection('Table')}
                   >
-                    <img src={W1} alt='logo' />
+                    <img src={Table} alt='logo' />
                     <p>Table</p>
                   </div>
               </div>
@@ -2073,7 +2074,7 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
                     className='b-chart'
                     onClick={() => handleChartSelection('Typography')}
                   >
-                    <img src={W1} alt='logo' />
+                    <img src={Typo} alt='logo' />
                     <p>Typography</p>
                   </div>
               </div>}
