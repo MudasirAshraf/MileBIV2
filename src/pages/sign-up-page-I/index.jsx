@@ -47,6 +47,10 @@ const SignpageI = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
     console.log(formData);
+    if (formData.CreatePassword !== formData.ConfirmPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
     navigate('/sign-up-page-II');
   };
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import "./forget-pass-I.scss";
 import { useNavigate } from 'react-router-dom';
 import Logo from "../../assets/svg/logo.svg";
@@ -20,6 +20,23 @@ import Question from "../../assets/svg/Question_light.svg";
 
 const ForgetPasswordI = () => {
   const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
+    email:"",
+  })
+  let handleChangeName = (event) => {
+    let fieldValue= event.target.name;
+    let newValue= event.target.value;
+    setFormData((currData)=>{
+      return{...currData, [fieldValue] : newValue}
+    })
+  }
+
+  let handleSubmit = (event)=> {
+    event.preventDefault();
+    console.log(formData);
+    navigate("/forget-password-II")
+  }
 
   const handleLoginPage = () => {
     navigate('/');
@@ -100,16 +117,24 @@ const ForgetPasswordI = () => {
           </div>
           {/* Form */}
           <div>
+            <form onSubmit={handleSubmit}>
             <div className="input-group-fp-I">
         <img src={Message} alt="userlogo"/>
-        <input type="email" placeholder="Email" name="email" className='input-details-sign-in' required />
+        <input className='input-details-sign-in'
+         type="email"
+          placeholder="Email"
+           name="email" 
+           id='email'
+           value={formData.email}
+           onChange={handleChangeName}
+           required />
         </div>  
-            
-          </div>
-          <div className='button-fp-I'>
-            <button className='btn-fp-I'>
+        <div className='button-fp-I'>
+            <button className='btn-fp-I' type='submit'>
                 <img src={SPIN} alt=""/>
                 Proceed</button>
+          </div>
+        </form>
           </div>
             {/* adding center line */}
             <div className='line-fp-I'>

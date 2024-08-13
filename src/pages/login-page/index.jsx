@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import "./login.scss";
 import Logo from "../../assets/svg/logo.svg";
@@ -11,6 +11,25 @@ import Question from "../../assets/svg/Question_light.svg";
 const LoginPage = () => {
   const navigate = useNavigate();
 
+  const [formData, setFormData] = useState({
+    userName:"",
+    password:"",
+  })
+
+  let handleNameChange = (event)=> {
+   let fieldValue = event.target.name;
+   let newValue = event.target.value;
+   setFormData((currData)=> {
+    return{...currData, [fieldValue] : newValue}
+   })
+}
+
+let handleSubmit = (event) => {
+  event.preventDefault();
+  console.log(formData);
+  navigate("/create-dashboard");
+}
+
   const handleCreateAccount = () => {
     navigate('/sign-up-page-I');
   };
@@ -19,9 +38,6 @@ const LoginPage = () => {
     navigate('/forget-password-I');
   };
 
-  const handleHomePage =() =>{
-    navigate("/create-dashboard");
-  };
   return (
     <div className='main-container-login-page'>
           {/* adding select option */}
@@ -45,14 +61,28 @@ const LoginPage = () => {
           </div>
           {/* Form */}
           <div>
-          <form>
+          <form onSubmit={handleSubmit}>
         <div className="input-group">
         <img src={User} alt="userlogo"/>
-          <input type="text" placeholder="Username" name="username"  className='input-details' required />
+          <input    className='input-details'
+           type="text"
+           placeholder="Username"
+            name="userName"
+            id='userName'
+            value={formData.userName}
+            onChange={handleNameChange}
+            required />
         </div>
         <div className="input-group">
          <img src={Password} alt="passlogo"/>
-          <input type="password" placeholder="Password" name="password" className='input-details' required />
+          <input className='input-details'
+           type="password" 
+           placeholder="Password"
+            name="password"
+            value={formData.password}
+            id='password'
+            onChange={handleNameChange}
+            required />
         </div>
         {/* adding text */}
         <div className='form-text'>
@@ -62,7 +92,7 @@ const LoginPage = () => {
         {/* adding button and text */}
         <div className='form-button-div'>
           <div className='form-link'><a href="" onClick={handleForgetPassword}>Forget Password?</a></div>
-          <div><button type="submit" onClick={handleHomePage}>Login</button></div>
+          <div><button type="submit">Login</button></div>
         </div>
         {/* adding button and text */}
         <div className='form-button-div'>

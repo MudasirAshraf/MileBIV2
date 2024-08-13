@@ -34,6 +34,15 @@ import GanttChart from "../../assets/svg/gantt-chart.svg";
 import BubbleChart from "../../assets/svg/bubble-chart.svg";
 import Table from "../../assets/svg/table.svg";
 import Typo from "../../assets/svg/typography.svg";
+import GaugeChart from "../../assets/svg/gauge-chart.svg";
+import BubbleChart3D from "../../assets/svg/3d-bubble-chart.svg";
+import Piechart from "../../assets/svg/pie-chart.svg";
+import SVB from "../../assets/svg/s-v-bar.svg";
+import SHB from "../../assets/svg/stacked-h-bar.svg";
+import SHBI from "../../assets/svg/SHB-I.svg";
+import MC from "../../assets/svg/mixed-chart.svg";
+import SVBI from "../../assets/svg/SVBI.svg";
+import AC from "../../assets/svg/area-chart.svg";
 import M1 from "../../assets/svg/m1.svg";
 import M2 from "../../assets/svg/m2.svg";
 import M3 from "../../assets/svg/m3.svg";
@@ -1906,7 +1915,7 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
                     className='b-chart'
                     onClick={() => handleChartSelection('Stacked Horizontal Bar Chart')}
                   >
-                    <img src={W3} alt='logo' />
+                    <img src={SHBI} alt='logo' />
                     <p>Stacked Horizontal Bar</p>
                   </div>
                   {/* Stacked Vertical Bar Chart */}
@@ -1914,7 +1923,7 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
                     className='b-chart'
                     onClick={() => handleChartSelection('Stacked Vertical Bar Chart')}
                   >
-                    <img src={W3} alt='logo' />
+                    <img src={SVB} alt='logo' />
                     <p>Stacked Vertical Bar</p>
                   </div>
                       {/* Stacked Horizontal Bar Chart I */}
@@ -1922,7 +1931,7 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
                     className='b-chart'
                     onClick={() => handleChartSelection('100% Stacked Horizontal Bar Chart')}
                   >
-                    <img src={W3} alt='logo' />
+                    <img src={SHB} alt='logo' />
                     <p>100% Stacked Horizontal</p>
                   </div>
                   {/* Stacked Vertical Bar Chart I */}
@@ -1930,7 +1939,7 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
                   className='b-chart'
                     onClick={() => handleChartSelection('100% Stacked Vertical Bar Chart')}
                   >
-                    <img src={W3} alt='logo' />
+                    <img src={SVBI} alt='logo' />
                     <p>100% Stacked Vertical</p>
                   </div>
                   {/* Pie Chart */}
@@ -1946,7 +1955,7 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
                     className='b-chart'
                     onClick={() => handleChartSelection('Donut Chart')}
                   >
-                    <img src={W1} alt='logo' />
+                    <img src={Piechart} alt='logo' />
                     <p>Donut Chart</p>
                   </div>
                   {/* Line Chart */}
@@ -1962,7 +1971,7 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
                     className='b-chart'
                     onClick={() => handleChartSelection('Area Chart')}
                   >
-                    <img src={W1} alt='logo' />
+                    <img src={AC} alt='logo' />
                     <p>Area Chart</p>
                   </div>
                      {/* Scatter Chart */}
@@ -1986,7 +1995,7 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
                     className='b-chart'
                     onClick={() => handleChartSelection('3D Bubble Chart')}
                   >
-                    <img src={W1} alt='logo' />
+                    <img src={BubbleChart3D} alt='logo' />
                     <p>3D Bubble Chart</p>
                   </div>
                     {/* Gantt Chart */}
@@ -2010,7 +2019,7 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
                     className='b-chart'
                     onClick={() => handleChartSelection('Mixed Chart')}
                   >
-                    <img src={W1} alt='logo' />
+                    <img src={MC} alt='logo' />
                     <p>Mixed Chart</p>
                   </div>
                          {/* Gauge Chart */}
@@ -2018,7 +2027,7 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
                     className='b-chart'
                     onClick={() => handleChartSelection('Gauge Chart')}
                   >
-                    <img src={W1} alt='logo' />
+                    <img src={GaugeChart} alt='logo' />
                     <p>Gauge Chart</p>
                   </div>
                   {/* Add more charts */}

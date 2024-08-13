@@ -14,7 +14,7 @@ const AccountSettingsPI = () => {
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
-    if (file) {
+    if (file) { 
       const reader = new FileReader();
       reader.onloadend = () => {
         setImage(reader.result);

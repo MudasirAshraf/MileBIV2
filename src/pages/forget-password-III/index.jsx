@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import "./forget-pass-III.scss";
 import Logo from "../../assets/svg/logo.svg";
 import Thrd from "../../assets/svg/third.svg";
@@ -17,6 +17,33 @@ import LineI from "../../assets/svg/line1.svg";
 
 
 const ForgetPasswordIII = () => {
+
+  const [formData, setFormData] = useState({
+    setNewPassword:"",
+    confirmPassword:"",
+  })
+
+  let handleNameChange = (event) => {
+    let fieldValue = event.target.name;
+    let newValue = event.target.value;
+    setFormData((currData)=> {
+     return{...currData, [fieldValue] : newValue}
+    })
+  }
+
+  let handleSubmit = (event) => {
+    event.preventDefault();
+    console.log(formData);
+    if (formData.setNewPassword !== formData.confirmPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
+    setFormData({
+      setNewPassword:"",
+    confirmPassword:"",
+    });
+    alert("Your password has been successfully reset. You can now log in with your new password.");
+  }
   return (
     <div className='main-container-forget-password-III'>
          <div className='header-details-sign-in-page-I'>
@@ -104,24 +131,34 @@ const ForgetPasswordIII = () => {
           </div>
             {/* Form */}
             <div>
-                <form>
-           
+                <form onSubmit={handleSubmit}>
            <div className="input-group-fp-I">
        <img src={Password} alt="userlogo"/>
-       <input type="password" placeholder="Set New Password" name="password" className="input-details-sign-in" required />
-
+       <input className="input-details-sign-in"
+        type="password"
+         placeholder="Set New Password" 
+         name="setNewPassword"
+         id='setNewPassword'
+         value={formData.setNewPassword}
+         onChange={handleNameChange}
+           required />
        </div>  
        <div className="input-group-fp-I">
        <img src={Password} alt="userlogo"/>
-       <input type="password" placeholder="Confirm Password" name="password" className="input-details-sign-in" required />
-
+       <input className="input-details-sign-in"
+        type="password"
+         placeholder="Confirm Password" 
+         name="confirmPassword"  
+         id='confirmPassword'
+         value={formData.confirmPassword}
+         onChange={handleNameChange}
+         required />
        </div>  
-       </form>
-       {/* Adding Button */}
-       <div className='button-fp-III'>
+          {/* Adding Button */}
+          <div className='button-fp-III'>
         <button>Proceed</button>
        </div>
-           
+       </form>
          </div>
              {/* adding center line */}
              <div className='line-fp-I'>
@@ -136,11 +173,9 @@ const ForgetPasswordIII = () => {
             <img src={Question} alt='logo'/>
           </div>
           <div className='login-help-link'><a href=''>Need Help ?</a></div>
-          
          </div>
           </div>
     </div>
   )
 }
-
 export default ForgetPasswordIII;

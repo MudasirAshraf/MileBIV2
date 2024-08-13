@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import './sign-up-page-III.scss';
 import Logo from "../../assets/svg/logo.svg";
 import Thrd from "../../assets/svg/third.svg";
@@ -17,6 +17,36 @@ import Adress from "../../assets/svg/adress.svg";
 
 
 const SignPageIII = () => {
+
+  const [formData, SetFormData] = useState({
+    companyName:"",
+    companyEmail:"",
+    country:"",
+    city:"",
+    address:"",
+  })
+
+  let handleNameChange= (event) => {
+    let fieldValue=event.target.name;
+    let newValue= event.target.value;
+    SetFormData((currData)=> {
+      return {...currData, [fieldValue] : newValue}
+    })
+  }
+
+  let handleSubmit = (event) => {
+    event.preventDefault();
+    console.log(formData);
+    alert("Congratulations! Your account has been successfully created. Welcome to MileBI!. You can now log in.");
+    SetFormData({
+      companyName:"",
+      companyEmail:"",
+      country:"",
+      city:"",
+      address:"",
+    })
+
+  }
   return (
     <div className='"main-container-sign-in-page-III"'>
        <div className='header-details-sign-in-page-I'>
@@ -83,9 +113,7 @@ const SignPageIII = () => {
                     <div className='progress-sp-III-V-image-III'>
                       <img src={Polygon} alt=""/>
                     </div>
-
                 </div>
-                
               </div>
             </div>
             {/* Adding side logo */}
@@ -104,23 +132,43 @@ const SignPageIII = () => {
           </div>
            {/* Form */}
            <div>
-            <form>
+            <form onSubmit={handleSubmit}>
               <div className='form-column-details'></div>
                  {/* first column */}
                  <div className='first-column-details'>
                  <div className="input-group-sign-in-row-I">
         {/* <img src={User} alt="userlogo"/> */}
-          <input type="text" placeholder="Company Name" name="username"  className='input-details-sign-in-row-I' required />
+          <input className='input-details-sign-in-row-I'
+           type="text"
+           placeholder="Company Name"
+          name="companyName" 
+          id='companyName'
+          value={formData.companyName}
+          onChange={handleNameChange}
+              required />
         </div>
          <div className="input-group-sign-in-row-I">
          <img src={Message} alt="userlogo"/>
-         <input type="email" placeholder="Company Email" name="email" className='input-details-sign-in-row-I' required />
+         <input className='input-details-sign-in-row-I'
+          type="email" 
+          placeholder="Company Email"
+           name="companyEmail"
+           value={formData.companyEmail}
+           id='companyEmail'
+           onChange={handleNameChange}
+          required />
         </div>
                  </div>
                  {/* Second column */}
                  <div className='second-column-details'>
                  <div className="input-group-sign-in">
-                 <select placeholder="City" class="select-login-page-III" required>
+                 <select className="select-login-page-III"
+                  placeholder="City"  
+                  value={formData.city}
+                  name='city'
+                  id='city'
+                 onChange={handleNameChange}
+                  required>
   <option value="" disabled selected>Country</option>
   <option>Saudi Arabia</option>
   <option>INDIA</option>
@@ -129,7 +177,13 @@ const SignPageIII = () => {
 </select>
         </div>
          <div className="input-group-sign-in">
-         <select placeholder="City" class="select-login-page-III" required>
+         <select className="select-login-page-III"
+          placeholder="City"
+          value={formData.country}
+          id='country'
+          name='country'
+          onChange={handleNameChange}
+          required>
   <option value="" disabled selected>Select your city</option>
   <option>Riyadh</option>
   <option>Makkah</option>
@@ -143,15 +197,22 @@ const SignPageIII = () => {
                  <div className='second-column-details'>
                              <div className="input-group-sign-in">
                              <img src={Adress} alt="userlogo"/>
-                             <input type="text" placeholder="Address" name="address" class="input-details-sign-in-row-I" required />
+                             <input class="input-details-sign-in-row-I"
+                              type="text" 
+                              placeholder="Address"
+                               name="address"
+                               id='address'
+                               value={formData.address}
+                               onChange={handleNameChange}
+                               required />
 
                              </div>
                  </div>
-            </form>
-          </div>
-          <div className='proceed-button'>
+                 <div className='proceed-button' type="submit">
                <button>Proceed</button>
             </div>
+            </form>
+          </div>
         </div>
         <div className='login-help-div'>
           <div className='login-hepl-image'>
