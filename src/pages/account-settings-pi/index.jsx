@@ -11,6 +11,31 @@ import Upload from '../../assets/svg/Avtr.svg';
 const AccountSettingsPI = () => {
     const [image, setImage] = useState(null);
     const [isImageUploaded, setIsImageUploaded] = useState(false);
+    // form Validation Data
+    const [formData, setFormData] = useState({
+      firstName:"",
+      lastName:"",
+      phoneNumber:"",
+    })
+
+    let handleNameChange = (event) => {
+      let fieldValue = event.target.name;
+      let newValue = event.target.value;
+      setFormData((currData)=>{
+        return{...currData, [fieldValue]: newValue}
+      })
+    }
+
+    let handleSubmit = (event) => {
+      event.preventDefault();
+      console.log(formData);
+      alert("your information has been updated");
+      setFormData({
+        firstName:"",
+        lastName:"",
+        phoneNumber:"",
+      })
+    }
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
@@ -86,18 +111,38 @@ const AccountSettingsPI = () => {
             </div>
             {/* Adding Form Details */}
             <div>
-            <form className='form-account-settings-pi'>
+            <form className='form-account-settings-pi' onSubmit={handleSubmit}>
               <div className='account-settings-pi-form'>
               <div className='input-group-sign-in-row-I-account-settings-pi'>  
-                <input type="text" id="first-name" placeholder='First Name' name="first-name" className='input-details-sign-in-row-I-account-settings-pi' required />
+                <input className='input-details-sign-in-row-I-account-settings-pi'
+                 type="text"
+                  id="firstName"
+                   placeholder='First Name'
+                    name="firstName" 
+                    value={formData.firstName}
+                    onChange={handleNameChange}
+                    required />
               </div>
               <div className='input-group-sign-in-row-I-account-settings-pi'>
-                
-                <input type="text" id="last-name" placeholder='Last Name' name="last-name" className='input-details-sign-in-row-I-account-settings-pi' required />
+                <input className='input-details-sign-in-row-I-account-settings-pi'
+                 type="text"
+                  id="lastName" 
+                  placeholder='Last Name'
+                   name="lastName"
+                   value={formData.lastName}
+                   onChange={handleNameChange}
+                   required />
               </div>
               <div className="input-group-sign-in-account-settings-pi">
               <img src={Phone} alt="passlogo"/>
-                <input type="tel" id="phone-number" placeholder='Phone Number' name="phone-number" className='input-details-sign-in-account-settings-pi' required />
+                <input className='input-details-sign-in-account-settings-pi'
+                 type="tel" 
+                 id="phoneNumber" 
+                 placeholder='Phone Number' 
+                 name="phoneNumber" 
+                 value={formData.phoneNumber}
+                 onChange={handleNameChange}
+                 required />
               </div>
               </div>
               <div className='account-settings-pi-form-button'>

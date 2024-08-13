@@ -1899,7 +1899,7 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
                     onClick={() => handleChartSelection('Horizontal Bar Chart')}
                     className='b-chart'
                   >
-                    <img src={W2} alt='logo' />
+                    <img src={W2} alt='logo' className='image-w2' />
                     <p>Horizontal Bar Chart</p>
                   </div>
                    {/* Vertical Bar Chart */}

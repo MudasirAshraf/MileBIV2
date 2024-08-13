@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import "./dataset-II.scss";
 import { useNavigate } from 'react-router-dom';
 import Back from "../../assets/svg/Back.svg";
@@ -14,10 +14,26 @@ const DatasetII = () => {
     const handleDatasetI = () => {
         navigate("/create-dataset-I")
     };
+    const [formData, setFormData] = useState({
+      server:"",
+      userName:"",
+      password:"",
+    })
 
-    const handleDatasetIII = () =>{
-     navigate("/create-dataset-III")
+    let handleNameChange = (event) => {
+      let fieldValue = event.target.name;
+      let newValue = event.target.value;
+      setFormData((currData)=> {
+        return{...currData, [fieldValue]: newValue}
+      });
     };
+
+    let handleSubmit = (event) => {
+      event.preventDefault();
+      console.log(formData);
+      navigate("/create-dataset-III");
+    }
+
 
   return (
     <div className='main-container-dataset-II'>
@@ -52,24 +68,48 @@ const DatasetII = () => {
         </div>
            {/* Adding Form */}
            <div>
-            <form className='form-container-dataset-II'>
+            <form className='form-container-dataset-II' onSubmit={handleSubmit}>
+              <div className='form-container-dataset-II-input-details'>
                 {/* first row */}
             <div className='input-group-sign-in-row-I-dataset-II'>
-                <input type='text' placeholder='Server' name='server' className='input-details-sign-in-row-I-dataset-II' required/>
+                <input className='input-details-sign-in-row-I-dataset-II'
+                 type='text'
+                  placeholder='Server'
+                   name='server' 
+                   id='server'
+                   value={formData.server}
+                   onChange={handleNameChange}
+                   required/>
             </div>
             {/* second row */}
             <div className='input-group-sign-in-row-I-dataset-II'>
-                <input type='text' placeholder='Username' name='username' className='input-details-sign-in-row-I-dataset-II' required/>
+                <input className='input-details-sign-in-row-I-dataset-II'
+                 type='text'
+                  placeholder='Username' 
+                  name='userName'
+                  id='userName'
+                  value={formData.userName}
+                  onChange={handleNameChange}
+                  required/>
             </div>
             {/* third row */}
             <div className='input-group-sign-in-row-I-dataset-II'>
-                <input type='password'placeholder='Password' name='password' className='input-details-sign-in-row-I-dataset-II' required />
+                <input className='input-details-sign-in-row-I-dataset-II'
+                 type='password'
+                 placeholder='Password'
+                  name='password'
+                  id='password'
+                  value={formData.password}
+                  onChange={handleNameChange}
+                  required />
             </div>
+            </div>
+            <div className='button-dataset-II'>
+            <button type='submit'>Connect</button>
+        </div>
             </form>
         </div>
-        <div className='button-dataset-II'>
-            <button onClick={handleDatasetIII}>Connect</button>
-        </div>
+       
         </div>
     </div>
   )

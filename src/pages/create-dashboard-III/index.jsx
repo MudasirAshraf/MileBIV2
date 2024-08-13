@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import "./modal-III.scss";
 import { useNavigate } from 'react-router-dom';
 import Back from "../../assets/svg/Back.svg";
@@ -16,9 +16,25 @@ const CreateDashboardModalIII = () => {
       navigate('/create-dashboard-II');
     };
 
-    const handleDashboardIV = () =>{
-        navigate("/create-dashboard-IV");
+    const [formData, setFormData] = useState({
+      server:"",
+      userName:"",
+      password:"",
+    })
+
+    let handleNameChange = (event) => {
+      let fieldValue = event.target.name;
+      let newValue = event.target.value;
+      setFormData((currData)=> {
+        return{...currData, [fieldValue]: newValue}
+      });
     };
+
+    let handleSubmit = (event) => {
+      event.preventDefault();
+      console.log(formData);
+      navigate("/create-dashboard-IV");
+    }
   return (
     <div className='main-container-create-dashboard-modals-III'>
     <div className='header-create-dashboard-III'>
@@ -56,23 +72,46 @@ const CreateDashboardModalIII = () => {
         </div>
         {/* Adding Form */}
         <div>
-            <form className='form-container-create-dashboard-III'>
+            <form className='form-container-create-dashboard-III' onSubmit={handleSubmit}>
+              <div className='form-container-create-dashboard-III-input-details'>
                 {/* first row */}
             <div className='input-group-sign-in-row-I-dm-III'>
-                <input type='text' placeholder='Server' name='server' className='input-details-sign-in-row-I-dm-III' required/>
+                <input className='input-details-sign-in-row-I-dm-III'
+                 type='text'
+                  placeholder='Server' 
+                  name='server' 
+                  id='server'
+                  value={formData.server}
+                  onChange={handleNameChange}
+                  required/>
             </div>
             {/* second row */}
             <div className='input-group-sign-in-row-I-dm-III'>
-                <input type='text' placeholder='Username' name='username' className='input-details-sign-in-row-I-dm-III' required/>
+                <input className='input-details-sign-in-row-I-dm-III' 
+                type='text' 
+                placeholder='Username'
+                 name='userName'
+                 id='userName'
+                 value={formData.userName}
+                 onChange={handleNameChange}
+                 required/>
             </div>
             {/* third row */}
             <div className='input-group-sign-in-row-I-dm-III'>
-                <input type='password'placeholder='Password' name='password' className='input-details-sign-in-row-I-dm-III' required />
+                <input className='input-details-sign-in-row-I-dm-III' 
+                 type='password'
+                 placeholder='Password'
+                  name='password'
+                  id='password'
+                  value={formData.password}
+                  onChange={handleNameChange}
+                   required />
             </div>
-            </form>
+            </div>
+            <div className='button-dashboard-modal-III'>
+            <button type='submit'>Connect</button>
         </div>
-        <div className='button-dashboard-modal-III'>
-            <button onClick={handleDashboardIV}>Connect</button>
+            </form>
         </div>
         </div>
     </div>

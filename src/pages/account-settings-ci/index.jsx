@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import "./account-settings-ci.scss";
 import DashboardWrapper from '../../components/dashboard-wrapper';
 import Check from "../../assets/svg/check.svg";
@@ -9,6 +9,36 @@ import Message from "../../assets/svg/Message_light.svg";
 import Adress from "../../assets/svg/adress.svg";
 
 const AccountSettingsCI = () => {
+
+  const [formData, setFormData] = useState({
+    companyName:"",
+    email:"",
+    country:"",
+    city:"",
+    address:"",
+  })
+
+  let handleNameChange = (event) => {
+    let fieldValue=event.target.name;
+    let newValue = event.target.value;
+    setFormData((currData)=>{
+       return{...currData, [fieldValue] : newValue}
+    })
+  }
+
+  let handleSubmit = (event) => {
+    event.preventDefault();
+    alert("your information has been updated")
+    console.log(formData);
+    setFormData({
+      companyName:"",
+      email:"",
+      country:"",
+      city:"",
+      address:"",
+    });
+  };
+
   return (
     <div className='main-container-account-settings-ci'>
       <div className='container-account-settings-ci'>
@@ -26,18 +56,37 @@ const AccountSettingsCI = () => {
             </div>
             {/* Adding form */}
             <div>
-              <form className='account-settings-ci-form-container'>
+              <form className='account-settings-ci-form-container' onSubmit={handleSubmit}>
                 {/* ist row */}
                 <div className='account-settings-ci-ist-row'>
                 <div className='input-group-sign-in-row-I-account-settings-pi'>  
-                <input type="text" id="company-name" placeholder='Company Name' name="company-name" className='input-details-sign-in-row-I-account-settings-pi' required />
+                <input className='input-details-sign-in-row-I-account-settings-pi'
+                 type="text"
+                  id="companyName" 
+                  placeholder='Company Name'
+                   name="companyName"  
+                   value={formData.companyName}
+                   onChange={handleNameChange}
+                   required />
               </div>
                 <div className='input-group-sign-in-account-settings-ci'>
                 <img src={Message} alt="passlogo"/>
-                <input type="email" id="email-address" placeholder="Email Address" name="email-address" className="input-details-sign-in-account-settings-ci" required />
+                <input className="input-details-sign-in-account-settings-ci"
+                 type="email" 
+                 id="email"
+                  placeholder="Email Address" 
+                  name="email"
+                  value={formData.email}
+                  onChange={handleNameChange}
+                  required />
                 </div>
                <div>
-               <select id="country" name="country" className="styled-select" required>
+               <select   className="styled-select"
+               id="country" 
+               name="country"  
+              value={formData.country}
+              onChange={handleNameChange}
+                required>
         <option value="" disabled selected>Country</option>
         <option value="usa">United States</option>
         <option value="canada">Canada</option>
@@ -50,7 +99,12 @@ const AccountSettingsCI = () => {
                 {/* second row */}
                 <div className='account-settings-ci-2nd-row'>
                 <div>
-               <select id="city" name="city" className="styled-select" required>
+               <select className="styled-select"
+                id="city"
+                 name="city" 
+                 value={formData.city}
+                 onChange={handleNameChange}
+                  required>
         <option value="" disabled selected>City</option>
         <option value="madinah">Madinah</option>
         <option value="riyadh">Riyadh</option>
@@ -60,12 +114,19 @@ const AccountSettingsCI = () => {
                </div>
                 <div className='input-group-ci'>
                 <img src={Adress} alt="passlogo"/>
-                <input type="text" id="adress" placeholder='Address' name="adress" className='input-details-adress-ci' required />
+                <input className='input-details-adress-ci'
+                 type="text" 
+                 id="address" 
+                 placeholder='Address'
+                  name="address" 
+                  value={formData.address}
+                  onChange={handleNameChange}
+                  required />
                 </div>
                 </div>
                 {/* third row */}
                 <div className='account-settings-ci-third-row'>
-                <button>Update</button>
+                <button type='submit'>Update</button>
                 </div>
               </form>
             </div>

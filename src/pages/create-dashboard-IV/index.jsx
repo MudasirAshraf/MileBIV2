@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import "./modal-IV.scss";
 import Back from "../../assets/svg/Back.svg";
 import Cross from '../../assets/svg/cross.svg';
-import Four from '../../assets/png/4.png';
+import Five from '../../assets/png/5.png';
 import PIV from '../../assets/svg/p4.svg';
 import Polygon from '../../assets/svg/Polygon 3.svg';
 import Ring from "../../assets/svg/ringround.svg";
@@ -71,7 +71,7 @@ const CreateDashboardModalIV = () => {
           </div>
    </div>
    <div className='second-row-dashboard-modals-I'>
-          <img src={Four} alt="logo"/>
+          <img src={Five} alt="logo"/>
         </div>
         <div className='header-dashboard-modals'>
           <p>Select Table / Data</p>

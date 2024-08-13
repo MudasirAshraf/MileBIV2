@@ -52,6 +52,11 @@
 }
 .form-container-create-dashboard-III{
     display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.form-container-create-dashboard-III-input-details{
+    display: flex;
     flex-direction: row;
     gap: 20px;
     padding: 40px 90px;

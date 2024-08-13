@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import "./account-settings-security.scss";
 import DashboardWrapper from '../../components/dashboard-wrapper';
 import Check from "../../assets/svg/check.svg";
@@ -7,6 +7,35 @@ import Line from "../../assets/svg/line.svg";
 import Password from "../../assets/svg/Key_light.svg";
 
 const AccoutSettingsSecurity = () => {
+  const [formData, setFormData] = useState({
+    oldPassword:"",
+    newPassword:"",
+    confirmPassword:"",
+  });
+
+  let handleNameChange = (event) =>{
+    let fieldValue = event.target.name;
+    let newValue = event.target.value;
+    setFormData((currData)=>{
+      return{...currData, [fieldValue] : newValue}
+    });
+  };
+  let handleSubmit = (event) =>{
+    event.preventDefault();
+    console.log(formData);
+    if (formData.oldPassword === formData.newPassword) {
+      alert("Old Passwords & New Password are same!");
+      return;
+    }
+    if (formData.newPassword !== formData.confirmPassword){
+      alert('New passwords do not match!')
+    }
+    setFormData({
+      oldPassword:"",
+    newPassword:"",
+    confirmPassword:"", 
+    })
+  }
   return (
     <div className='main-container-account-settings-security'>
       <div className='container-account-settings-security'>
@@ -24,19 +53,40 @@ const AccoutSettingsSecurity = () => {
             </div>
                {/* Adding Form Details */}
                <div>
-            <form className='form-account-settings-pi'>
+            <form className='form-account-settings-pi' onSubmit={handleSubmit}>
               <div className='account-settings-pi-form'>
               <div className="input-group-sign-in-account-settings-pi">
               <img src={Password} alt="passlogo"/>
-              <input type="password" id="old-password" placeholder="Enter old password" name="old-password" class="input-details-sign-in-account-settings-pi" required />
+              <input class="input-details-sign-in-account-settings-pi"
+               type="password"
+                id="oldPassword" 
+                placeholder="Enter old password"
+                 name="oldPassword" 
+                 value={formData.oldPassword}
+                 onChange={handleNameChange}
+                 required />
               </div>
               <div className="input-group-sign-in-account-settings-pi">
               <img src={Password} alt="passlogo"/>
-              <input type="password" id="old-password" placeholder="Enter New password" name="old-password" class="input-details-sign-in-account-settings-pi" required />
+              <input class="input-details-sign-in-account-settings-pi"
+               type="password"
+                id="newPassword"
+                 placeholder="Enter New password"
+                  name="newPassword" 
+                  value={formData.newPassword}
+                  onChange={handleNameChange}
+                  required />
               </div>
               <div className="input-group-sign-in-account-settings-pi">
               <img src={Password} alt="passlogo"/>
-              <input type="password" id="old-password" placeholder="Confirm password" name="old-password" class="input-details-sign-in-account-settings-pi" required />
+              <input class="input-details-sign-in-account-settings-pi"
+               type="password"
+                id="confirmPassword"
+                 placeholder="Confirm password"
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleNameChange}
+                  required />
               </div>
               </div>
               <div className='account-settings-pi-form-button'>

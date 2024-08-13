@@ -44,6 +44,11 @@
 }
 .form-container-dataset-II{
     display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.form-container-dataset-II-input-details{
+    display: flex;
     flex-direction: row;
     gap: 20px;
     padding: 40px 90px;
