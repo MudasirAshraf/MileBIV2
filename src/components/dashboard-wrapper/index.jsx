@@ -14,11 +14,37 @@ import Bell from "../../assets/svg/bell.svg";
 
 const DashboardWrapper = ({ children, publishedCount, draftsCount, workspacesCount }) => {
   const location = useLocation();
+  const navigate = useNavigate();
 
-const navigate = useNavigate();
-const handleCreateDashboard = () => {
-  navigate("/grids");
-};
+  const handleCreateDashboard = () => {
+    navigate("/create-dashboard-modals");
+  };
+
+  const handleCreateDataset = () => {
+    navigate("/create-dataset-I");
+  };
+
+  const handleCreateGrids = () => {
+    navigate("/grids");
+  };
+
+  const handleSelectChange = (event) => {
+    const value = event.target.value;
+    if (value === 'settings') {
+      handleSettings();
+    } else if (value === 'logout') {
+      handleCreateDash();
+    }
+  };
+
+  const handleSettings = () => {
+    navigate("/account-settings"); 
+  };
+
+  const handleCreateDash = () => {
+    navigate("/create-dashboard");
+  }
+
   return (
     <div className='main-container-dashboard-wrapper'>
       {/* Main Container */}
@@ -72,14 +98,14 @@ const handleCreateDashboard = () => {
             <div className='first-div-second-row'>
               {/* 1st button */}
               <div>
-                <button className='first-div-second-row-btn-I'>
+                <button className='first-div-second-row-btn-I' onClick={handleCreateGrids}>
                   <img src={Group} alt="logo" />
                   <p>Dashboard Builder</p>
                 </button>
               </div>
               {/* 2nd button */}
               <div>
-                <button className='first-div-second-row-btn-II'>
+                <button className='first-div-second-row-btn-II' onClick={handleCreateDataset}>
                   <img src={Square} alt="logo" />
                   <p>Create a Dataset</p>
                 </button>
@@ -94,9 +120,10 @@ const handleCreateDashboard = () => {
               {/* 4th Select option */}
               <div className='first-div-second-row-btn-IV'>
                 <img src={Dataset} alt="logo" />
-                <select className='first-div-second-row-btn-IV-select'>
-                  <option>Tahir</option>
-                  <option>Mudasir</option>
+                <select className='first-div-second-row-btn-IV-select' onChange={handleSelectChange}>
+                  <option value="">Select an option</option>
+                  <option value="settings">Account Settings</option>
+                  <option value="logout">Logout</option>
                 </select>
               </div>
               {/* 5th div */}
@@ -110,7 +137,6 @@ const handleCreateDashboard = () => {
           </div>
         </div>
       </div>
-   
     </div>
   );
 }

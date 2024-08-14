@@ -21,12 +21,16 @@ const DatasetI = () => {
       navigate('/create-dataset-II');
     };
 
+    const handleCreateDashboard = () => {
+      navigate("/create-dashboard");
+    };
+
   return (
     <div className='main-container-dataset-I'>
       <div className='header-dataset-I'>
         {/* Adding Header */}
       <div>
-  <img src={Back} alt="logo" style={{cursor:"pointer"}}/>
+  <img src={Back} alt="logo" style={{cursor:"pointer"}} onClick={handleCreateDashboard}/>
  </div>
  <div>
   <img src={Cross} alt="logo"/>

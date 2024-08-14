@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './dashboard.scss';
 import Logo from '../../assets/svg/Header.svg';
 import Workspace from '../../assets/svg/workspace.svg';
@@ -221,6 +222,15 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
   const [selectedComponent, setSelectedComponent] = useState(null);
   const [showChartList, setShowChartList] = useState(false);
   const [chartOptions, setChartOptions] = useState(defaultChartOptions);
+  const navigate = useNavigate();
+
+  const handleCreateDashboard = () => {
+    navigate("/create-dashboard-modals");
+  };
+
+  const handleCreateDataset = () => {
+    navigate("/create-dataset-I");
+  };
   
 
   const handleSaveChart = () => {
@@ -2136,7 +2146,7 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
             <div className='DS'>
               <img src={DS} alt='logo' />
             </div>
-            <div>
+            <div onClick={handleCreateDataset}>
               <p>Create a Dataset</p>
             </div>
           </div>
@@ -2144,15 +2154,15 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
             <div className='DS'>
               <img src={DS} alt='logo' />
             </div>
-            <div>
+            <div onClick={handleCreateDashboard}>
               <p>Create a Dashboard</p>
             </div>
           </div>
           <div className='first-div-second-row-btn-IV-nav'>
             <img src={Dataset} alt='logo' />
             <select className='first-div-second-row-btn-IV-select-nav'>
-              <option>Tahir</option>
-              <option>Mudasir</option>
+            <option>Account Settings</option>
+                  <option>Logout</option>
             </select>
           </div>
           <div className='bell'>

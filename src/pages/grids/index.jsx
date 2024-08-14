@@ -75,5 +75,4 @@ const Grids = () => {
   );
 };
 
-
 export default Grids;

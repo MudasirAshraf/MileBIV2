@@ -63,10 +63,12 @@ const CardII = ({ title, title1, title2, status }) => {
               </button>
             )}
             {status === "published" && (
-              <button className='third-column-card-ii-button-part-i'>
+              <div>
+              <button className='third-column-card-ii-button-part-i' >
                 <img src={Ring} alt="logo"/>
                 <p>Publish</p>
               </button>
+              </div>
             )}
         </div>
     </div>
