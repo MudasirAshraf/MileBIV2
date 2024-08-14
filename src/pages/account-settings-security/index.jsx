@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import { useNavigate } from 'react-router-dom';
 import "./account-settings-security.scss";
 import DashboardWrapper from '../../components/dashboard-wrapper';
 import Check from "../../assets/svg/check.svg";
@@ -7,6 +8,14 @@ import Line from "../../assets/svg/line.svg";
 import Password from "../../assets/svg/Key_light.svg";
 
 const AccoutSettingsSecurity = () => {
+
+   // Navigation to Account-Settings
+   const navigate = useNavigate();
+
+   const handleAccountSettings = ()=>{
+     navigate("/account-settings");
+   };
+
   const [formData, setFormData] = useState({
     oldPassword:"",
     newPassword:"",
@@ -42,7 +51,7 @@ const AccoutSettingsSecurity = () => {
       <DashboardWrapper>
       <div className='account-settings-security'>
             <img src={Check} alt="logo"/>
-            <p>Account Settings</p> 
+            <p className='account-settings-ci-paragraph' onClick={handleAccountSettings}>Account Settings</p> 
             <img src={EArrow} alt='logo'/>
             <p>Security</p>
             </div>

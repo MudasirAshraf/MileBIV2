@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import "./account-settings-pi.scss";
 import DashboardWrapper from '../../components/dashboard-wrapper';
 import Check from "../../assets/svg/check.svg";
@@ -11,6 +12,12 @@ import Upload from '../../assets/svg/Avtr.svg';
 const AccountSettingsPI = () => {
     const [image, setImage] = useState(null);
     const [isImageUploaded, setIsImageUploaded] = useState(false);
+    // Navigation to Account-Settings
+    const navigate = useNavigate();
+
+    const handleAccountSettings = ()=>{
+      navigate("/account-settings");
+    };
     // form Validation Data
     const [formData, setFormData] = useState({
       firstName:"",
@@ -58,7 +65,7 @@ const AccountSettingsPI = () => {
         <DashboardWrapper>
             <div className='account-settings-pi'>
             <img src={Check} alt="logo"/>
-            <p>Account Settings</p> 
+            <p className='account-settings-ci-paragraph' onClick={handleAccountSettings}>Account Settings</p> 
             <img src={EArrow} alt='logo'/>
             <p>Personal Info</p>
             </div>

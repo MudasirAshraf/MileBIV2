@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import { useNavigate } from 'react-router-dom';
 import "./account-settings-ci.scss";
 import DashboardWrapper from '../../components/dashboard-wrapper';
 import Check from "../../assets/svg/check.svg";
@@ -8,7 +9,14 @@ import Phone from "../../assets/svg/Phone_light.svg";
 import Message from "../../assets/svg/Message_light.svg";
 import Adress from "../../assets/svg/adress.svg";
 
+
 const AccountSettingsCI = () => {
+
+  const navigate = useNavigate();
+
+  const handleAccountSettings = ()=>{
+    navigate("/account-settings");
+  };
 
   const [formData, setFormData] = useState({
     companyName:"",
@@ -45,7 +53,7 @@ const AccountSettingsCI = () => {
         <DashboardWrapper>
         <div className='account-settings-ci'>
             <img src={Check} alt="logo"/>
-            <p>Account Settings</p> 
+            <p className='account-settings-ci-paragraph' onClick={handleAccountSettings}>Account Settings</p> 
             <img src={EArrow} alt='logo'/>
             <p>Company Info</p>
             </div>
