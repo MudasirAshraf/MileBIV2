@@ -4,11 +4,12 @@ import Dashboard from '../../components/dashboard';
 import Grid from '../../components/grid-charts';
 
 const Grids = () => {
-  const [grids, setGrids] = useState([1]);
+  const [grids, setGrids] = useState([{ id: 1, rows: 1, cols: 1 }]);
   const [selectedCharts, setSelectedCharts] = useState([]);
   const [chartOptions, setChartOptions] = useState({});
   const [selectedChart, setSelectedChart] = useState(null);
   const [selectedGridIndex, setSelectedGridIndex] = useState(null);
+  const [gridToMoveIndex, setGridToMoveIndex] = useState(null);
 
   const handleCreateGrid = (rows, cols) => {
     const newGrid = { rows, cols, id: Date.now() };
@@ -22,14 +23,21 @@ const Grids = () => {
   };
 
   const handleSelectGrid = (index) => {
+    if (selectedGridIndex === null) {
+      setSelectedGridIndex(index);
+    } else if (gridToMoveIndex === null) {
+      setGridToMoveIndex(index);
+    } else {
+      // Swap if both indices are selected
+      handleShuffleCharts();
+    }
     setSelectedChart(selectedCharts[index]);
-    setSelectedGridIndex(index);
   };
 
   const handleUpdateChartOptions = (updatedOptions) => {
     setChartOptions(updatedOptions);
   };
-  
+
   const handleDeleteChart = () => {
     if (selectedGridIndex !== null) {
       const updatedCharts = selectedCharts.filter((_, i) => i !== selectedGridIndex);
@@ -39,11 +47,25 @@ const Grids = () => {
       setGrids(updatedGrids);
       setSelectedChart(null);
       setSelectedGridIndex(null);
+      setGridToMoveIndex(null);
       setChartOptions(prevOptions => {
         const newOptions = { ...prevOptions };
         delete newOptions[selectedChart];
         return newOptions;
       });
+    }
+  };
+
+  const handleShuffleCharts = () => {
+    if (selectedGridIndex !== null && gridToMoveIndex !== null && selectedGridIndex !== gridToMoveIndex) {
+      const updatedCharts = [...selectedCharts];
+      const temp = updatedCharts[selectedGridIndex];
+      updatedCharts[selectedGridIndex] = updatedCharts[gridToMoveIndex];
+      updatedCharts[gridToMoveIndex] = temp;
+
+      setSelectedCharts(updatedCharts);
+      setSelectedGridIndex(null);
+      setGridToMoveIndex(null);
     }
   };
 
@@ -56,6 +78,9 @@ const Grids = () => {
         onDeleteChart={handleDeleteChart}
         chartOptions={chartOptions}
         onUpdateChartOptions={handleUpdateChartOptions}
+        handleShuffleCharts={handleShuffleCharts}
+        selectedGridIndex={selectedGridIndex} 
+        gridToMoveIndex={gridToMoveIndex} 
       >
         <div className='container-grids'>
           <div className='content-grids'>
@@ -65,7 +90,7 @@ const Grids = () => {
                 chart={selectedCharts[index]}
                 chartOptions={chartOptions[selectedCharts[index]]}
                 onSelect={() => handleSelectGrid(index)}
-                isSelected={selectedGridIndex === index}
+                isSelected={selectedGridIndex === index || gridToMoveIndex === index}
               />
             ))}
           </div>

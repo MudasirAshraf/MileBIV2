@@ -217,7 +217,8 @@ const defaultChartOptions = {
   },
 };
 
-const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDeleteChart, onUpdateChartOptions }) => {
+const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDeleteChart, onUpdateChartOptions, handleShuffleCharts,
+  selectedGridIndex, gridToMoveIndex}) => {
   const [activeTab, setActiveTab] = useState('Grids');
   const [selectedComponent, setSelectedComponent] = useState(null);
   const [showChartList, setShowChartList] = useState(false);
@@ -2236,6 +2237,7 @@ const Dashboard = ({ children, onCreateGrid, onSelectChart, selectedChart, onDel
                 <img src={L1} alt='logo' />
               </div>
               <div className='sr-CDB-III'>
+              <button  className='sr-btn' onClick={handleShuffleCharts} disabled={selectedGridIndex === null || gridToMoveIndex === null}>Shuffle Charts</button>
                 <div>
                   <button className='sr-btn' onClick={handleSaveChart}>Save Changes</button>
                 </div>
