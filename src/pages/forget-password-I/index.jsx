@@ -34,6 +34,12 @@ const ForgetPasswordI = () => {
 
   let handleSubmit = (event)=> {
     event.preventDefault();
+      //  Adding Email Updation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email)) {
+        alert("Email is not valid");
+        return;
+      }
     console.log(formData);
     navigate("/forget-password-II")
   }

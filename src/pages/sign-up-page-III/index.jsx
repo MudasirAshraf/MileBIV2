@@ -26,6 +26,11 @@ const SignPageIII = () => {
     address:"",
   })
 
+  const isEmailValid = (companyEmail) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(companyEmail);
+  };
+
   let handleNameChange= (event) => {
     let fieldValue=event.target.name;
     let newValue= event.target.value;
@@ -36,6 +41,10 @@ const SignPageIII = () => {
 
   let handleSubmit = (event) => {
     event.preventDefault();
+    if (!isEmailValid(formData.companyEmail)) {
+      alert("Email address is not valid!");
+      return;
+    }
     console.log(formData);
     alert("Congratulations! Your account has been successfully created. Welcome to MileBI!. You can now log in.");
     SetFormData({

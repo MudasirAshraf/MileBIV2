@@ -32,6 +32,17 @@ const AccoutSettingsSecurity = () => {
   let handleSubmit = (event) =>{
     event.preventDefault();
     console.log(formData);
+    if (formData.newPassword.length < 8 || formData.confirmPassword.length < 8) {
+      alert("Password must be at least 8 characters long.");
+      return;
+    }
+  
+    const passwordRegex = /^(?=.*[a-zA-Z])(?=.*[^a-zA-Z]).{8,}$/;
+    if (!passwordRegex.test(formData.newPassword) || !passwordRegex.test(formData.confirmPassword)) {
+      alert("Password must be a combination of letters and other characters.");
+      return;
+    }
+
     if (formData.oldPassword === formData.newPassword) {
       alert("Old Passwords & New Password are same!");
       return;
@@ -44,6 +55,7 @@ const AccoutSettingsSecurity = () => {
     newPassword:"",
     confirmPassword:"", 
     })
+    alert("your password has been updated.")
   }
   return (
     <div className='main-container-account-settings-security'>

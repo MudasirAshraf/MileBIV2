@@ -44,11 +44,41 @@ const SignpageI = () => {
     }));
   };
 
+  const isEmailValid = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const isPhoneNumberValid = (phoneNumber) => {
+    return phoneNumber.length >= 7 && phoneNumber.length <= 13;
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
     console.log(formData);
     if (formData.CreatePassword !== formData.ConfirmPassword) {
       alert("Passwords do not match!");
+      return;
+    }
+
+    if (!isEmailValid(formData.email)) {
+      alert("Email address is not valid!");
+      return;
+    }
+
+    if (!isPhoneNumberValid(formData.phoneNumber)) {
+      alert("Phone number must be between 7 and 13 digits!");
+      return;
+    }
+
+    if (formData.CreatePassword.length < 8 || formData.ConfirmPassword.length < 8) {
+      alert("Password must be at least 8 characters long.");
+      return;
+    }
+  
+    const passwordRegex = /^(?=.*[a-zA-Z])(?=.*[^a-zA-Z]).{8,}$/;
+    if (!passwordRegex.test(formData.CreatePassword) || !passwordRegex.test(formData.ConfirmPassword)) {
+      alert("Password must be a combination of letters and other characters.");
       return;
     }
     navigate('/sign-up-page-II');

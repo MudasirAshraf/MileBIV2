@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import "./forget-pass-III.scss";
 import Logo from "../../assets/svg/logo.svg";
 import Thrd from "../../assets/svg/third.svg";
@@ -17,11 +18,15 @@ import LineI from "../../assets/svg/line1.svg";
 
 
 const ForgetPasswordIII = () => {
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     setNewPassword:"",
     confirmPassword:"",
   })
+  const handleLoginPage = () => {
+  navigate("/");
+  }
 
   let handleNameChange = (event) => {
     let fieldValue = event.target.name;
@@ -33,6 +38,16 @@ const ForgetPasswordIII = () => {
 
   let handleSubmit = (event) => {
     event.preventDefault();
+  if (formData.setNewPassword.length < 8 || formData.confirmPassword.length < 8) {
+    alert("Password must be at least 8 characters long.");
+    return;
+  }
+
+  const passwordRegex = /^(?=.*[a-zA-Z])(?=.*[^a-zA-Z]).{8,}$/;
+  if (!passwordRegex.test(formData.setNewPassword) || !passwordRegex.test(formData.confirmPassword)) {
+    alert("Password must be a combination of letters and other characters.");
+    return;
+  }
     console.log(formData);
     if (formData.setNewPassword !== formData.confirmPassword) {
       alert("Passwords do not match!");
@@ -165,7 +180,7 @@ const ForgetPasswordIII = () => {
             <img src={LineI} alt=''/>
           </div>
           <div className='button-fp-III'>
-         <div><button className='button-1'>Sign In</button></div>
+         <div><button className='button-1' onClick={handleLoginPage}>Sign In</button></div>
         </div>
           </div>
           <div className='login-help-div'>

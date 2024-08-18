@@ -59,15 +59,22 @@ const Grids = () => {
   const handleShuffleCharts = () => {
     if (selectedGridIndex !== null && gridToMoveIndex !== null && selectedGridIndex !== gridToMoveIndex) {
       const updatedCharts = [...selectedCharts];
-      const temp = updatedCharts[selectedGridIndex];
-      updatedCharts[selectedGridIndex] = updatedCharts[gridToMoveIndex];
-      updatedCharts[gridToMoveIndex] = temp;
-
+      
+      // Get the selected chart to move
+      const chartToMove = updatedCharts[selectedGridIndex];
+      
+      // Remove the selected chart from its current position
+      updatedCharts.splice(selectedGridIndex, 1);
+      
+      // Insert the selected chart at the target position
+      updatedCharts.splice(gridToMoveIndex, 0, chartToMove);
+      
       setSelectedCharts(updatedCharts);
       setSelectedGridIndex(null);
       setGridToMoveIndex(null);
     }
   };
+   
 
   return (
     <div className='main-container'>

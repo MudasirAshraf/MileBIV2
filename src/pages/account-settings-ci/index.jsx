@@ -4,10 +4,9 @@ import "./account-settings-ci.scss";
 import DashboardWrapper from '../../components/dashboard-wrapper';
 import Check from "../../assets/svg/check.svg";
 import EArrow from "../../assets/svg/expandarrow.svg";
-import Line from "../../assets/svg/line.svg";
-import Phone from "../../assets/svg/Phone_light.svg";
 import Message from "../../assets/svg/Message_light.svg";
 import Adress from "../../assets/svg/adress.svg";
+import Line from "../../assets/svg/line.svg"; 
 
 
 const AccountSettingsCI = () => {
@@ -36,15 +35,16 @@ const AccountSettingsCI = () => {
 
   let handleSubmit = (event) => {
     event.preventDefault();
+  //  Adding Email Updation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      alert("Email is not valid");
+      return;
+    }
+  // Alert Update Information
     alert("your information has been updated")
     console.log(formData);
-    setFormData({
-      companyName:"",
-      email:"",
-      country:"",
-      city:"",
-      address:"",
-    });
+    navigate("/account-settings-security");
   };
 
   return (
