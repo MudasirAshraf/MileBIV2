@@ -14,109 +14,99 @@ import I4 from '../../assets/svg/I4.svg';
 import I5 from '../../assets/svg/I5.svg';
 
 const DatasetI = () => {
-
     const navigate = useNavigate();
 
-    const handleDatasetII = () => {
-      navigate('/create-dataset-II');
+    const handleDatasetII = (databaseType) => {
+      navigate('/create-dataset-II', { state: { databaseType } });
     };
 
     const handleCreateDashboard = () => {
       navigate("/create-dashboard");
     };
 
-  return (
-    <div className='main-container-dataset-I'>
-      <div className='header-dataset-I'>
-        {/* Adding Header */}
-      <div>
-  <img src={Back} alt="logo" style={{cursor:"pointer"}} onClick={handleCreateDashboard}/>
- </div>
- <div>
-  <img src={Cross} alt="logo"/>
- </div>
-      </div>
-      {/* Main container */}
-      <div className='container-dataset-I'>
-      {/* first row */}
-      <div className='first-row-dataset-I'>
-      <p>Create a Dataset</p>
-      <img src={DI} alt="logo"/>
-      <div className='second-row-dataset-I'>
-        <img src={Polygon} alt="logo"/>
-      </div>
-      </div>
-      <div className='third-row-dataset-I'>
-      <img src={One} alt="logo"/>
-      </div>
-      <div className='header-dashboard-modals'>
-          <p>Select Data Source</p>
-          <img src={Line} alt="logo"/>
+    return (
+      <div className='main-container-dataset-I'>
+        <div className='header-dataset-I'>
+          {/* Adding Header */}
+          <div>
+            <img src={Back} alt="logo" style={{ cursor: "pointer" }} onClick={handleCreateDashboard} />
+          </div>
+          <div>
+            <img src={Cross} alt="logo" />
+          </div>
         </div>
-        {/* cards container */}
-        <div className='cards-container-dataset-I'>
-        {/* first card */}
-        <div className='card-I-dataset-I'>
-            <div>
-                <img src={I1} alt="logo"/>
+        {/* Main container */}
+        <div className='container-dataset-I'>
+          {/* first row */}
+          <div className='first-row-dataset-I'>
+            <p>Create a Dataset</p>
+            <img src={DI} alt="logo" />
+            <div className='second-row-dataset-I'>
+              <img src={Polygon} alt="logo" />
             </div>
-            <div>
+          </div>
+          <div className='third-row-dataset-I'>
+            <img src={One} alt="logo" />
+          </div>
+          <div className='header-dashboard-modals'>
+            <p>Select Data Source</p>
+            <img src={Line} alt="logo" />
+          </div>
+          {/* cards container */}
+          <div className='cards-container-dataset-I'>
+            {/* first card */}
+            <div className='card-I-dataset-I' onClick={() => handleDatasetII('SQLServer')}>
+              <div>
+                <img src={I1} alt="logo" />
+              </div>
+              <div>
                 <p>SQL Server</p>
+              </div>
             </div>
-        </div>
-          {/* second card */}
-          <div className='card-I-dataset-I'>
-            <div>
-                <img src={I2} alt="logo"/>
+            {/* second card */}
+            <div className='card-I-dataset-I' onClick={() => handleDatasetII('Postgre')}>
+              <div>
+                <img src={I2} alt="logo" />
+              </div>
+              <div>
+                <p>Postgre</p>
+              </div>
             </div>
-            <div>
-                <p>SAP DB</p>
-            </div>
-        </div>
-          {/* Third card */}
-          <div className='card-I-dataset-I'>
-            <div>
-                <img src={I3} alt="logo"/>
-            </div>
-            <div>
+            {/* Third card */}
+            <div className='card-I-dataset-I' onClick={() => handleDatasetII('Oracle')}>
+              <div>
+                <img src={I3} alt="logo" />
+              </div>
+              <div>
                 <p>Oracle Database</p>
+              </div>
             </div>
-        </div>
-           {/* Fourth card */}
-           <div className='card-I-dataset-I'>
-            <div>
-                <img src={I4} alt="logo"/>
-            </div>
-            <div>
+            {/* Fourth card */}
+            <div className='card-I-dataset-I' onClick={() => handleDatasetII('IBM')}>
+              <div>
+                <img src={I4} alt="logo" />
+              </div>
+              <div>
                 <p>IBM DB</p>
+              </div>
             </div>
-        </div>
-         {/* Fifth card */}
-         <div className='card-I-dataset-I'>
-            <div>
-                <img src={I5} alt="logo"/>
-            </div>
-            <div>
+            {/* Fifth card */}
+            <div className='card-I-dataset-I' onClick={() => handleDatasetII('Excel')}>
+              <div>
+                <img src={I5} alt="logo" />
+              </div>
+              <div>
                 <p>Excel</p>
+              </div>
             </div>
-        </div>
-           {/* Fifth card */}
-           <div className='card-I-dataset-I'>
-            <div>
-                <img src={I5} alt="logo"/>
-            </div>
-            <div>
-                <p>Excel</p>
-            </div>
-        </div>
-        </div>
-         {/* Adding Button */}
-         <div className='button-dataset-I'>
-            <button onClick={handleDatasetII}>Proceed</button>
+          </div>
+          {/* Adding Button */}
+          <div className='button-dataset-I'>
+            <button onClick={() => handleDatasetII()}>Proceed</button>
+          </div>
         </div>
       </div>
-    </div>
-  )
+    )
 }
 
-export default DatasetI
+export default DatasetI;

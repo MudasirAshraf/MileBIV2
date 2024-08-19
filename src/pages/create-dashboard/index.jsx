@@ -47,22 +47,6 @@ const CreateDashboard = () => {
     { title: "sales 2022" },
     { title: "Balance Sheet 2022" },
     { title: "Employee Data" },
-    { title: "Resources 2022-2023" },
-    { title: "Canteen Report" },
-    { title: "sales 2022" },
-    { title: "Mile bi 2022" },
-    { title: "Employee data" },
-    { title: "Resources 2022-2023" },
-    { title: "Canteen Report" },
-    { title: "Resources 2022-2023" },
-    { title: "Canteen Report" },
-    { title: "sales 2022" },
-    { title: "Mile bi 2022" },
-    { title: "Employee data" },
-    { title: "Resources 2022-2023" },
-    { title: "Canteen Report" },
-    { title: "Resources 2022-2023" },
-    { title: "Canteen Report" },
   ];
 
   const totalPages = activeTab === 'create-dashboards' ? Math.ceil(cardsData.length / itemsPerPage) :
