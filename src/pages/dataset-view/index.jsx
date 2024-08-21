@@ -7,18 +7,7 @@ const DatasetView = () => {
         { date: '23-04-2022', title: 'Sale', avgSale: '50,000 SAR', minSale: '30,000 SAR', maxSale: '70,000 SAR', totalValue: '200,000 SAR', employeeId: 'AR912' },
         { date: '23-04-2022', title: 'Sale', avgSale: '50,000 SAR', minSale: '30,000 SAR', maxSale: '70,000 SAR', totalValue: '200,000 SAR', employeeId: 'AR913' },
         { date: '23-04-2022', title: 'Sale', avgSale: '50,000 SAR', minSale: '30,000 SAR', maxSale: '70,000 SAR', totalValue: '200,000 SAR', employeeId: 'AR914' },
-        { date: '23-04-2022', title: 'Sale', avgSale: '50,000 SAR', minSale: '30,000 SAR', maxSale: '70,000 SAR', totalValue: '200,000 SAR', employeeId: 'AR915' },
-        { date: '23-04-2022', title: 'Sale', avgSale: '50,000 SAR', minSale: '30,000 SAR', maxSale: '70,000 SAR', totalValue: '200,000 SAR', employeeId: 'AR916' },
-        { date: '23-04-2022', title: 'Sale', avgSale: '50,000 SAR', minSale: '30,000 SAR', maxSale: '70,000 SAR', totalValue: '200,000 SAR', employeeId: 'AR917' },
-        { date: '23-04-2022', title: 'Sale', avgSale: '50,000 SAR', minSale: '30,000 SAR', maxSale: '70,000 SAR', totalValue: '200,000 SAR', employeeId: 'AR918' },
-        { date: '23-04-2022', title: 'Sale', avgSale: '50,000 SAR', minSale: '30,000 SAR', maxSale: '70,000 SAR', totalValue: '200,000 SAR', employeeId: 'AR919' },
-        { date: '23-04-2022', title: 'Sale', avgSale: '50,000 SAR', minSale: '30,000 SAR', maxSale: '70,000 SAR', totalValue: '200,000 SAR', employeeId: 'AR920' },
-        { date: '23-04-2022', title: 'Sale', avgSale: '50,000 SAR', minSale: '30,000 SAR', maxSale: '70,000 SAR', totalValue: '200,000 SAR', employeeId: 'AR921' },
-        { date: '23-04-2022', title: 'Sale', avgSale: '50,000 SAR', minSale: '30,000 SAR', maxSale: '70,000 SAR', totalValue: '200,000 SAR', employeeId: 'AR922' },
-        { date: '23-04-2022', title: 'Sale', avgSale: '50,000 SAR', minSale: '30,000 SAR', maxSale: '70,000 SAR', totalValue: '200,000 SAR', employeeId: 'AR923' },
-        { date: '23-04-2022', title: 'Sale', avgSale: '50,000 SAR', minSale: '30,000 SAR', maxSale: '70,000 SAR', totalValue: '200,000 SAR', employeeId: 'AR912' },
-        { date: '23-04-2022', title: 'Sale', avgSale: '50,000 SAR', minSale: '30,000 SAR', maxSale: '70,000 SAR', totalValue: '200,000 SAR', employeeId: 'AR912' },
-        
+      
     ];
   return (
     <div className='main-container-dataset-view'>

@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import "./dataset-III.scss";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Back from "../../assets/svg/Back.svg";
 import Cross from '../../assets/svg/cross.svg';
 import Three from '../../assets/png/3.png';
@@ -8,161 +8,173 @@ import DIII from "../../assets/svg/D3.svg";
 import Polygon from '../../assets/svg/Polygon 3.svg';
 import Line from '../../assets/svg/line.svg';
 import Ring from "../../assets/svg/ringround.svg";
-import Folder from "../../assets/svg/bluefolder.svg";
-import Setting from "../../assets/svg/setting.svg";
+import axios from 'axios';
 
-const dataset = [
-    { date: '23-04-2022', title: 'Sale', avgSale: "50,000 SAR", minSale: "30,000 SAR", maxSale: "70,000 SAR", totalValues: "200,000 SAR" },
-    { date: '23-04-2022', title: 'Sale', avgSale:"50,000 SAR", minSale: "30,000 SAR", maxSale: "70,000 SAR", totalValues: "200,000 SAR" },
-    { date: '23-04-2022', title: 'Sale', avgSale:"50,000 SAR", minSale: "30,000 SAR", maxSale: "70,000 SAR", totalValues: "200,000 SAR" },
-    { date: '23-04-2022', title: 'Sale', avgSale:"50,000 SAR", minSale: "30,000 SAR", maxSale: "70,000 SAR", totalValues: "200,000 SAR" },
-    { date: '23-04-2022', title: 'Sale', avgSale: "50,000 SAR", minSale: "30,000 SAR", maxSale: "70,000 SAR", totalValues: "200,000 SAR" },
-    { date: "23-04-2022", title: 'Sale', avgSale: "50,000 SAR", minSale: "30,000 SAR", maxSale: "70,000 SAR", totalValues: "200,000 SAR" },
-    { date: '23-04-2022', title: 'Sale', avgSale: "50,000 SAR", minSale: "30,000 SAR", maxSale: "70,000 SAR", totalValues: "200,000 SAR" },
-    { date: '23-04-2022', title: 'Sale', avgSale: "50,000 SAR", minSale: "30,000 SAR", maxSale: "70,000 SAR", totalValues: "200,000 SAR" },
-    { date: '23-04-2022', title: 'Sale', avgSale: "50,000 SAR", minSale: "30,000 SAR", maxSale: "70,000 SAR", totalValues: "200,000 SAR" },
-    { date: '23-04-2022', title: 'Sale', avgSale: "50,000 SAR", minSale: "30,000 SAR", maxSale: "70,000 SAR", totalValues: "200,000 SAR" },
-    { date: '23-04-2022', title: 'Sale', avgSale: "50,000 SAR", minSale: "30,000 SAR", maxSale: "70,000 SAR", totalValues: "200,000 SAR" },
-    { date: '23-04-2022', title: 'Sale', avgSale: "50,000 SAR", minSale: "30,000 SAR", maxSale: "70,000 SAR", totalValues: "200,000 SAR" },
-    { date: '23-04-2022', title: 'Sale', avgSale: "50,000 SAR", minSale: "30,000 SAR", maxSale: "70,000 SAR", totalValues: "200,000 SAR" },
-  ];
+const DatasetIII = ({ data }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { payload } = location.state || {};
 
-const DatasetIII = () => {
-    const navigate = useNavigate();
-    const handleDatasetII = () => {
-        navigate("/create-dataset-II")
-    };
+  const [clickedTableData, setClickedTableData] = useState({});
+  const [selectedTables, setSelectedTables] = useState([]);
 
-    const handleDatasetIV = () => {
-        navigate("/create-dataset-IV")
-    };
+  const handleDatasetII = () => {
+    navigate("/create-dataset-II");
+  };
+
+  const handleDatasetIV = () => {
+    navigate("/create-dataset-IV");
+  };
+
+  const handleCheckboxChange = async (tableName) => {
+    const newSelectedTables = selectedTables.includes(tableName)
+      ? selectedTables.filter(name => name !== tableName)
+      : [...selectedTables, tableName];
+    
+    setSelectedTables(newSelectedTables);
+
+    if (!clickedTableData[tableName]) {
+      try {
+        const requestPayload = {
+          ...payload,
+          tableName,
+        };
+
+        const config = {
+          headers: {
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IiIsImVtYWlsIjoibWFzaHJhZkBhYXRjLmNvLmluIiwibmFtZWlkIjoiNDMiLCJVc2VySWQiOiI0MyIsIk9yZ2FuaXphdGlvbklkIjoiMzMiLCJuYmYiOjE3MDE4NTUwOTAsImV4cCI6MTcwMjQ1OTg5MCwiaWF0IjoxNzAxODU1MDkwLCJpc3MiOiJ5b3VySXNzdWVyIiwiYXVkIjoieW91ckF1ZGllbmNlIn0.B1AleyHA1nH4xrOxEw-J7833e80lCi9hEZP4gXE-yk8`,
+          },
+        };
+
+        const response = await axios.post(
+          `${import.meta.env.VITE_BASE_URL_CONNECTOR}PostgreConnector/gettabledata`,
+          requestPayload,
+          config
+        );
+
+        setClickedTableData(prevState => ({
+          ...prevState,
+          [tableName]: response.data
+        }));
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+  };
+
+  const renderTables = () => {
+    if (selectedTables.length === 0);
+
+    return selectedTables.map(tableName => {
+      const tableData = clickedTableData[tableName];
+      if (!tableData || !tableData.data) return null;
+
+      const parsedData = JSON.parse(tableData.data);
+      if (!parsedData.Table || !parsedData.Table.length) return <p>No data available for {tableName}</p>;
+
+      const columns = Object.keys(parsedData.Table[0]);
+
+      return (
+        <div key={tableName} className="second-row-table-ds-III">
+          <h3>{tableName}</h3>
+          <table>
+            <thead>
+              <tr>
+                {columns.map(column => (
+                  <th key={column}>{column}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {parsedData.Table.map((row, index) => (
+                <tr key={index}>
+                  {columns.map(column => (
+                    <td key={column}>{row[column]}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
+    });
+  };
+
+  if (!data?.data) {
+    return null;
+  }
+
   return (
     <div className='main-container-dataset-III'>
-       <div className='header-dataset-III'>
-        {/* Adding Header */}
-      <div>
-  <img src={Back} alt="logo" style={{cursor:"pointer"}} onClick={handleDatasetII}/>
- </div>
- <div>
-  <img src={Cross} alt="logo"/>
- </div>
+      <div className='header-dataset-III'>
+        <div>
+          <img src={Back} alt="Back" style={{ cursor: "pointer" }} onClick={handleDatasetII} />
+        </div>
+        <div>
+          <img src={Cross} alt="Close" />
+        </div>
       </div>
-        {/* Main container */}
-        <div className='container-dataset-III'>
-      {/* first row */}
-      <div className='first-row-dataset-III'>
-      <p>Create a Dataset</p>
-      <img src={DIII} alt="logo"/>
-      <div className='second-row-dataset-III'>
-        <img src={Polygon} alt="logo"/>
-      </div>
-      <div className='ring-dataset-III'>
-        <img src={Ring} alt="logo"/>
-      </div>
-      <div className='ring-i-dataset-III'>
-        <img src={Ring} alt="logo"/>
-      </div>
-      </div>
-      <div className='third-row-dataset-III'>
-      <img src={Three} alt="logo"/>
-      </div>
-      <div className='header-dashboard-modals'>
+      <div className='container-dataset-III'>
+        <div className='first-row-dataset-III'>
+          <p>Create a Dataset</p>
+          <img src={DIII} alt="D3" />
+          <div className='second-row-dataset-III'>
+            <img src={Polygon} alt="Polygon" />
+          </div>
+          <div className='ring-dataset-III'>
+            <img src={Ring} alt="Ring" />
+          </div>
+          <div className='ring-i-dataset-III'>
+            <img src={Ring} alt="Ring" />
+          </div>
+        </div>
+        <div className='third-row-dataset-III'>
+          <img src={Three} alt="Three" />
+        </div>
+        <div className='header-dashboard-modals'>
           <p>Select Table / Data</p>
-          <img src={Line} alt="logo"/>
+          <img src={Line} alt="Line" />
         </div>
-        {/* main container table */}
         <div className='container-table-dataset-III'>
-             <div className='main-container-table-dataset-III'>
-                {/* first row */}
-                <div className='first-row-table-ds-III'>
-                    {/* first column */}
-                    <div className='first-column-ds-III'>
-                    <img src={Folder} alt="logo"/>
-                    <p>Sampledata.accdb [4]</p>
-                    </div>
-                    {/* second column */}
-                    <div className='second-column-ds-III'>
-                    <input type='checkbox' />
-                    <label>sales_data</label>
-                    </div>
-                       {/* third column */}
-                       <div className='second-column-ds-III'>
-                    <input type='checkbox' />
-                    <label>finance</label>
-                    </div>
-                         {/* fourth column */}
-                         <div className='second-column-ds-III'>
-                    <input type='checkbox' />
-                    <label>users_meta</label>
-                    </div>
-                       {/* fifth column */}
-                       <div className='second-column-ds-III'>
-                    <input type='checkbox' />
-                    <label>users_meta</label>
-                    </div>
+          <div className='main-container-table-dataset-III'>
+            <div className='first-row-table-ds-III'>
+              {JSON.parse(data.data).map((item) => (
+                <div
+                  className='first-column-ds-III'
+                  key={item.table_name}
+                >
+                  <input 
+                    type="checkbox" 
+                    checked={selectedTables.includes(item.table_name)} 
+                    onChange={() => handleCheckboxChange(item.table_name)} 
+                  />
+                  <p>{item.table_name}</p>
                 </div>
-                {/* second row Table */}
-                <div className='second-row-table-ds-III'>
-                      {/* first column */}
-                <div>
-                    <p>sales_data</p>
-                </div>
-                {/* second column (Table) */}
-                <div>
-                <table>
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Title</th>
-                  <th className='average-sale-container-dataset-III'>Average Sale
-                  <div className='setting-dataset-III'>
-                            <img src={Setting} alt='logo'/>
-                        </div>
-                  </th>
-                  <th>Min Sale</th>
-                  <th>Max Sale</th>
-                  <th>Total Value</th>
-                </tr>
-              </thead>
-              <tbody>
-                {dataset.map((row, index) => (
-                  <tr key={index}>
-                    <td>{row.date}</td>
-                    <td>{row.title}</td>
-                    <td>
-                        {row.avgSale}
-                        </td>
-                    <td>{row.minSale}</td>
-                    <td>{row.maxSale}</td>
-                    <td>{row.totalValues}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-                </div>
-                </div>
-             </div>
+              ))}
+            </div>
+          </div>
+          <div className='render-table-data'>  
+            {renderTables()}
+          </div>
         </div>
-                 {/* Adding Button */}
-                 <div className='button-dataset-III'>
+        <div className='button-dataset-III'>
           <button>Modify</button>
         </div>
-        {/* Adding SQL Query */}
         <div className='sql-query-ds-III'>
-             <div className='input-data-ds-III'>
-                <input type='text' placeholder='Enter SQL Query' name='sql-query' className='input-details-ds-III' />
-             </div>
+          <div className='input-data-ds-III'>
+            <input type='text' placeholder='Enter SQL Query' name='sql-query' className='input-details-ds-III' />
+          </div>
         </div>
         <div className='second-column-sql-query-ds-III'>
-                <p>SQL Query Executed Sucessfully!</p>
-                <button>Execute</button>
-             </div>
-             <div className='load-data-btn-ds-III'>
-                <button onClick={handleDatasetIV}>Load Data</button>
-             </div>
+          <p>SQL Query Executed Successfully!</p>
+          <button>Execute</button>
         </div>
+        <div className='load-data-btn-ds-III'>
+          <button onClick={handleDatasetIV}>Save</button>
+        </div>
+      </div>
     </div>
-  )
-}
+  );
+};
 
 export default DatasetIII;

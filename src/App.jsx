@@ -1,6 +1,7 @@
 
 import './App.scss';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { useState } from 'react';
 import LoginPage from './pages/login-page';
 import SignpageI from './pages/sign-up-page-I';
 import SignPageII from './pages/sign-up-page-II';
@@ -34,7 +35,9 @@ import TemplateII from './pages/template-II';
 import TemplateIII from './pages/template-III';
 
 
+
 function App() {
+  const [data, setData] = useState();
   return (
     <div id="root" className='App'>
       <Router>
@@ -74,8 +77,8 @@ function App() {
         <Route path="/template-III" element={<TemplateIII/>}/>
         {/* Dataset Modals */}
         <Route path="/create-dataset-I" element={<DatasetI/>}/>
-        <Route path="/create-dataset-II" element={<DatasetII/>}/>
-        <Route path="/create-dataset-III" element={<DatasetIII/>}/>
+        <Route path="/create-dataset-II" element={<DatasetII setData={setData}/>} />
+        <Route path="/create-dataset-III" element={<DatasetIII data={data} setData={setData}/>}/>
         <Route path="/create-dataset-IV" element={<DatasetIV/>}/>
       {/* Grid Wrapper */}
       <Route path="/grids" element={<Grids/>}/>
