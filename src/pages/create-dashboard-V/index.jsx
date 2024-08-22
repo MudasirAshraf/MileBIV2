@@ -1,8 +1,14 @@
 import React from 'react';
 import "./modal-V.scss";
 import CenterLogo from "../../assets/svg/data.svg";
+import { useNavigate } from 'react-router-dom';
 
 const CreateDashboardModalV = () => {
+  const navigate = useNavigate();
+
+  const handleNavigate = ()=> {
+    navigate("/create-dashboard")
+  }
 
   return (
     <div className='main-container-dashboard-V'>
@@ -18,7 +24,7 @@ const CreateDashboardModalV = () => {
        </div>
        {/* Third Column */}
        <div className='third-column-dashboard-V'>
-       <button>I'm Done</button>
+       <button onClick={handleNavigate}>I'm Done</button>
        </div>
         </div>
       

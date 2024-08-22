@@ -1,69 +1,79 @@
-import React from 'react';
-import "./dataset-view.scss";
-import Folder from "../../assets/svg/bluefolder.svg";
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import axios from 'axios';
+import "./dataset-view.scss"
 
 const DatasetView = () => {
-    const data = [
-        { date: '23-04-2022', title: 'Sale', avgSale: '50,000 SAR', minSale: '30,000 SAR', maxSale: '70,000 SAR', totalValue: '200,000 SAR', employeeId: 'AR912' },
-        { date: '23-04-2022', title: 'Sale', avgSale: '50,000 SAR', minSale: '30,000 SAR', maxSale: '70,000 SAR', totalValue: '200,000 SAR', employeeId: 'AR913' },
-        { date: '23-04-2022', title: 'Sale', avgSale: '50,000 SAR', minSale: '30,000 SAR', maxSale: '70,000 SAR', totalValue: '200,000 SAR', employeeId: 'AR914' },
-      
-    ];
+  const location = useLocation();
+  const title = location.state?.title;
+  const [data, setData] = useState();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+        try {
+          const response = await axios.get(`${import.meta.env.VITE_BASE_URL_DASHBOARD}Dataset`, {
+            headers: {
+              Authorization: `Bearer ${import.meta.env.VITE_API_TOKEN}`,
+            },
+            params: { title },
+          });
+          setData(response.data.data || response.data);
+          setLoading(false);
+        } catch (error) {
+          setError('Failed to fetch data');
+          setLoading(false);
+        }
+      }
+    fetchData();
+  },[]);
+
+  if (loading && !data) {
+    return <p>Loading data...</p>;
+  }
+
+  if (error) {
+    return <p>{error}</p>;
+  }
   return (
     <div className='main-container-dataset-view'>
-        <div className='container-dataset-view'>
-            {/* first row */}
-            <div className='first-row-dataset-view'>
-            <div className='dataset-view-first-row'>
-                <div className='dataset-view-first-column'>
-                <img src={Folder} alt="logo"/>
-                <select id="dataset-select">
-        <option value="sampledata.accdb [4]">sampledata.accdb [4]</option>
-        <option value="sales_data">sales_data</option>
-        <option value="finance">finance</option>
-    </select>
-                </div>
-            </div>
-            </div>
-            {/* second row */}
-            <div className='dataset-table-container'>
-                {/* Table Header */}
-                <div className='dataset-table-header'>
-                    <p>sales_data</p>
-                </div>
-                {/* Table Data */}
-                <div className='data-set-table-container'>
-                <table>
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Title</th>
-                        <th>Average Sale</th>
-                        <th>Min Sale</th>
-                        <th>Max Sale</th>
-                        <th>Total Value</th>
-                        <th>Employee ID</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {data.map((row, index) => (
-                        <tr key={index}>
-                            <td>{row.date}</td>
-                            <td>{row.title}</td>
-                            <td>{row.avgSale}</td>
-                            <td>{row.minSale}</td>
-                            <td>{row.maxSale}</td>
-                            <td>{row.totalValue}</td>
-                            <td>{row.employeeId}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-                </div>
-            </div>
+      <div className='container-dataset-view'>
+        <div className='dataset-table-container'>
+          <div className='dataset-table-header'>
+            <p>{title}</p>
+          </div>
+          <div className='data-set-table-container'>
+          <table>
+  <thead>
+    <tr>
+      {
+      data.length > 0 &&
+        Object.keys(data[0].dataSourceData[0]).map((key) => (
+          <th key={key}>{key}</th>
+        ))}
+    </tr>
+  </thead>
+  <tbody>
+    { 
+    data.map((row, index) => (
+      <React.Fragment key={index}>
+        {row.dataSourceData?.map((dtx, j) => (
+          <tr key={`${index}-${j}`}>
+            {Object.keys(dtx).map((key, k) => (
+              <td key={k}>{dtx[key]}</td>
+            ))}
+          </tr>
+        ))}
+      </React.Fragment>
+    ))}
+  </tbody>
+</table>
+          </div>
         </div>
+      </div>
     </div>
-  )
-}
+  );
+};
 
 export default DatasetView;

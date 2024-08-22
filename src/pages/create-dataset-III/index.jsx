@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import "./dataset-III.scss";
 import { useNavigate, useLocation } from 'react-router-dom';
 import Back from "../../assets/svg/Back.svg";
@@ -22,8 +22,33 @@ const DatasetIII = ({ data }) => {
     navigate("/create-dataset-II");
   };
 
-  const handleDatasetIV = () => {
-    navigate("/create-dataset-IV");
+  const handleDatasetIV = async () => {
+    try {
+      const requestPayload = {
+        ...payload, 
+        connectionString: "connectionString",
+        datasetTitle: "tableName",
+        userName: "userName",
+        password: "password",
+        DataSourceData: selectedTables.map(tabledata => clickedTableData[tabledata]?.Table || []),
+      };
+      console.log('Request Payload for save:', requestPayload);
+      const config = {
+        headers: {
+          Authorization: `Bearer ${import.meta.env.VITE_API_TOKEN}`,
+        },
+      };
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL_DASHBOARD}Dataset`,
+        requestPayload,
+        config
+      );
+      if (response.status === 200) {
+        navigate("/create-dataset-IV");
+      }
+    } catch (error) {
+      console.error('Error saving dataset:', error);
+    }
   };
 
   const handleCheckboxChange = async (tableName) => {
@@ -39,41 +64,38 @@ const DatasetIII = ({ data }) => {
           ...payload,
           tableName,
         };
-
         const config = {
           headers: {
-            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IiIsImVtYWlsIjoibWFzaHJhZkBhYXRjLmNvLmluIiwibmFtZWlkIjoiNDMiLCJVc2VySWQiOiI0MyIsIk9yZ2FuaXphdGlvbklkIjoiMzMiLCJuYmYiOjE3MDE4NTUwOTAsImV4cCI6MTcwMjQ1OTg5MCwiaWF0IjoxNzAxODU1MDkwLCJpc3MiOiJ5b3VySXNzdWVyIiwiYXVkIjoieW91ckF1ZGllbmNlIn0.B1AleyHA1nH4xrOxEw-J7833e80lCi9hEZP4gXE-yk8`,
+            Authorization: `Bearer ${import.meta.env.VITE_API_TOKEN}`,
           },
         };
-
         const response = await axios.post(
           `${import.meta.env.VITE_BASE_URL_CONNECTOR}PostgreConnector/gettabledata`,
           requestPayload,
           config
         );
-
         setClickedTableData(prevState => ({
           ...prevState,
           [tableName]: response.data
         }));
       } catch (error) {
-        console.error('Error:', error);
+        console.error('Error fetching table data:', error);
       }
     }
   };
-
   const renderTables = () => {
-    if (selectedTables.length === 0);
-
+    if (selectedTables.length === 0) {;
+    }
+  
     return selectedTables.map(tableName => {
       const tableData = clickedTableData[tableName];
-      if (!tableData || !tableData.data) return null;
-
+      if (!tableData || !tableData.data) return <p key={tableName}>No data available for {tableName}</p>;
+  
       const parsedData = JSON.parse(tableData.data);
-      if (!parsedData.Table || !parsedData.Table.length) return <p>No data available for {tableName}</p>;
-
+      if (!parsedData.Table || !parsedData.Table.length) return <p key={tableName}>No data available for {tableName}</p>;
+  
       const columns = Object.keys(parsedData.Table[0]);
-
+  
       return (
         <div key={tableName} className="second-row-table-ds-III">
           <h3>{tableName}</h3>
@@ -99,9 +121,8 @@ const DatasetIII = ({ data }) => {
       );
     });
   };
-
   if (!data?.data) {
-    return null;
+    return <p>No data available</p>;
   }
 
   return (

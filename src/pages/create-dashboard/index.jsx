@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import "./create-dashboard.scss";
 import DashboardWrapper from '../../components/dashboard-wrapper';
 import Hline from "../../assets/svg/headerline.svg";
@@ -8,11 +8,34 @@ import TIII from "../../assets/png/T3.png";
 import CardII from '../../components/card-II';
 import CardIII from '../../components/card-III';
 import CardIV from '../../components/card-IV';
+import axios from 'axios';
 
 const CreateDashboard = () => {
   const [activeTab, setActiveTab] = useState('create-dashboards');
   const [page, setPage] = useState(1); 
   const itemsPerPage = activeTab === 'datasets' ? 12 : 8; 
+  const [datasets, setDatasets] = useState([]);
+
+  useEffect(() => {
+    const fetchDatasets = async () => {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_BASE_URL_DASHBOARD}Dataset`, {
+          headers: {
+            Authorization: `Bearer ${import.meta.env.VITE_API_TOKEN}`,
+          },
+        });
+        if (Array.isArray(response.data.data)) {
+          setDatasets(response.data.data);
+        } else {
+          console.error('Unexpected data format:', response.data);
+          setDatasets([]);
+        }
+      } catch (error) {
+        console.error('Error fetching datasets:', error);
+      }
+    };
+    fetchDatasets();
+  }, []);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -22,19 +45,6 @@ const CreateDashboard = () => {
   const cardsData = [
     { title: "Sales Dashboard", publishedDate: "21-Mar-2022", lastUpdatedDate: "21-Mar-2022", statusUpdate: "published" },
     { title: "Marketing Dashboard", publishedDate: "22-Mar-2022", lastUpdatedDate: "23-Mar-2022", statusUpdate: "draft" },
-    { title: "Finance Dashboard", publishedDate: "24-Mar-2022", lastUpdatedDate: "25-Mar-2022", statusUpdate: "draft" },
-    { title: "Finance Dashboard", publishedDate: "24-Mar-2022", lastUpdatedDate: "25-Mar-2022", statusUpdate: "draft" },
-    { title: "Sales Dashboard", publishedDate: "24-Mar-2022", lastUpdatedDate: "25-Mar-2022", statusUpdate: "published" },
-    { title: "Finance Dashboard", publishedDate: "24-Mar-2022", lastUpdatedDate: "25-Mar-2022", statusUpdate: "published" },
-    { title: "Marketing Dashboard", publishedDate: "24-Mar-2022", lastUpdatedDate: "25-Mar-2022", statusUpdate: "published" },
-    { title: "Employee Dashboard", publishedDate: "24-Mar-2022", lastUpdatedDate: "25-Mar-2022", statusUpdate: "published" },
-    { title: "Sales Dashboard", publishedDate: "21-Mar-2022", lastUpdatedDate: "21-Mar-2022", statusUpdate: "published" },
-    { title: "Marketing Dashboard", publishedDate: "22-Mar-2022", lastUpdatedDate: "23-Mar-2022", statusUpdate: "draft" },
-    { title: "Finance Dashboard", publishedDate: "24-Mar-2022", lastUpdatedDate: "25-Mar-2022", statusUpdate: "draft" },
-    { title: "Finance Dashboard", publishedDate: "24-Mar-2022", lastUpdatedDate: "25-Mar-2022", statusUpdate: "draft" },
-    { title: "Sales Dashboard", publishedDate: "24-Mar-2022", lastUpdatedDate: "25-Mar-2022", statusUpdate: "published" },
-    { title: "Finance Dashboard", publishedDate: "24-Mar-2022", lastUpdatedDate: "25-Mar-2022", statusUpdate: "published" },
-
   ];
 
   const cardsDataI = [
@@ -43,15 +53,9 @@ const CreateDashboard = () => {
     { id: 3, title: "Template 3", image: TIII },
   ];
 
-  const cardsDataII = [
-    { title: "sales 2022" },
-    { title: "Balance Sheet 2022" },
-    { title: "Employee Data" },
-  ];
-
   const totalPages = activeTab === 'create-dashboards' ? Math.ceil(cardsData.length / itemsPerPage) :
     activeTab === 'available-templates' ? Math.ceil(cardsDataI.length / itemsPerPage) :
-    Math.ceil(cardsDataII.length / itemsPerPage);
+    Math.ceil(datasets.length / itemsPerPage);
 
   const visiblePages = Array.from({ length: totalPages }, (_, index) => index + 1);
 
@@ -81,7 +85,7 @@ const CreateDashboard = () => {
               <a href="#" className='create-dashboard-links' onClick={() => handleTabClick('datasets')}>
                 Datasets
               </a>
-              <div className='create-dashboard-circle'>{cardsDataII.length}</div>
+              <div className='create-dashboard-circle'>{datasets.length}</div>
             </div>
           </div>
           <div>
@@ -116,16 +120,12 @@ const CreateDashboard = () => {
           )}
           {/* Datasets */}
           {activeTab === 'datasets' && (
-            <div className='main-container-datasets'>
-              {cardsDataII.slice((page - 1) * itemsPerPage, page * itemsPerPage).map((card, index) => (
-                <CardIV
-                  key={index}
-                  title={card.title}
-                />
-              ))}
-            </div>
-          )}
-
+    <div className='main-container-datasets'>
+        {datasets.slice((page - 1) * itemsPerPage, page * itemsPerPage).map((dataset, index) => (
+        <CardIV key={index} title={dataset.datasetTitle} />
+      ))}
+    </div>
+)}
           {/* Pagination controls for Create Dashboard, Available Templates, Data Sets */}
           <div className="pagination">
             <button onClick={() => handlePageChange(page - 1)} disabled={page === 1}>{"<"}</button>
