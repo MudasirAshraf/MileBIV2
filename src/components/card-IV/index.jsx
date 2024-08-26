@@ -16,7 +16,7 @@ const CardIV = ({title,}) => {
   const navigate = useNavigate();
 
   const handleDataSet = () => {
-    navigate('/dataset-view');
+    navigate('/dataset-view', { state: { datasetTitle: title } });
   };
 
 
