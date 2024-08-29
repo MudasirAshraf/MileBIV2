@@ -122,8 +122,7 @@ const CreateDashboard = () => {
           {activeTab === 'datasets' && (
     <div className='main-container-datasets'>
         {datasets.slice((page - 1) * itemsPerPage, page * itemsPerPage).map((dataset, index) => (
-       <CardIV key={index} title={dataset.datasetTitle} />
-
+     <CardIV key={index} title={dataset.datasetTitle}/>
       ))}
     </div>
 )}
