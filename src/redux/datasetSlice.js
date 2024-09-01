@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { evaluate } from 'mathjs';
 
-//  fetch dataset from the server
+// Fetch dataset from the server
 export const fetchDataset = createAsyncThunk('dataset/fetchDataset', async () => {
   const response = await axios.get(`${import.meta.env.VITE_BASE_URL_DASHBOARD}Dataset`, {
     headers: {
@@ -13,7 +13,7 @@ export const fetchDataset = createAsyncThunk('dataset/fetchDataset', async () =>
   return Array.isArray(response.data.data) ? response.data.data : [];
 });
 
-//  update dataset on the server
+// Update dataset on the server
 export const updateDataset = createAsyncThunk('dataset/updateDataset', async (payload) => {
   const response = await axios.put(
     `${import.meta.env.VITE_BASE_URL_DASHBOARD}Dataset`,
@@ -28,6 +28,7 @@ export const updateDataset = createAsyncThunk('dataset/updateDataset', async (pa
   return response.data;
 });
 
+// Define initial state and slice
 const datasetSlice = createSlice({
   name: 'dataset',
   initialState: {
@@ -35,15 +36,16 @@ const datasetSlice = createSlice({
     loading: false,
     error: null,
     transformationSteps: [],
+    current: null,
   },
   reducers: {
     addColumn: (state, action) => {
       const newColumn = action.payload;
 
       // Apply the transformation to the data
-      const updatedData = state.data.map((row) => ({
+      const updatedData = state.data.map(row => ({
         ...row,
-        dataSourceData: (row.dataSourceData || []).map((dtx) => ({
+        dataSourceData: (row.dataSourceData || []).map(dtx => ({
           ...dtx,
           [newColumn.title]: newColumn.type === 'Expression'
             ? evaluateExpression(dtx, newColumn.expression)
@@ -60,25 +62,18 @@ const datasetSlice = createSlice({
         ...(newColumn.type === 'Expression' && { Expression: newColumn.expression }),
       });
 
-      // Update the data in the state
       state.data = updatedData;
+      state.current = {
+        data: updatedData,
+        transformationSteps: state.transformationSteps,
+      };
     },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchDataset.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(fetchDataset.fulfilled, (state, action) => {
-        state.data = action.payload;
-        state.loading = false;
-      })
-      .addCase(fetchDataset.rejected, (state, action) => {
-        state.error = action.error.message;
-        state.loading = false;
-      })
       .addCase(updateDataset.fulfilled, (state, action) => {
         state.data = action.payload; // Update the state with the response from the server
+        state.current = action.payload;
       });
   },
 });
@@ -86,7 +81,7 @@ const datasetSlice = createSlice({
 export const { addColumn } = datasetSlice.actions;
 export default datasetSlice.reducer;
 
-// function to evaluate expressions
+// Function to evaluate expressions
 export const evaluateExpression = (data, expression) => {
   try {
     const context = { ...data };

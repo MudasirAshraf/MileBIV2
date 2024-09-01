@@ -6,7 +6,6 @@ import datasetReducer from '../Milebi/src/redux/datasetSlice';
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['dataset'], // Only persist the dataset slice
 };
 
 const persistedReducer = persistReducer(persistConfig, datasetReducer);

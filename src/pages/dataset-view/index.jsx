@@ -6,9 +6,7 @@ import { evaluateExpression } from '../../redux/datasetSlice';
 
 const DatasetView = () => {
   const dispatch = useDispatch();
-
-  //  the current state using useSelector
-  const { data, loading, error, transformationSteps } = useSelector((state) => state.dataset);
+  const { data, loading, error, transformationSteps,} = useSelector((state) => state.dataset);
 
   const [isAddingColumn, setIsAddingColumn] = useState(false);
   const [newColumnTitle, setNewColumnTitle] = useState('');
@@ -16,7 +14,7 @@ const DatasetView = () => {
   const [newColumnExpression, setNewColumnExpression] = useState('');
 
   useEffect(() => {
-    dispatch(fetchDataset()); // Fetch the dataset when component mounts
+    dispatch(fetchDataset()); 
   }, [dispatch]);
 
   const handleAddClick = () => {
@@ -25,27 +23,27 @@ const DatasetView = () => {
 
   const handleSaveColumn = () => {
     if (!newColumnTitle) return;
-
+  
     const newColumn = {
       title: newColumnTitle,
       type: newColumnType,
       expression: newColumnType === 'Expression' ? newColumnExpression : '',
     };
-
+  
     // Dispatch addColumn to update local state
     dispatch(addColumn(newColumn));
-
-    // Create the updated dataset
-    const currentDataset = {
-      data: (data || []).map(row => ({
-        ...row,
-        dataSourceData: (row.dataSourceData || []).map(dtx => ({
-          ...dtx,
-          [newColumn.title]: newColumn.type === 'Expression'
-            ? evaluateExpression(dtx, newColumn.expression)
-            : '',
-        })),
+  
+    // Prepare only the necessary data for the update
+    const updatedData = (data || []).map(row => ({
+      dataSourceData: (row.dataSourceData || []).map(dtx => ({
+        [newColumn.title]: newColumn.type === 'Expression'
+          ? evaluateExpression(dtx, newColumn.expression)
+          : '',
       })),
+    }));
+  
+    const datasetToUpdate = {
+      data: updatedData,
       transformationSteps: [
         ...transformationSteps,
         {
@@ -57,16 +55,16 @@ const DatasetView = () => {
         },
       ],
     };
-
-    // updateDataset to save to the server
-    dispatch(updateDataset(currentDataset));
-
+  
+    // Dispatch updateDataset to save to the server
+    dispatch(updateDataset(datasetToUpdate));
+  
     setIsAddingColumn(false);
     setNewColumnTitle('');
     setNewColumnType('Regular');
     setNewColumnExpression('');
   };
-
+  
   const handleCancelClick = () => {
     setIsAddingColumn(false);
     setNewColumnTitle('');
