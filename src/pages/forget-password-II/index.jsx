@@ -15,10 +15,20 @@ import Line from "../../assets/svg/line.svg";
 import B2 from "../../assets/png/2.png";
 import LineI from "../../assets/svg/line1.svg";
 import Question from "../../assets/svg/Question_light.svg";
+import { verifyCode } from '../../actions/loginActions';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import PropTypes from "prop-types";
+import { forgotPassword } from "../../actions/loginActions";
+import { connect } from "react-redux";
 
-const ForgetPasswordII = () => {
+
+const ForgetPasswordII = (props) => {
   const [code, setCode] = useState(['', '', '', '']);
   const inputRefs = useRef([]);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  
 
   const handleChange = (e, index) => {
     const { value } = e.target;
@@ -39,6 +49,27 @@ const ForgetPasswordII = () => {
       inputRefs.current[index - 1].focus();
     }
   };
+  const handleProceed = async () => {
+    try {
+      const codeString = code.join('');
+      const response = await dispatch(verifyCode({ email: props.email, ResetCode: codeString }));
+      if (response && response.success) { 
+        navigate('/forget-password-III'); 
+      } 
+    } catch (error) {
+      alert("OTP is Invalid")
+      console.error("Verification failed", error);
+    }
+  };
+  
+  const handleResendCode = () => {
+    dispatch(forgotPassword(props.email))
+    .then(() => {
+    })
+    .catch((error) => {
+      console.error("Verification failed", error);
+    });
+  }
 
   return (
     <div className="main-container-forget-password-II">
@@ -147,12 +178,12 @@ const ForgetPasswordII = () => {
               ))}
             </div>
             <div>
-              <a onClick={() => alert('Resending code')} className='code-resend-sp-II'>Resend Code</a>
+              <a onClick={handleResendCode} className='code-resend-sp-II'>Resend Code</a>
             </div>
             </div>
           </div>
           <div className='proceed-button'>
-               <button>Proceed</button>
+               <button onClick={handleProceed}>Proceed</button>
             </div>
                {/* adding center line */}
                <div className='line-fp-I'>
@@ -174,4 +205,15 @@ const ForgetPasswordII = () => {
   )
 }
 
-export default ForgetPasswordII;
+ForgetPasswordII.propTypes = {
+  verifyCode: PropTypes.func.isRequired,
+};
+const mapStateToProps = (state) => {
+  console.log("Current Redux state:", state); 
+  return {
+    email: state.login.resetEmail, 
+    response: state.response.response,
+  };
+};
+
+export default connect(mapStateToProps, { verifyCode })(ForgetPasswordII);

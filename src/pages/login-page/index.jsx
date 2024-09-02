@@ -1,41 +1,39 @@
-import React, { useState } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types'; 
+import { connect } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
 import "./login.scss";
 import Logo from "../../assets/svg/logo.svg";
 import User from "../../assets/svg/User_light.svg";
 import Password from "../../assets/svg/Key_light.svg";
 import Question from "../../assets/svg/Question_light.svg";
-import { getAuth } from "../actions/loginActions";
-const LoginPage = ({getAuth}) => {
+import { getAuth } from "../../actions/loginActions";
+
+const LoginPage = ({ getAuth }) => {
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState({
-    userName: "",
-    password: "",
-  });
-  const [error, setError] = useState('');
-
-  let handleNameChange = (event) => {
-    let fieldValue = event.target.name;
-    let newValue = event.target.value;
-    setFormData((currData) => {
-      return { ...currData, [fieldValue]: newValue };
-    });
+  const initialValues = {
+    username: '',
+    password: '',
   };
 
-  let handleSubmit = (event) => {
-    event.preventDefault();
+  // Defining validation schema using Yup
+  const validationSchema = Yup.object().shape({
+    username: Yup.string().required(''),
+    password: Yup.string().min(5, 'Minimum five characters').required(''),
+  });
 
-    // Validate that both fields are filled out
-    if (!formData.userName || !formData.password) {
-      setError("Please enter both username and password.");
-      return;
+  const handleSubmit = async (values, { setSubmitting }) => {
+    try {
+      await getAuth(values); // Dispatching the getAuth action with form values
+      navigate('/create-dashboard'); 
+    } catch (error) {
+      console.error('Login submission error:', error);
+    } finally {
+      setSubmitting(false);
     }
-
-    setError('');
-    console.log(formData);
-    //getAuth(your login details)
-    navigate("/create-dashboard");
   };
 
   const handleCreateAccount = () => {
@@ -63,55 +61,57 @@ const LoginPage = ({getAuth}) => {
             <h1 className='form-header-text'>Sign In</h1>
           </div>
           <div>
-            <form onSubmit={handleSubmit}>
-              <div className="input-group">
-                <img src={User} alt="userlogo" />
-                <input
-                  className='input-details'
-                  type="text"
-                  placeholder="Username"
-                  name="userName"
-                  id='userName'
-                  value={formData.userName}
-                  onChange={handleNameChange}
-                  required
-                />
-              </div>
-              <div className="input-group">
-                <img src={Password} alt="passlogo" />
-                <input
-                  className='input-details'
-                  type="password"
-                  placeholder="Password"
-                  name="password"
-                  value={formData.password}
-                  id='password'
-                  onChange={handleNameChange}
-                  required
-                />
-              </div>
-              {/* setting up error */}
-              {error && <div className='form-text'><p>{error}</p></div>}
-              {/* Adding Button */}
-              <div className='button-text-div'>
-                <div className='form-button-div'>
-                  <div className='form-link'>
-                    <a href="#" onClick={(e) => { e.preventDefault(); handleForgetPassword(); }}>
-                      Forget Password?
-                    </a>
+            <Formik
+              initialValues={initialValues}
+              validationSchema={validationSchema}
+              onSubmit={handleSubmit}
+            >
+              {({ isSubmitting }) => (
+                <Form>
+                  <div className="input-group">
+                    <img src={User} alt="userlogo" />
+                    <Field
+                      className='input-details'
+                      type="text"
+                      placeholder="Username"
+                      name="username"
+                      id='username'
+                    />
+                    <ErrorMessage name="username" component="div" className='form-text' />
                   </div>
-                  <div><button type="submit">Login</button></div>
-                </div>
-                <div className='form-button-div'>
-                  <div>
-                    <a href="#" className='form-link-i' onClick={(e) => { e.preventDefault(); handleCreateAccount(); }}>
-                      Don't have an account?
-                    </a>
+                  <div className="input-group">
+                    <img src={Password} alt="passlogo" />
+                    <Field
+                      className='input-details'
+                      type="password"
+                      placeholder="Password"
+                      name="password"
+                      id='password'
+                    />
+                    <ErrorMessage name="password" component="div" className='form-text' />
                   </div>
-                  <div><button className='button-1' onClick={handleCreateAccount}>Create Account</button></div>
-                </div>
-              </div>
-            </form>
+                  {/* Adding Button */}
+                  <div className='button-text-div'>
+                    <div className='form-button-div'>
+                      <div className='form-link'>
+                        <a href="#" onClick={(e) => { e.preventDefault(); handleForgetPassword(); }}>
+                          Forget Password?
+                        </a>
+                      </div>
+                      <div><button type="submit" disabled={isSubmitting}>Login</button></div>
+                    </div>
+                    <div className='form-button-div'>
+                      <div>
+                        <a href="#" className='form-link-i' onClick={(e) => { e.preventDefault(); handleCreateAccount(); }}>
+                          Don't have an account?
+                        </a>
+                      </div>
+                      <div><button type="button" className='button-1' onClick={handleCreateAccount}>Create Account</button></div>
+                    </div>
+                  </div>
+                </Form>
+              )}
+            </Formik>
           </div>
         </div>
         <div className='login-help-div'>
@@ -124,10 +124,13 @@ const LoginPage = ({getAuth}) => {
     </div>
   );
 };
+
 LoginPage.propTypes = {
   getAuth: PropTypes.func.isRequired,
 };
+
 const mapStateToProps = (state) => ({
   response: state.response.response,
 });
+
 export default connect(mapStateToProps, { getAuth })(LoginPage);

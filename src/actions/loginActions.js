@@ -9,7 +9,7 @@ import {
   RESET_EMAIL,
 } from "./types";
 import axiosInstance from "../components/axios";
-import store from "../store";
+import {store} from "../store"
 import urlswithoutgateway from "./urlswithoutgateway";
 
 const config = ({ id }) => ({
@@ -30,6 +30,7 @@ export const getAuth = (user) => async (dispatch) => {
       },
     })
     .then((response) => {
+      console.log("API Response:", response);
       dispatch({
         type: RESPONSE,
         regresponse: response.data,
@@ -41,7 +42,7 @@ export const getAuth = (user) => async (dispatch) => {
         });
         window.setTimeout(function () {
           // Move to a new location or you can do something else
-          window.location.href = "/home";
+          window.location.href = "/create-dashboard";
         }, 5000);
         //generate cookie inside local system and redirect to home page as logged in user
       }
@@ -113,6 +114,8 @@ export const postResetDetails = (user) => async (dispatch) => {
           window.location.href = "/";
         }, 5000);
       }
+        // Return the response data
+    return response.data;
     })
     .catch((error) => {
       dispatch({
@@ -123,36 +126,39 @@ export const postResetDetails = (user) => async (dispatch) => {
 };
 //verifyCode
 export const verifyCode = (user) => async (dispatch) => {
-  axiosInstance.defaults.baseURL= urlswithoutgateway("admin");
-  axiosInstance
-  .post("/User/resetcodevalidation/", JSON.stringify(user), {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  })
-    .then((response) => {
-      dispatch({
-        type: RESPONSE,
-        regresponse: response.data,
-      });
-      if (response.data.messageType !== 2) {
-        dispatch({
-          type: FORGOT_JOURNEY,
-          payload: 3,
-        });
-      }
-    })
-    .catch((error) => {
-      dispatch({
-        type: RESPONSE,
-        regresponse: error.response.data,
-      });
-      dispatch({
-        type: AUTH_ERROR,
-        payload: error.response.statusText,
-      });
+  try {
+    axiosInstance.defaults.baseURL = urlswithoutgateway("admin");
+    const response = await axiosInstance.post("/User/resetcodevalidation/", JSON.stringify(user), {
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
+    dispatch({
+      type: RESPONSE,
+      regresponse: response.data,
+    });
+
+    if (response.data.messageType !== 2) {
+      dispatch({
+        type: FORGOT_JOURNEY,
+        payload: 3,
+      });
+    }
+    return response.data;
+  } catch (error) {
+    dispatch({
+      type: RESPONSE,
+      regresponse: error.response?.data,
+    });
+    dispatch({
+      type: AUTH_ERROR,
+      payload: error.response?.statusText,
+    });
+    throw error;
+  }
 };
+
+
 //validateAccess
 export const validateAccess = (id) => async (dispatch) => {
   axiosInstance.defaults.baseURL= urlswithoutgateway("admin");
