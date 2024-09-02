@@ -6,7 +6,7 @@ import CenterLogo from "../../assets/svg/centerlogo.svg";
 import DropdownMenu from '../dropdown-menu';
 import { useNavigate } from 'react-router-dom';
 
-const CardIV = ({title,}) => {
+const CardIV = ({title}) => {
   const [showDropdown, setShowDropdown] = useState(false);
 
   const handleSettingClick = () => {
@@ -16,7 +16,7 @@ const CardIV = ({title,}) => {
   const navigate = useNavigate();
 
   const handleDataSet = () => {
-    navigate('/dataset-view');
+    navigate('/dataset-view', { state: {datasetTitle: title } });
   };
 
 
