@@ -33,13 +33,17 @@ import Grids from './pages/grids';
 import TemplateI from './pages/template-I';
 import TemplateII from './pages/template-II';
 import TemplateIII from './pages/template-III';
-
+import { PersistGate } from "redux-persist/integration/react";
+import { persistor, store } from "./store";
+import { Provider } from "react-redux";
 
 
 
 function App() {
   const [data, setData] = useState();
   return (
+    <Provider store={store}>
+    <PersistGate loading={null} persistor={persistor}>
     <div id="root" className='App'>
       <Router>
         <Routes>
@@ -86,6 +90,8 @@ function App() {
         </Routes>
       </Router>
     </div>
+    </PersistGate>
+    </Provider>
   )
 }
 
