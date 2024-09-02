@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
 import "./forget-pass-III.scss";
 import Logo from "../../assets/svg/logo.svg";
 import Thrd from "../../assets/svg/third.svg";
@@ -15,57 +17,56 @@ import Line from "../../assets/svg/line.svg";
 import Password from "../../assets/svg/Key_light.svg";
 import Question from "../../assets/svg/Question_light.svg";
 import LineI from "../../assets/svg/line1.svg";
+import { useDispatch } from 'react-redux';
+import { postResetDetails } from '../../actions/loginActions';
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
 
 
-const ForgetPasswordIII = () => {
+
+// Validation schema
+const validationSchema = Yup.object({
+  setNewPassword: Yup.string()
+    .min(8, "Password must be at least 8 characters long")
+    .matches(/^(?=.*[a-zA-Z])(?=.*[^a-zA-Z]).{8,}$/, "Password must be a combination of letters and other characters")
+    .required("Required"),
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref('setNewPassword'), null], "Passwords do not match")
+    .required("Required"),
+});
+
+const ForgetPasswordIII = (props) => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState({
-    setNewPassword:"",
-    confirmPassword:"",
-  })
   const handleLoginPage = () => {
-  navigate("/");
-  }
+    navigate("/");
+  };
 
-  let handleNameChange = (event) => {
-    let fieldValue = event.target.name;
-    let newValue = event.target.value;
-    setFormData((currData)=> {
-     return{...currData, [fieldValue] : newValue}
-    })
-  }
+  const handleSubmit = (values, { resetForm }) => {
+    const {setNewPassword } = values;
+    console.log(props)
+    dispatch(postResetDetails({ Email: props.email, NewPassword: setNewPassword }))
+      .then((response) => {
+        if (response && response.success) { 
+          navigate('/'); 
+        } 
+        resetForm();
+      })
+      .catch((error) => {
+        console.error("Verification Reset failed", error);
+        alert("Password reset failed. Please try again.");
+      });
+  };
 
-  let handleSubmit = (event) => {
-    event.preventDefault();
-  if (formData.setNewPassword.length < 8 || formData.confirmPassword.length < 8) {
-    alert("Password must be at least 8 characters long.");
-    return;
-  }
 
-  const passwordRegex = /^(?=.*[a-zA-Z])(?=.*[^a-zA-Z]).{8,}$/;
-  if (!passwordRegex.test(formData.setNewPassword) || !passwordRegex.test(formData.confirmPassword)) {
-    alert("Password must be a combination of letters and other characters.");
-    return;
-  }
-    console.log(formData);
-    if (formData.setNewPassword !== formData.confirmPassword) {
-      alert("Passwords do not match!");
-      return;
-    }
-    setFormData({
-      setNewPassword:"",
-    confirmPassword:"",
-    });
-    alert("Your password has been successfully reset. You can now log in with your new password.");
-  }
   return (
     <div className='main-container-forget-password-III'>
-         <div className='header-details-sign-in-page-I'>
+      <div className='header-details-sign-in-page-I'>
         <div>
-          <img src={Back} alt="backlogo" className='image-sign-up'/>
+          <img src={Back} alt="backlogo" className='image-sign-up' />
         </div>
-        {/* adding select option */}
+        {/* Adding select option */}
         <div className='login-page-select-option'>
           <select className='select-option'>
             <option>English</option>
@@ -74,123 +75,138 @@ const ForgetPasswordIII = () => {
         </div>
       </div>
       <div className='container-sign-in-page-III'>
-        {/* adding Logo to the page */}
+        {/* Adding Logo to the page */}
         <div>
-          <img src={Logo} alt='logo'/>
+          <img src={Logo} alt='logo' />
         </div>
-        {/* adding form container */}
+        {/* Adding form container */}
         <div className='form-container-sign-in-page-I'>
           <div className='header-container-forget-password-III'>
-            {/* header */}
+            {/* Header */}
             <div className='form-header-forget-password-III'>
               <div className='form-header-forget-password-III-div'>
                 <h1 className='form-header-text-sign-in-page'>Forget Password</h1>
               </div>
               {/* Progress bar */}
               <div className='progress-bar-forget-password-III'>
-                {/* first */}
+                {/* First */}
                 <div className='progress-sp-III-I-fp-III'>
-                  <div className='progress-sp-III-I-image-I-fp-III'><img src={I} alt=""/></div>
-                  <div className='progress-sp-III-I-image-II-fp-III'><img src={EllipseI} alt=""/></div>
-                  <div className='progress-sp-III-I-image-III-fp-III'><img src={Ring} alt=""/></div>
+                  <div className='progress-sp-III-I-image-I-fp-III'><img src={I} alt="" /></div>
+                  <div className='progress-sp-III-I-image-II-fp-III'><img src={EllipseI} alt="" /></div>
+                  <div className='progress-sp-III-I-image-III-fp-III'><img src={Ring} alt="" /></div>
                 </div>
                 {/* Second */}
                 <div className='progress-sp-III-II-fp-III'>
                   <div className='progress-sp-III-II-image-I-fp-III'>
-                    <img src={UnionII} alt=""/></div>
+                    <img src={UnionII} alt="" /></div>
                 </div>
                 {/* Third */}
                 <div className='progress-sp-III-III-fp-III'>
-                    <div className='progress--III-images-fp-III'>
-                  <div className='progress-sp-III-III-image-II-fp-III'>
-                  <img src={EllipseI} alt=""/>
-                  <img src={Two} alt="" className='progress-sp-III-III-image-I-fp-III'/>
-                  </div>
-                  <div className='progress-sp-III-III-image-III-fp-III'><img src={Ring} alt=""/></div>
+                  <div className='progress--III-images-fp-III'>
+                    <div className='progress-sp-III-III-image-II-fp-III'>
+                      <img src={EllipseI} alt="" />
+                      <img src={Two} alt="" className='progress-sp-III-III-image-I-fp-III' />
+                    </div>
+                    <div className='progress-sp-III-III-image-III-fp-III'><img src={Ring} alt="" /></div>
                   </div>
                 </div>
-                  {/* Fourth */}
-                 <div className='progress-sp-III-IV-fp-III'>
-                 <div className='progress-sp-III-IV--image-I-fp-III'>
-                 <img src={UnionII} alt=""/></div>
-                 </div>
-                  {/* Fifth */}
+                {/* Fourth */}
+                <div className='progress-sp-III-IV-fp-III'>
+                  <div className='progress-sp-III-IV--image-I-fp-III'>
+                    <img src={UnionII} alt="" /></div>
+                </div>
+                {/* Fifth */}
                 <div className='progress-sp-III-V-fp-III'>
-                <div className='progress-sp-III-V-image-I-fp-III'>
-                      <img src={EllipseI} alt=""/>
-                    </div>
-                    <div className='progress-sp-III-V-image-II-fp-III'>
-                      <img src={Thrd} alt=""/>
-                    </div>
-                    <div className='progress-sp-III-V-image-III-fp-III'>
-                      <img src={Polygon} alt=""/>
-                    </div>
+                  <div className='progress-sp-III-V-image-I-fp-III'>
+                    <img src={EllipseI} alt="" />
+                  </div>
+                  <div className='progress-sp-III-V-image-II-fp-III'>
+                    <img src={Thrd} alt="" />
+                  </div>
+                  <div className='progress-sp-III-V-image-III-fp-III'>
+                    <img src={Polygon} alt="" />
+                  </div>
 
                 </div>
-                
+
               </div>
             </div>
             {/* Adding side logo */}
             <div className='side-logo-sign-in-page'>
-              <img src={Three} alt="logo"/>
+              <img src={Three} alt="logo" />
             </div>
           </div>
-          {/* adding text */}
+          {/* Adding text */}
           <div className='sub-header-sign-in-page-I'>
             <div className='sub-header-sign-in-page-I-text'>
               <p>Set New Password</p>
             </div>
             <div>
-              <img src={Line} alt=""/>
+              <img src={Line} alt="" />
             </div>
           </div>
-            {/* Form */}
-            <div>
-                <form onSubmit={handleSubmit}>
-           <div className="input-group-fp-I">
-       <img src={Password} alt="userlogo"/>
-       <input className="input-details-sign-in"
-        type="password"
-         placeholder="Set New Password" 
-         name="setNewPassword"
-         id='setNewPassword'
-         value={formData.setNewPassword}
-         onChange={handleNameChange}
-           required />
-       </div>  
-       <div className="input-group-fp-I">
-       <img src={Password} alt="userlogo"/>
-       <input className="input-details-sign-in"
-        type="password"
-         placeholder="Confirm Password" 
-         name="confirmPassword"  
-         id='confirmPassword'
-         value={formData.confirmPassword}
-         onChange={handleNameChange}
-         required />
-       </div>  
-          {/* Adding Button */}
-          <div className='button-fp-III'>
-        <button>Proceed</button>
-       </div>
-       </form>
-         </div>
-             {/* adding center line */}
-             <div className='line-fp-I'>
-            <img src={LineI} alt=''/>
+          {/* Form using Formik */}
+          <Formik
+            initialValues={{ setNewPassword: "", confirmPassword: "" }}
+            validationSchema={validationSchema}
+            onSubmit={handleSubmit}
+          >
+            {({ errors, touched }) => (
+              <Form>
+                <div className="input-group-fp-I">
+                  <img src={Password} alt="userlogo" />
+                  <Field
+                    className="input-details-sign-in"
+                    type="password"
+                    placeholder="Set New Password"
+                    name="setNewPassword"
+                  />
+                  <ErrorMessage name="setNewPassword" component="div" className="error-message" />
+                </div>
+                <div className="input-group-fp-I">
+                  <img src={Password} alt="userlogo" />
+                  <Field
+                    className="input-details-sign-in"
+                    type="password"
+                    placeholder="Confirm Password"
+                    name="confirmPassword"
+                  />
+                  <ErrorMessage name="confirmPassword" component="div" className="error-message" />
+                </div>
+                {/* Adding Button */}
+                <div className='button-fp-III'>
+                  <button type="submit">Proceed</button>
+                </div>
+              </Form>
+            )}
+          </Formik>
+          {/* Adding center line */}
+          <div className='line-fp-I'>
+            <img src={LineI} alt='' />
           </div>
           <div className='button-fp-III'>
-         <div><button className='button-1' onClick={handleLoginPage}>Sign In</button></div>
+            <div><button className='button-1' onClick={handleLoginPage}>Sign In</button></div>
+          </div>
         </div>
-          </div>
-          <div className='login-help-div'>
+        <div className='login-help-div'>
           <div className='login-hepl-image'>
-            <img src={Question} alt='logo'/>
+            <img src={Question} alt='logo' />
           </div>
           <div className='login-help-link'><a href=''>Need Help ?</a></div>
-         </div>
-          </div>
+        </div>
+      </div>
     </div>
-  )
-}
-export default ForgetPasswordIII;
+  );
+};
+ForgetPasswordIII.propTypes = {
+  postResetDetails: PropTypes.func.isRequired,
+};
+const mapStateToProps = (state) => {
+  console.log("Current Redux state ForgetPasswordIII:", state); 
+  return {
+    email: state.login.resetEmail, 
+    response: state.response.response,
+  };
+};
+export default connect(mapStateToProps, { postResetDetails })(ForgetPasswordIII);
+
