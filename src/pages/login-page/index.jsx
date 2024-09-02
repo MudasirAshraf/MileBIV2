@@ -5,8 +5,8 @@ import Logo from "../../assets/svg/logo.svg";
 import User from "../../assets/svg/User_light.svg";
 import Password from "../../assets/svg/Key_light.svg";
 import Question from "../../assets/svg/Question_light.svg";
-
-const LoginPage = () => {
+import { getAuth } from "../actions/loginActions";
+const LoginPage = ({getAuth}) => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -34,6 +34,7 @@ const LoginPage = () => {
 
     setError('');
     console.log(formData);
+    //getAuth(your login details)
     navigate("/create-dashboard");
   };
 
@@ -123,5 +124,10 @@ const LoginPage = () => {
     </div>
   );
 };
-
-export default LoginPage;
+LoginPage.propTypes = {
+  getAuth: PropTypes.func.isRequired,
+};
+const mapStateToProps = (state) => ({
+  response: state.response.response,
+});
+export default connect(mapStateToProps, { getAuth })(LoginPage);
