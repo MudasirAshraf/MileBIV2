@@ -45,7 +45,6 @@ const ForgetPasswordIII = (props) => {
 
   const handleSubmit = (values, { resetForm }) => {
     const {setNewPassword } = values;
-    console.log(props)
     dispatch(postResetDetails({ Email: props.email, NewPassword: setNewPassword }))
       .then((response) => {
         if (response && response.success) { 
@@ -202,7 +201,7 @@ ForgetPasswordIII.propTypes = {
   postResetDetails: PropTypes.func.isRequired,
 };
 const mapStateToProps = (state) => {
-  console.log("Current Redux state ForgetPasswordIII:", state); 
+  console.log("Current Redux state:", state); 
   return {
     email: state.login.resetEmail, 
     response: state.response.response,
