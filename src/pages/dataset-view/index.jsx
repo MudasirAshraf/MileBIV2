@@ -1,74 +1,149 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import axios from 'axios';
-import "./dataset-view.scss"
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchDataset, addColumn, updateDataset } from '../../redux/datasetSlice';
+import './dataset-view.scss';
+import { evaluateExpression } from '../../redux/datasetSlice';
 
 const DatasetView = () => {
-  const location = useLocation();
-  const title = location.state?.title;
-  const [data, setData] = useState();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const dispatch = useDispatch();
+  const { data, loading, error, transformationSteps,} = useSelector((state) => state.dataset);
+
+  const [isAddingColumn, setIsAddingColumn] = useState(false);
+  const [newColumnTitle, setNewColumnTitle] = useState('');
+  const [newColumnType, setNewColumnType] = useState('Regular');
+  const [newColumnExpression, setNewColumnExpression] = useState('');
 
   useEffect(() => {
-    const fetchData = async () => {
-        try {
-          const response = await axios.get(`${import.meta.env.VITE_BASE_URL_DASHBOARD}Dataset`, {
-            headers: {
-              Authorization: `Bearer ${import.meta.env.VITE_API_TOKEN}`,
-            },
-            params: { title },
-          });
-          setData(response.data.data || response.data);
-          setLoading(false);
-        } catch (error) {
-          setError('Failed to fetch data');
-          setLoading(false);
-        }
-      }
-    fetchData();
-  },[]);
+    dispatch(fetchDataset()); 
+  }, [dispatch]);
 
-  if (loading && !data) {
+  const handleAddClick = () => {
+    setIsAddingColumn(true);
+  };
+
+  const handleSaveColumn = () => {
+    if (!newColumnTitle) return;
+  
+    const newColumn = {
+      title: newColumnTitle,
+      type: newColumnType,
+      expression: newColumnType === 'Expression' ? newColumnExpression : '',
+    };
+  
+    // Dispatch addColumn to update local state
+    dispatch(addColumn(newColumn));
+  
+    // Prepare only the necessary data for the update
+    const updatedData = (data || []).map(row => ({
+      dataSourceData: (row.dataSourceData || []).map(dtx => ({
+        [newColumn.title]: newColumn.type === 'Expression'
+          ? evaluateExpression(dtx, newColumn.expression)
+          : '',
+      })),
+    }));
+  
+    const datasetToUpdate = {
+      data: updatedData,
+      transformationSteps: [
+        ...transformationSteps,
+        {
+          Step: transformationSteps.length + 1,
+          Type: 'AddColumn',
+          Title: newColumn.title,
+          ColumnCategory: newColumn.type,
+          ...(newColumn.type === 'Expression' && { Expression: newColumn.expression }),
+        },
+      ],
+    };
+  
+    // Dispatch updateDataset to save to the server
+    dispatch(updateDataset(datasetToUpdate));
+  
+    setIsAddingColumn(false);
+    setNewColumnTitle('');
+    setNewColumnType('Regular');
+    setNewColumnExpression('');
+  };
+  
+  const handleCancelClick = () => {
+    setIsAddingColumn(false);
+    setNewColumnTitle('');
+    setNewColumnType('Regular');
+    setNewColumnExpression('');
+  };
+
+  if (loading) {
     return <p>Loading data...</p>;
   }
 
   if (error) {
     return <p>{error}</p>;
   }
+
+  const safeData = Array.isArray(data) ? data : [];
+
   return (
     <div className='main-container-dataset-view'>
       <div className='container-dataset-view'>
         <div className='dataset-table-container'>
           <div className='dataset-table-header'>
-            <p>{title}</p>
+            {!isAddingColumn && <button onClick={handleAddClick}>Add</button>}
+            {isAddingColumn && (
+              <div className="add-column-inputs">
+                <input
+                  className='inp'
+                  type="text"
+                  placeholder="Enter Title"
+                  value={newColumnTitle}
+                  onChange={(e) => setNewColumnTitle(e.target.value)}
+                />
+                <select
+                  value={newColumnType}
+                  onChange={(e) => setNewColumnType(e.target.value)}
+                >
+                  <option value="Regular">Regular</option>
+                  <option value="Expression">Expression</option>
+                </select>
+                {newColumnType === 'Expression' && (
+                  <input
+                    className='inp'
+                    type="text"
+                    placeholder="Enter Expression"
+                    value={newColumnExpression}
+                    onChange={(e) => setNewColumnExpression(e.target.value)}
+                  />
+                )}
+                <button onClick={handleSaveColumn}>Save</button>
+                <button onClick={handleCancelClick}>Cancel</button>
+              </div>
+            )}
           </div>
           <div className='data-set-table-container'>
-          <table>
-  <thead>
-    <tr>
-      {
-      data.length > 0 &&
-        Object.keys(data[0].dataSourceData[0]).map((key) => (
-          <th key={key}>{key}</th>
-        ))}
-    </tr>
-  </thead>
-  <tbody>
-    { 
-    data.map((row, index) => (
-      <React.Fragment key={index}>
-        {row.dataSourceData?.map((dtx, j) => (
-          <tr key={`${index}-${j}`}>
-            {Object.keys(dtx).map((key, k) => (
-              <td key={k}>{dtx[key]}</td>
-            ))}
-          </tr>
-        ))}
-      </React.Fragment>
-    ))}
-  </tbody>
-</table>
+            <table>
+              <thead>
+                <tr>
+                  {safeData.length > 0 &&
+                    Object.keys(safeData[0].dataSourceData?.[0] || {}).map((key) => (
+                      <th key={key}>{key}</th>
+                    ))}
+                  {isAddingColumn && <th>{newColumnTitle}</th>}
+                </tr>
+              </thead>
+              <tbody>
+                {safeData.map((row, index) => (
+                  <React.Fragment key={index}>
+                    {row.dataSourceData?.map((dtx, j) => (
+                      <tr key={`${index}-${j}`}>
+                        {Object.keys(dtx || {}).map((key) => (
+                          <td key={key}>{dtx[key]}</td>
+                        ))}
+                        {isAddingColumn && <td>{dtx[newColumnTitle] || ''}</td>}
+                      </tr>
+                    ))}
+                  </React.Fragment>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>

@@ -45,14 +45,14 @@ const DatasetII = ({ setData }) => {
       };
 
       const config = {
-        headers: {
+        headers: { 
           Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IiIsImVtYWlsIjoibWFzaHJhZkBhYXRjLmNvLmluIiwibmFtZWlkIjoiNDMiLCJVc2VySWQiOiI0MyIsIk9yZ2FuaXphdGlvbklkIjoiMzMiLCJuYmYiOjE3MDE4NTUwOTAsImV4cCI6MTcwMjQ1OTg5MCwiaWF0IjoxNzAxODU1MDkwLCJpc3MiOiJ5b3VySXNzdWVyIiwiYXVkIjoieW91ckF1ZGllbmNlIn0.B1AleyHA1nH4xrOxEw-J7833e80lCi9hEZP4gXE-yk8`
         }
       };
       const response = await axios.post(`${import.meta.env.VITE_BASE_URL_CONNECTOR}PostgreConnector/getalltables`, payload, config);
       console.log('Response:', response.data);
       setData(response.data);
-      navigate("/create-dataset-III", { state: { payload } });  // Pass the payload when navigating
+      navigate("/create-dataset-III", { state: { payload } });  
     } catch (error) {
       console.error('Error:', error);
     }
