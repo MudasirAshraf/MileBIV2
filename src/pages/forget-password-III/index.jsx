@@ -24,7 +24,7 @@ import { connect } from "react-redux";
 
 
 
-// Validation schema
+// Validation schema for SetNewPassword && ConfirmPassword
 const validationSchema = Yup.object({
   setNewPassword: Yup.string()
     .min(8, "Password must be at least 8 characters long")
@@ -60,6 +60,7 @@ const ForgetPasswordIII = (props) => {
 
 
   return (
+    // Main Container
     <div className='main-container-forget-password-III'>
       <div className='header-details-sign-in-page-I'>
         <div>

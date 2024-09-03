@@ -37,7 +37,6 @@ const ForgetPasswordII = (props) => {
       newCode[index] = value;
       setCode(newCode);
 
-      // Move to the next input
       if (value && index < 3) {
         inputRefs.current[index + 1].focus();
       }
