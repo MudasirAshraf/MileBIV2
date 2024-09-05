@@ -1,0 +1,29 @@
+.main-container-error-page{
+    width: 100%;
+}
+.container-error-page{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 50px;
+    margin-top: 120px;
+}
+.error-image {
+    transform: rotate(180deg);
+}
+.second-column-error-page{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.second-column-error-page h1{
+   font-size: 2.6rem;
+    font-weight: 600;
+}
+.second-column-error-page p{
+    font-size: 1.1rem;
+     font-weight: 400;
+     color: #1C9CA7;
+ }

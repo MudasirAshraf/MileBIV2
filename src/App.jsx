@@ -9,6 +9,8 @@ import SignPageIII from './pages/sign-up-page-III';
 import ForgetPasswordI from './pages/forget-password-I';
 import ForgetPasswordII from './pages/forget-password-II';
 import ForgetPasswordIII from './pages/forget-password-III';
+import UpdatePassword from './pages/update-password';
+import ErrorPage from './pages/error-page';
 import AccountSettings from './pages/account-settings';
 import AccountSettingsPI from './pages/account-settings-pi';
 import AccoutSettingsSecurity from './pages/account-settings-security';
@@ -39,6 +41,7 @@ import { Provider } from "react-redux";
 
 
 
+
 function App() {
   const [data, setData] = useState();
   return (
@@ -57,6 +60,8 @@ function App() {
         <Route path="/forget-password-I" element={<ForgetPasswordI/>}/>
         <Route path="/forget-password-II" element={<ForgetPasswordII/>}/>
         <Route path="/forget-password-III" element={<ForgetPasswordIII/>}/>
+        <Route path="/update-password" element={<UpdatePassword/>}/>
+        <Route path="/error-page" element={<ErrorPage/>}/>
         {/* Account Settings */}
         <Route path="/account-settings" element={<AccountSettings/>}/>
         <Route path="/account-settings-pi" element={<AccountSettingsPI/>}/>

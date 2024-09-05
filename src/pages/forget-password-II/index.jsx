@@ -21,6 +21,8 @@ import { useNavigate } from 'react-router-dom';
 import PropTypes from "prop-types";
 import { forgotPassword } from "../../actions/loginActions";
 import { connect } from "react-redux";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 const ForgetPasswordII = (props) => {
@@ -56,19 +58,21 @@ const ForgetPasswordII = (props) => {
         navigate('/forget-password-III'); 
       } 
     } catch (error) {
-      alert("OTP is Invalid")
+      toast.error("OTP is Invalid");
       console.error("Verification failed", error);
     }
   };
   
-  const handleResendCode = () => {
-    dispatch(forgotPassword(props.email))
-    .then(() => {
-    })
-    .catch((error) => {
+  const handleResendCode = async () => {
+    try {
+      await dispatch(forgotPassword(props.email));
+      toast.success("Code resent successfully");
+    } catch (error) {
       console.error("Verification failed", error);
-    });
-  }
+      toast.error("Failed to resend code");
+    }
+  };
+  
 
   return (
     <div className="main-container-forget-password-II">
@@ -200,6 +204,17 @@ const ForgetPasswordII = (props) => {
           
          </div>
       </div>
+         {/* Toast container */}
+         <ToastContainer 
+        autoClose={4000}        
+        hideProgressBar={false} 
+        newestOnTop={false}     
+        closeOnClick            
+        rtl={false}             
+        pauseOnFocusLoss       
+        draggable              
+        pauseOnHover            
+      />
     </div>
   )
 }

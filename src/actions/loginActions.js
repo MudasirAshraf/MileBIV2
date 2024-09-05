@@ -18,45 +18,38 @@ const config = ({ id }) => ({
   },
 });
 
-
 //getAuth
 export const getAuth = (user) => async (dispatch) => {
-  axiosInstance.defaults.baseURL= urlswithoutgateway("admin");
-  console.log(axiosInstance)
-  axiosInstance
-    .post("/User/Login", JSON.stringify(user), {
+  try {
+    const response = await axiosInstance.post("/User/Login", JSON.stringify(user), {
       headers: {
         "Content-Type": "application/json",
       },
-    })
-    .then((response) => {
-      console.log("API Response:", response);
-      dispatch({
-        type: RESPONSE,
-        regresponse: response.data,
-      });
-      if (response.data.messageType !== 2) {
-        dispatch({
-          type: SET_LOGIN,
-          payload: response.data.data,
-        });
-        window.setTimeout(function () {
-          // Move to a new location or you can do something else
-          window.location.href = "/create-dashboard";
-        }, 5000);
-        //generate cookie inside local system and redirect to home page as logged in user
-      }
-    })
-    .catch((error) => {
-      dispatch({
-        type: RESPONSE,
-        regresponse: error.response.data,
-      });
-      dispatch({
-        type: AUTH_ERROR,
-        payload: error.response.statusText,
-      });
     });
+    dispatch({
+      type: RESPONSE,
+      regresponse: response.data,
+    });
+
+    if (response.data.messageType !== 2) {
+      dispatch({
+        type: SET_LOGIN,
+        payload: response.data.data,
+      });
+      return response.data; 
+    }
+  } catch (error) {
+    dispatch({
+      type: RESPONSE,
+      regresponse: error.response.data,
+    });
+
+    dispatch({
+      type: AUTH_ERROR,
+      payload: error.response.statusText,
+    });
+    throw error; 
+  }
 };
 //forgotPassword
 export const forgotPassword = (email) => async (dispatch) => {
@@ -111,8 +104,8 @@ export const postResetDetails = (user) => async (dispatch) => {
       });
       if (response.data.messageType !== 2) {
         window.setTimeout(function () {
-          window.location.href = "/";
-        }, 5000);
+          window.location.href = "/update-password";
+        }, 500);
       }
         // Return the response data
     return response.data;

@@ -1,6 +1,15 @@
-.main-container-forget-password-II{
-    width: 100%;
-}
+    .main-container-forget-password-II {
+        width: 100%;
+        // React-toast CSS
+        .Toastify__toast-container {
+          position: absolute;
+          top: 1.5%;
+          left: 55%;
+          transform: translateX(-50%);
+          margin-top: 440px;
+        }
+      }
+
 .form-header-forget-password-II{
     font-size: 1.3rem;
 }
@@ -67,13 +76,6 @@
       left: 37%;
       top: 14%;
   }
-//   .form-sign-in-fp-II{
-//     display: flex;
-//     flex-direction: row;
-//     justify-content: flex-end;
-//     align-items: flex-end;
-//     margin-left: 400px;
-//   }
   .form-sign-in-fp-II{
     display: flex;
     flex-direction: row;
@@ -82,3 +84,9 @@
     padding-right: 52px;
     margin-top: 60px;
   }
+  .code-div {
+    position: relative; 
+  }
+  
+
+  

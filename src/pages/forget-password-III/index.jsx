@@ -23,7 +23,6 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 
 
-
 // Validation schema for SetNewPassword && ConfirmPassword
 const validationSchema = Yup.object({
   setNewPassword: Yup.string()
@@ -43,22 +42,22 @@ const ForgetPasswordIII = (props) => {
     navigate("/");
   };
 
-  const handleSubmit = (values, { resetForm }) => {
-    const {setNewPassword } = values;
-    dispatch(postResetDetails({ Email: props.email, NewPassword: setNewPassword }))
-      .then((response) => {
-        if (response && response.success) { 
-          navigate('/'); 
-        } 
+  const handleSubmit = async (values, { resetForm }) => {
+    const { setNewPassword } = values;
+    try {
+      const response = await dispatch(postResetDetails({ Email: props.email, NewPassword: setNewPassword }));
+  
+      if (response && response.success) {
         resetForm();
-      })
-      .catch((error) => {
-        console.error("Verification Reset failed", error);
-        alert("Password reset failed. Please try again.");
-      });
+        navigate("/update-password");
+      } 
+    } catch (error) {
+      console.error("Verification Reset failed", error);
+      navigate("/error-page");
+    }
   };
-
-
+  
+  
   return (
     // Main Container
     <div className='main-container-forget-password-III'>
