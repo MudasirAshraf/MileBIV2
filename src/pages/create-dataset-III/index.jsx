@@ -27,7 +27,7 @@ const DatasetIII = ({ data }) => {
       const requestPayload = {
         ...payload, 
         connectionString: "connectionString",
-        datasetTitle: "tableName",
+        datasetTitle: selectedTables[0],
         userName: "userName",
         password: "password",
         DataSourceData: selectedTables.map(tabledata => clickedTableData[tabledata]?.Table || []),
