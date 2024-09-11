@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
 import axios from 'axios';
-import { setCurrent, updateDataset } from "../../actions/datasetActions";
+import { updateDataset } from "../../actions/datasetActions";
 import { evaluate } from 'mathjs';
 import "./dataset-view.scss";
+import PropTypes from 'prop-types'; 
+import { connect } from 'react-redux';
 
 
 export const evaluateExpression = (data, expression) => {
@@ -18,17 +19,13 @@ export const evaluateExpression = (data, expression) => {
   }
 };
 
-const DatasetView = () => {
+const DatasetView = ({updateDataset,dataset}) => {
   const location = useLocation();
-  const title = location.state?.title;
-  const [data, setData] = useState();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [isAddingColumn, setIsAddingColumn] = useState(false);
   const [newColumnTitle, setNewColumnTitle] = useState('');
   const [newColumnType, setNewColumnType] = useState('Regular');
   const [newColumnExpression, setNewColumnExpression] = useState('');
-  const dispatch = useDispatch();
+  
 
   const handleAddClick = () => {
     setIsAddingColumn(true);
@@ -48,6 +45,13 @@ const DatasetView = () => {
       expression: newColumnExpression
     };
 
+//add column => create a function in datasetactions that updates transformation steps of current variable
+//or i can just do it here directly then send single complete dataset to updatedataset action
+//updateDataset(safeData) if it is in local page then append transformation node here directly, if object is in reducer state then define actions
+
+
+
+
     try {
       // Update the local dataset state first
       const updatedDataset = {
@@ -65,37 +69,11 @@ const DatasetView = () => {
 
     handleCancelClick();
   };
+console.log(dataset)
+  const safeData =dataset && Array.isArray(dataset) ? dataset : [];
+  console.log(safeData)
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(`${import.meta.env.VITE_BASE_URL_DASHBOARD}Dataset`, {
-          headers: {
-            Authorization: `Bearer ${import.meta.env.VITE_API_TOKEN}`,
-          },
-          params: { title },
-        });
-        setData(response.data.data || response.data);
-        setLoading(false);
-      } catch (error) {
-        setError('Failed to fetch data');
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [title]);
-
-  if (loading && !data) {
-    return <p>Loading data...</p>;
-  }
-
-  if (error) {
-    return <p>{error}</p>;
-  }
-
-  const safeData = Array.isArray(data) ? data : [];
-
-  return (
+  return (dataset &&
     <div className='main-container-dataset-view'>
       <div className='container-dataset-view'>
         <div className='dataset-table-container'>
@@ -169,5 +147,12 @@ const DatasetView = () => {
     </div>
   );
 };
+DatasetView.propTypes = {
+  updateDataset: PropTypes.func.isRequired,
+};
+const mapStateToProps = (state) => ({
+  response: state.response.response,
+  dataset:state.dataset.current,
+});
+export default connect(mapStateToProps, { updateDataset })(DatasetView);
 
-export default DatasetView;

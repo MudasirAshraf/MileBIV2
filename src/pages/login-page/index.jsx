@@ -12,12 +12,10 @@ import User from "../../assets/svg/User_light.svg";
 import Password from "../../assets/svg/Key_light.svg";
 import Question from "../../assets/svg/Question_light.svg";
 import { getAuth } from "../../actions/loginActions";
-import { useDispatch } from 'react-redux';
 
-const LoginPage = () => {
+const LoginPage = ({response,getAuth}) => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-
+  
   const initialValues = {
     username: "",
     password: "",
@@ -31,9 +29,9 @@ const LoginPage = () => {
 
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
-      const response = await dispatch(getAuth(values)); 
+      getAuth(values); 
       if (response && response.success){
-    sessionStorage.setItem("token", response.data.token)
+      sessionStorage.setItem("token", response.data.token)
       navigate('/create-dashboard'); 
       }
     } catch (error) {
@@ -54,7 +52,7 @@ const LoginPage = () => {
 
   return (
     <div className='main-container-login-page'>
-      <div className='login-page-select-option'>
+        <div className='login-page-select-option'>
         <select className='select-option'>
           <option>English</option>
           <option>Arabic</option>
