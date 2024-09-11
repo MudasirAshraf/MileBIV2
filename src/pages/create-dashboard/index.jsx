@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types'; 
+import { connect } from 'react-redux';
 import "./create-dashboard.scss";
 import DashboardWrapper from '../../components/dashboard-wrapper';
 import Hline from "../../assets/svg/headerline.svg";
@@ -8,33 +10,16 @@ import TIII from "../../assets/png/T3.png";
 import CardII from '../../components/card-II';
 import CardIII from '../../components/card-III';
 import CardIV from '../../components/card-IV';
-import axios from 'axios';
+import { getDatasets } from '../../actions/datasetActions';
 
-const CreateDashboard = () => {
+const CreateDashboard = ({datasets,getDatasets}) => {
   const [activeTab, setActiveTab] = useState('create-dashboards');
   const [page, setPage] = useState(1); 
   const itemsPerPage = activeTab === 'datasets' ? 12 : 8; 
-  const [datasets, setDatasets] = useState([]);
+  
 
   useEffect(() => {
-    const fetchDatasets = async () => {
-      try {
-        const response = await axios.get(`${import.meta.env.VITE_BASE_URL_DASHBOARD}Dataset`, {
-          headers: {
-            Authorization: `Bearer ${import.meta.env.VITE_API_TOKEN}`,
-          },
-        });
-        if (Array.isArray(response.data.data)) {
-          setDatasets(response.data.data);
-        } else {
-          console.error('Unexpected data format:', response.data);
-          setDatasets([]);
-        }
-      } catch (error) {
-        console.error('Error fetching datasets:', error);
-      }
-    };
-    fetchDatasets();
+    getDatasets();
   }, []);
 
   const handleTabClick = (tab) => {
@@ -55,7 +40,7 @@ const CreateDashboard = () => {
 
   const totalPages = activeTab === 'create-dashboards' ? Math.ceil(cardsData.length / itemsPerPage) :
     activeTab === 'available-templates' ? Math.ceil(cardsDataI.length / itemsPerPage) :
-    Math.ceil(datasets.length / itemsPerPage);
+    Math.ceil(datasets && datasets.length / itemsPerPage);
 
   const visiblePages = Array.from({ length: totalPages }, (_, index) => index + 1);
 
@@ -63,7 +48,7 @@ const CreateDashboard = () => {
     setPage(pageNumber);
   };
 
-  return (
+  return ( datasets &&
     <div className='main-container-create-dashboard'>
       <div className='container-create-dashboard'>
         <DashboardWrapper>
@@ -122,7 +107,7 @@ const CreateDashboard = () => {
           {activeTab === 'datasets' && (
     <div className='main-container-datasets'>
         {datasets.slice((page - 1) * itemsPerPage, page * itemsPerPage).map((dataset, index) => (
-        <CardIV key={index} title={dataset.datasetTitle} />
+        <CardIV key={index} dataset={dataset} />
       ))}
     </div>
 )}
@@ -141,5 +126,12 @@ const CreateDashboard = () => {
     </div>
   );
 }
+CreateDashboard.propTypes = {
+  getDatasets: PropTypes.func.isRequired,
+};
+const mapStateToProps = (state) => ({
+  response: state.response.response,
+  datasets:state.dataset.datasets,
+});
+export default connect(mapStateToProps, { getDatasets })(CreateDashboard);
 
-export default CreateDashboard;

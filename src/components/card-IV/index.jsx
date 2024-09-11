@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types'; 
+import { connect } from 'react-redux';
 import "./card-IV.scss";
 import Setting from "../../assets/svg/setting.svg";
 import EYE from "../../assets/svg/eye.svg";
 import CenterLogo from "../../assets/svg/centerlogo.svg";
 import DropdownMenu from '../dropdown-menu';
 import { useNavigate } from 'react-router-dom';
+import { setCurrent } from '../../actions/datasetActions';
 
-const CardIV = ({title,}) => {
+
+const CardIV = ({dataset,setCurrent}) => {
   const [showDropdown, setShowDropdown] = useState(false);
-
   const handleSettingClick = () => {
     setShowDropdown(!showDropdown);
   };
@@ -16,7 +19,8 @@ const CardIV = ({title,}) => {
   const navigate = useNavigate();
 
   const handleDataSet = () => {
-    navigate('/dataset-view');
+    setCurrent(dataset)
+    navigate('/dataset-view?id='+ dataset.datasetId);
   };
 
 
@@ -35,7 +39,7 @@ const CardIV = ({title,}) => {
     </div>
     {/* third column */}
     <div className='third-column-card-iv'>
-          <p>{title}</p>
+          <p>{dataset.datasetTitle}</p>
     </div>
     {/* fourth column */}
     <div className='fourth-column-card-iv' onClick={handleDataSet}>
@@ -48,4 +52,11 @@ const CardIV = ({title,}) => {
   )
 }
 
-export default CardIV;
+CardIV.propTypes = {
+  setCurrent: PropTypes.func.isRequired,
+};
+const mapStateToProps = (state) => ({
+  response: state.response.response,
+});
+
+export default connect(mapStateToProps, { setCurrent })(CardIV);
