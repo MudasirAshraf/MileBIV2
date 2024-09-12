@@ -19,9 +19,11 @@ const CardIV = ({dataset,setCurrent}) => {
   const navigate = useNavigate();
 
   const handleDataSet = () => {
-    setCurrent(dataset)
-    navigate('/dataset-view?id='+ dataset.datasetId);
+    console.log('Selected Dataset:', dataset);
+    setCurrent(dataset); // Set the current dataset in the store.
+    navigate(`/dataset-view`, { state: { datasetId: dataset.datasetId } }); // Pass dataset ID via state.
   };
+  
 
 
   return (

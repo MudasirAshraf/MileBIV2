@@ -1,12 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import axios from 'axios';
-import { updateDataset } from "../../actions/datasetActions";
+import React, { useState } from 'react';
+import { updateDataset, setCurrent } from "../../actions/datasetActions";
 import { evaluate } from 'mathjs';
 import "./dataset-view.scss";
 import PropTypes from 'prop-types'; 
 import { connect } from 'react-redux';
-
 
 export const evaluateExpression = (data, expression) => {
   try {
@@ -19,13 +16,11 @@ export const evaluateExpression = (data, expression) => {
   }
 };
 
-const DatasetView = ({updateDataset,dataset}) => {
-  const location = useLocation();
+const DatasetView = ({ updateDataset, dataset }) => {
   const [isAddingColumn, setIsAddingColumn] = useState(false);
   const [newColumnTitle, setNewColumnTitle] = useState('');
   const [newColumnType, setNewColumnType] = useState('Regular');
   const [newColumnExpression, setNewColumnExpression] = useState('');
-  
 
   const handleAddClick = () => {
     setIsAddingColumn(true);
@@ -45,33 +40,21 @@ const DatasetView = ({updateDataset,dataset}) => {
       expression: newColumnExpression
     };
 
-//add column => create a function in datasetactions that updates transformation steps of current variable
-//or i can just do it here directly then send single complete dataset to updatedataset action
-//updateDataset(safeData) if it is in local page then append transformation node here directly, if object is in reducer state then define actions
-
-
-
-
     try {
-      // Update the local dataset state first
       const updatedDataset = {
-        columns: [...(data.columns || []), newColumn] 
+        ...dataset,
+        columns: [...(dataset.columns || []), newColumn] 
       };
 
-      //  setCurrent action to update the state
-      dispatch(setCurrent(updatedDataset));
-
-      await dispatch(updateDataset(updatedDataset));
-
+      setCurrent(updatedDataset);
+      await updateDataset(updatedDataset);
     } catch (error) {
       console.error("Failed to save dataset:", error);
     }
 
     handleCancelClick();
   };
-console.log(dataset)
-  const safeData =dataset && Array.isArray(dataset) ? dataset : [];
-  console.log(safeData)
+ 
 
   return (dataset &&
     <div className='main-container-dataset-view'>
@@ -113,31 +96,24 @@ console.log(dataset)
             <table>
               <thead>
                 <tr>
-                  {safeData.length > 0 &&
-                    Object.keys(safeData[0].dataSourceData?.[0] || {}).map((key) => (
-                      <th key={key}>{key}</th>
+                  {dataset.columns && dataset.columns.length > 0 &&
+                    dataset.columns.map((column, index) => (
+                      <th key={index}>{column.title}</th>
                     ))}
                   {isAddingColumn && <th>{newColumnTitle}</th>}
                 </tr>
               </thead>
               <tbody>
-                {safeData.map((row, index) => (
-                  <React.Fragment key={index}>
-                    {row.dataSourceData?.map((dtx, j) => (
-                      <tr key={`${index}-${j}`}>
-                        {Object.keys(dtx || {}).map((key) => (
-                          <td key={key}>{dtx[key]}</td>
-                        ))}
-                        {isAddingColumn && (
-                          <td>
-                            {newColumnType === 'Expression'
-                              ? evaluateExpression(dtx, newColumnExpression)
-                              : dtx[newColumnTitle] || ''}
-                          </td>
-                        )}
-                      </tr>
+                {dataset.rows && dataset.rows.map((row, index) => (
+                  <tr key={index}>
+                    {dataset.columns.map((column, colIndex) => (
+                      <td key={colIndex}>
+                        {column.type === 'Expression' && isAddingColumn
+                          ? evaluateExpression(row, newColumnExpression)
+                          : row[column.title] || ''}
+                      </td>
                     ))}
-                  </React.Fragment>
+                  </tr>
                 ))}
               </tbody>
             </table>
@@ -148,4 +124,13 @@ console.log(dataset)
   );
 };
 
-export default DatasetView;
+DatasetView.propTypes = {
+  updateDataset: PropTypes.func.isRequired,
+  dataset: PropTypes.object 
+};
+
+const mapStateToProps = (state) => ({
+  dataset: state.dataset.current
+});
+
+export default connect(mapStateToProps, { updateDataset})(DatasetView);
