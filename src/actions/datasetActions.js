@@ -276,7 +276,7 @@ export const deleteDataset = (id) => async (dispatch) => {
           type: DELETE_DATASET,
           payload: response.data,
         });
-        window.location.reload();
+        // window.location.reload();
       }
     })
     .catch((error) => {

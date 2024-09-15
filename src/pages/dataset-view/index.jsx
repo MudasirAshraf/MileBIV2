@@ -67,6 +67,14 @@ const DatasetView = ({ updateDataset, dataset, getSpecificDataset }) => {
     handleCancelClick();
   };
 
+  const safeData = dataset?.data?.dataSourceData
+  ? Array.isArray(dataset.data.dataSourceData)
+    ? dataset.data.dataSourceData
+    : JSON.parse(dataset.data.dataSourceData || "[]")
+  : [];
+
+
+  
   return (
     dataset && (
       <div className="main-container-dataset-view">
@@ -105,32 +113,31 @@ const DatasetView = ({ updateDataset, dataset, getSpecificDataset }) => {
               )}
             </div>
             <div className="data-set-table-container">
-              <table>
-                <thead>
-                  <tr>
-                    {dataset.columns &&
-                      dataset.columns.length > 0 &&
-                      dataset.columns.map((column, index) => (
-                        <th key={index}>{column.title}</th>
-                      ))}
-                    {isAddingColumn && <th>{newColumnTitle}</th>}
-                  </tr>
-                </thead>
-                <tbody>
-                  {dataset.rows &&
-                    dataset.rows.map((row, index) => (
-                      <tr key={index}>
-                        {dataset.columns.map((column, colIndex) => (
-                          <td key={colIndex}>
-                            {column.type === "Expression" && isAddingColumn
-                              ? evaluateExpression(row, newColumnExpression)
-                              : row[column.title] || ""}
-                          </td>
+            <table>
+              <thead>
+                <tr>
+                  {safeData.length > 0 &&
+                    Object.keys(safeData[0].dataSourceData?.[0] || {}).map((key) => (
+                      <th key={key}>{key}</th>
+                    ))}
+                  {isAddingColumn && <th>{newColumnTitle}</th>}
+                </tr>
+              </thead>
+              <tbody>
+                {safeData.map((row, index) => (
+                  <React.Fragment key={index}>
+                    {row.dataSourceData?.map((dtx, j) => (
+                      <tr key={`${index}-${j}`}>
+                        {Object.keys(dtx || {}).map((key) => (
+                          <td key={key}>{dtx[key]}</td>
                         ))}
+                        {isAddingColumn && <td>{dtx[newColumnTitle] || ''}</td>}
                       </tr>
                     ))}
-                </tbody>
-              </table>
+                  </React.Fragment>
+                ))}
+              </tbody>
+            </table>
             </div>
           </div>
         </div>
