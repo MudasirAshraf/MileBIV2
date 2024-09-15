@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
-import { updateDataset } from "../../actions/datasetActions";
+import { getSpecificDataset, updateDataset } from "../../actions/datasetActions";
 import { evaluate } from 'mathjs';
 import "./dataset-view.scss";
 import PropTypes from 'prop-types'; 
@@ -19,12 +19,19 @@ export const evaluateExpression = (data, expression) => {
   }
 };
 
-const DatasetView = ({updateDataset,dataset}) => {
+const DatasetView = ({updateDataset,dataset,getSpecificDataset}) => {
   const location = useLocation();
+  const [searchParams]=useSearchParams();
+  const datasetId=searchParams.get("id");
+  useEffect(()=>{
+datasetId && getSpecificDataset(datasetId)
+//eslint-disable-next-line
+  },[])
   const [isAddingColumn, setIsAddingColumn] = useState(false);
   const [newColumnTitle, setNewColumnTitle] = useState('');
   const [newColumnType, setNewColumnType] = useState('Regular');
   const [newColumnExpression, setNewColumnExpression] = useState('');
+  
   
 
   const handleAddClick = () => {
@@ -147,5 +154,13 @@ console.log(dataset)
     </div>
   );
 };
+DatasetView.propTypes = {
+  getSpecificDataset: PropTypes.func.isRequired,
+};
+const mapStateToProps = (state) => ({
+  response: state.response.response,
+  dataset:state.dataset.current,
 
-export default DatasetView;
+});
+
+export default connect(mapStateToProps, { getSpecificDataset })(DatasetView);
