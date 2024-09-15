@@ -23,16 +23,16 @@ const DatasetIII = ({ data }) => {
   };
 
   const handleDatasetIV = async () => {
-    try {
-      console.log(clickedTableData)
-      clickedTableData.map((tabledata) =>{
+    try {      
+      selectedTables.map((tableName) =>{
+      const tableData = clickedTableData[tableName];
       const requestPayload = {
         ...payload, 
         connectionString: "connectionString",
-        datasetTitle: selectedTables[0],
+        datasetTitle: tableName,
         userName: "userName",
         password: "password",
-        DataSourceData: tabledata.data,
+        DataSourceData: tableData.data,
       };
       const config = {
         headers: {
@@ -45,7 +45,7 @@ const DatasetIII = ({ data }) => {
         config
       );
       if (response.status === 200) {
-        // navigate("/create-dataset-IV");
+         navigate("/create-dataset-IV");
       }})
     } catch (error) {
       console.error('Error saving dataset:', error);
