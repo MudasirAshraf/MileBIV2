@@ -7,6 +7,7 @@ import {
   DELETE_DATASET,
   GET_ALL_TABLES,
   GET_TABLE_DATA,TABLE_LOADING,SET_CURRENT_DATASET,
+  GET_SPECIFIC_DATASETS,
 } from "./types";
 import axiosInstance from "../components/axios";
 import { store } from "../store";
@@ -199,10 +200,39 @@ export const getDatasets = () => async (dispatch) => {
       });
     });
 };
+
+export const getSpecificDataset = (id) => async (dispatch) => {
+  axiosInstance.defaults.baseURL= urlswithoutgateway("dashboard");
+  axiosInstance
+    .get("Dataset/"+id,  {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    .then((response) => {
+      console.log('Dataset response:', response.data); // Add this line
+      dispatch({
+        type: RESPONSE,
+        regresponse: response.data,
+      });
+      if (response.data.messageType !== 2) {
+        dispatch({
+          type: GET_SPECIFIC_DATASETS,
+          payload: response.data.data,
+        });
+      }
+    })
+    .catch((error) => {
+      dispatch({
+        type: DATASET_ERROR,
+        payload: error.response,
+      });
+    });
+};
 export const updateDataset = (dataset) => async (dispatch) => {
   axiosInstance.defaults.baseURL= urlswithoutgateway("dashboard");
   axiosInstance
-    .put("Dataset", JSON.stringify(dataset), {
+    .put("Dataset/Get", JSON.stringify(dataset), {
       headers: {
         "Content-Type": "application/json",
       },
@@ -231,7 +261,7 @@ export const updateDataset = (dataset) => async (dispatch) => {
 export const deleteDataset = (id) => async (dispatch) => {
   axiosInstance.defaults.baseURL= urlswithoutgateway("dashboard");
   axiosInstance
-    .delete(`PaymentCredential/delete/${id}`, {
+    .delete(`dataset/${id}`, {
       headers: {
         "Content-Type": "application/json",
       },

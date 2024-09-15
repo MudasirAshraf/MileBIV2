@@ -7,10 +7,10 @@ import EYE from "../../assets/svg/eye.svg";
 import CenterLogo from "../../assets/svg/centerlogo.svg";
 import DropdownMenu from '../dropdown-menu';
 import { useNavigate } from 'react-router-dom';
-import { setCurrent } from '../../actions/datasetActions';
+import { setCurrent, deleteDataset } from '../../actions/datasetActions';
 
 
-const CardIV = ({dataset,setCurrent}) => {
+const CardIV = ({dataset,setCurrent, deleteDataset}) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const handleSettingClick = () => {
     setShowDropdown(!showDropdown);
@@ -19,9 +19,8 @@ const CardIV = ({dataset,setCurrent}) => {
   const navigate = useNavigate();
 
   const handleDataSet = () => {
-    console.log('Selected Dataset:', dataset);
-    setCurrent(dataset); // Set the current dataset in the store.
-    navigate(`/dataset-view`, { state: { datasetId: dataset.datasetId } }); // Pass dataset ID via state.
+    setCurrent(dataset);
+    navigate('/dataset-view?id='+ dataset.datasetId);
   };
   
 
@@ -32,7 +31,9 @@ const CardIV = ({dataset,setCurrent}) => {
     <div className='card-iv-setting'>
     <div className='first-column-card-iv'>
         <img src={Setting} alt="logo" className='first-column-card-iv-image' onClick={handleSettingClick}/>
-        {showDropdown && <DropdownMenu />}
+        {showDropdown && (
+            <DropdownMenu deleteDataset={deleteDataset} datasetId={dataset.datasetId} />
+          )}
     </div>
     </div>
     {/* second column */}
@@ -56,9 +57,11 @@ const CardIV = ({dataset,setCurrent}) => {
 
 CardIV.propTypes = {
   setCurrent: PropTypes.func.isRequired,
+  deleteDataset: PropTypes.func.isRequired,
 };
+
 const mapStateToProps = (state) => ({
   response: state.response.response,
 });
 
-export default connect(mapStateToProps, { setCurrent })(CardIV);
+export default connect(mapStateToProps, { setCurrent, deleteDataset })(CardIV);
