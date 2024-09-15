@@ -24,28 +24,29 @@ const DatasetIII = ({ data }) => {
 
   const handleDatasetIV = async () => {
     try {
+      console.log(clickedTableData)
+      clickedTableData.map((tabledata) =>{
       const requestPayload = {
         ...payload, 
         connectionString: "connectionString",
         datasetTitle: selectedTables[0],
         userName: "userName",
         password: "password",
-        DataSourceData: selectedTables.map(tabledata => clickedTableData[tabledata]?.Table || []),
+        DataSourceData: tabledata.data,
       };
-      console.log('Request Payload for save:', requestPayload);
       const config = {
         headers: {
           Authorization: `Bearer ${import.meta.env.VITE_API_TOKEN}`,
         },
       };
-      const response = await axios.post(
+      const response =  axios.post(
         `${import.meta.env.VITE_BASE_URL_DASHBOARD}Dataset`,
         requestPayload,
         config
       );
       if (response.status === 200) {
-        navigate("/create-dataset-IV");
-      }
+        // navigate("/create-dataset-IV");
+      }})
     } catch (error) {
       console.error('Error saving dataset:', error);
     }

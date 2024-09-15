@@ -210,7 +210,7 @@ export const getSpecificDataset = (id) => async (dispatch) => {
       },
     })
     .then((response) => {
-      console.log('Dataset response:', response.data); // Add this line
+      console.log('Dataset response:', response.data); // console data
       dispatch({
         type: RESPONSE,
         regresponse: response.data,
@@ -232,7 +232,7 @@ export const getSpecificDataset = (id) => async (dispatch) => {
 export const updateDataset = (dataset) => async (dispatch) => {
   axiosInstance.defaults.baseURL= urlswithoutgateway("dashboard");
   axiosInstance
-    .put("Dataset/Get", JSON.stringify(dataset), {
+    .put("Dataset", JSON.stringify(dataset), {
       headers: {
         "Content-Type": "application/json",
       },
