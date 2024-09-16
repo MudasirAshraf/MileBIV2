@@ -61,7 +61,7 @@ const DatasetView = ({ updateDataset, dataset, getSpecificDataset }) => {
       });
   
       // Append new column to safe data
-      const updatedSafeData = safeData.map(row => ({
+      const updatedSafeData = safeData.Table.map(row => ({
         ...row,
         [newColumn.title]: newColumnType === 'Expression'
           ? evaluateExpression(row, newColumn.expression)
@@ -85,8 +85,6 @@ const DatasetView = ({ updateDataset, dataset, getSpecificDataset }) => {
   };
   
   
-  
-
   const safeData = Array.isArray(dataset?.dataSourceData)
   ? dataset?.dataSourceData
   : JSON.parse(dataset?.dataSourceData || "[]");
