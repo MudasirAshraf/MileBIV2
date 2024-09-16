@@ -67,14 +67,8 @@ const DatasetView = ({ updateDataset, dataset, getSpecificDataset }) => {
     handleCancelClick();
   };
 
-  const safeData = dataset?.data?.dataSourceData
-  ? Array.isArray(dataset.data.dataSourceData)
-    ? dataset.data.dataSourceData
-    : JSON.parse(dataset.data.dataSourceData || "[]")
-  : [];
-
-
-  
+  const safeData = dataset?JSON.parse(dataset?.dataSourceData):[];
+  console.log("save data", safeData)
   return (
     dataset && (
       <div className="main-container-dataset-view">
@@ -107,37 +101,33 @@ const DatasetView = ({ updateDataset, dataset, getSpecificDataset }) => {
                       onChange={(e) => setNewColumnExpression(e.target.value)}
                     />
                   )}
-                  <button onClick={handleSaveColumn}>Save</button>
+                  <button onClick={handleSaveColumn }>Save</button>
                   <button onClick={handleCancelClick}>Cancel</button>
                 </div>
               )}
             </div>
             <div className="data-set-table-container">
             <table>
-              <thead>
-                <tr>
-                  {safeData.length > 0 &&
-                    Object.keys(safeData[0].dataSourceData?.[0] || {}).map((key) => (
-                      <th key={key}>{key}</th>
-                    ))}
-                  {isAddingColumn && <th>{newColumnTitle}</th>}
-                </tr>
-              </thead>
-              <tbody>
-                {safeData.map((row, index) => (
-                  <React.Fragment key={index}>
-                    {row.dataSourceData?.map((dtx, j) => (
-                      <tr key={`${index}-${j}`}>
-                        {Object.keys(dtx || {}).map((key) => (
-                          <td key={key}>{dtx[key]}</td>
-                        ))}
-                        {isAddingColumn && <td>{dtx[newColumnTitle] || ''}</td>}
-                      </tr>
-                    ))}
-                  </React.Fragment>
-                ))}
-              </tbody>
-            </table>
+  <thead>
+    <tr>
+      {safeData?.Table?.length > 0 &&
+        Object.keys(safeData.Table[0] || {}).map((key) => (
+          <th key={key}>{key}</th>
+        ))}
+      {isAddingColumn && <th>{newColumnTitle}</th>}
+    </tr>
+  </thead>
+  <tbody>
+    {safeData?.Table?.map((row, index) => (
+      <tr key={index}>
+        {Object.keys(row).map((key, i) => (
+          <td key={i}>{row[key]}</td>
+        ))}
+        {isAddingColumn && <td>{row[newColumnTitle] || ''}</td>}
+      </tr>
+    ))}
+  </tbody>
+</table>
             </div>
           </div>
         </div>
