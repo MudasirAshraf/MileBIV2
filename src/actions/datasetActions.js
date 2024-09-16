@@ -7,7 +7,7 @@ import {
   DELETE_DATASET,
   GET_ALL_TABLES,
   GET_TABLE_DATA,TABLE_LOADING,SET_CURRENT_DATASET,
-  GET_SPECIFIC_DATASETS,
+  GET_SPECIFIC_DATASETS,ADD_TRANSFORMATION,
 } from "./types";
 import axiosInstance from "../components/axios";
 import { store } from "../store";
@@ -297,5 +297,12 @@ export const setCurrent = (dataset) => {
   return {
     type: SET_CURRENT_DATASET,
     payload: dataset,
+  };
+};
+//set Current Dataset
+export const appendTransformation = (step) => {
+  return {
+    type: ADD_TRANSFORMATION,
+    payload: step,
   };
 };

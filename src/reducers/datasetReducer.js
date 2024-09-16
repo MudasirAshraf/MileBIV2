@@ -3,7 +3,7 @@ import {
   DATASET_ERROR,
   GET_ALL_DATASETS,
   GET_ALL_TABLES,TABLE_LOADING,
-  GET_TABLE_DATA,SET_CURRENT_DATASET,GET_SPECIFIC_DATASETS,
+  GET_TABLE_DATA,SET_CURRENT_DATASET,GET_SPECIFIC_DATASETS,ADD_TRANSFORMATION,
 } from "../actions/types";
 
 const initialState = {
@@ -33,6 +33,12 @@ export const datasetReducer = (state = initialState, action) => {
         ...state,
         current: action.payload,
       }
+      
+      case ADD_TRANSFORMATION:
+        return{
+          ...state,
+        current:{...state.current, transformationSteps:state.current.transformationSteps===null?action.payload:[...state.current.transformationSteps,action.payload[0]]}
+        }
     case GET_ALL_DATASETS:
       return {
         ...state,

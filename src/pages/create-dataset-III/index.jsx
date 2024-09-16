@@ -26,19 +26,23 @@ const DatasetIII = ({ data }) => {
     try {      
       selectedTables.map((tableName) =>{
       const tableData = clickedTableData[tableName];
+      const safeData=JSON.parse(tableData.data)
+      
       const requestPayload = {
         ...payload, 
         connectionString: "connectionString",
         datasetTitle: tableName,
         userName: "userName",
         password: "password",
-        DataSourceData: tableData.data,
+        DataSourceData: safeData.Table,
       };
+      
       const config = {
         headers: {
           Authorization: `Bearer ${import.meta.env.VITE_API_TOKEN}`,
         },
       };
+  
       const response =  axios.post(
         `${import.meta.env.VITE_BASE_URL_DASHBOARD}Dataset`,
         requestPayload,

@@ -3,6 +3,7 @@ import { useLocation, useSearchParams } from "react-router-dom";
 import {
   getSpecificDataset,
   updateDataset,
+  appendTransformation,
 } from "../../actions/datasetActions";
 import { evaluate } from "mathjs";
 import "./dataset-view.scss";
@@ -19,7 +20,7 @@ export const evaluateExpression = (data, expression) => {
   }
 };
 
-const DatasetView = ({ updateDataset, dataset, getSpecificDataset }) => {
+const DatasetView = ({ updateDataset, dataset, getSpecificDataset,appendTransformation }) => {
   console.log("Dataset",dataset)
   const location = useLocation();
   const [searchParams] = useSearchParams();
@@ -53,30 +54,25 @@ const DatasetView = ({ updateDataset, dataset, getSpecificDataset }) => {
   
     try {
       // Update transformation steps first
-      const updatedTransformationSteps = dataset.transformationSteps || [];
+      const updatedTransformationSteps =[];
       updatedTransformationSteps.push({
         column: newColumn.title,
         type: newColumnType,
         expression: newColumnExpression,
       });
-  
+  appendTransformation(updatedTransformationSteps)
       // Append new column to safe data
-      const updatedSafeData = safeData.map(row => ({
+      
+      const updatedSafeData = safeData?.map(row => ({
         ...row,
         [newColumn.title]: newColumnType === 'Expression'
           ? evaluateExpression(row, newColumn.expression)
           : '',
       }));
-  
       // Update dataset after appending column and updating transformation steps
-      const updatedDataset = {
-        ...dataset,
-        transformationSteps: updatedTransformationSteps,
-        dataSourceData: JSON.stringify(updatedSafeData),
-      };
-  
+     dataset.dataSourceData=updatedSafeData;
       // Calling updateDataset 
-      await updateDataset(updatedDataset);
+      await updateDataset(dataset);
     } catch (error) {
       console.error("Failed to save dataset:", error);
     }
@@ -87,9 +83,7 @@ const DatasetView = ({ updateDataset, dataset, getSpecificDataset }) => {
   
   
 
-  const safeData = Array.isArray(dataset?.dataSourceData)
-  ? dataset?.dataSourceData
-  : JSON.parse(dataset?.dataSourceData || "[]");
+  const safeData = dataset?.dataSourceData || "[]";
 
   console.log("save data", safeData)
   return (
@@ -133,15 +127,15 @@ const DatasetView = ({ updateDataset, dataset, getSpecificDataset }) => {
             <table>
   <thead>
     <tr>
-      {safeData?.Table?.length > 0 &&
-        Object.keys(safeData.Table[0] || {}).map((key) => (
+      {safeData?.length > 0 &&
+        Object.keys(safeData[0] || {}).map((key) => (
           <th key={key}>{key}</th>
         ))}
       {isAddingColumn && <th>{newColumnTitle}</th>}
     </tr>
   </thead>
   <tbody>
-    {safeData?.Table?.map((row, index) => (
+    {safeData?.map((row, index) => (
       <tr key={index}>
         {Object.keys(row).map((key, i) => (
           <td key={i}>{row[key]}</td>
@@ -170,4 +164,4 @@ const mapStateToProps = (state) => ({
   dataset: state.dataset.current,
 });
 
-export default connect(mapStateToProps, { getSpecificDataset })(DatasetView);
+export default connect(mapStateToProps, { getSpecificDataset ,appendTransformation,updateDataset})(DatasetView);
