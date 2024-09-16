@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
-import axios from "axios";
 import {
   getSpecificDataset,
   updateDataset,
@@ -16,7 +15,6 @@ export const evaluateExpression = (data, expression) => {
     const result = evaluate(expression, context);
     return typeof result === "object" ? JSON.stringify(result) : result;
   } catch (error) {
-    console.error("Error evaluating expression:", error.message);
     return "";
   }
 };
@@ -52,14 +50,32 @@ const DatasetView = ({ updateDataset, dataset, getSpecificDataset }) => {
       type: newColumnType,
       expression: newColumnExpression,
     };
-
+  
     try {
+      // Update transformation steps first
+      const updatedTransformationSteps = dataset.transformationSteps || [];
+      updatedTransformationSteps.push({
+        column: newColumn.title,
+        type: newColumnType,
+        expression: newColumnExpression,
+      });
+  
+      // Append new column to safe data
+      const updatedSafeData = safeData.map(row => ({
+        ...row,
+        [newColumn.title]: newColumnType === 'Expression'
+          ? evaluateExpression(row, newColumn.expression)
+          : '',
+      }));
+  
+      // Update dataset after appending column and updating transformation steps
       const updatedDataset = {
         ...dataset,
-        columns: [...(dataset.columns || []), newColumn],
+        transformationSteps: updatedTransformationSteps,
+        dataSourceData: JSON.stringify(updatedSafeData),
       };
-
-      setCurrent(updatedDataset);
+  
+      // Calling updateDataset 
       await updateDataset(updatedDataset);
     } catch (error) {
       console.error("Failed to save dataset:", error);
@@ -67,8 +83,14 @@ const DatasetView = ({ updateDataset, dataset, getSpecificDataset }) => {
 
     handleCancelClick();
   };
+  
+  
+  
 
-  const safeData = dataset?JSON.parse(dataset?.dataSourceData):[];
+  const safeData = Array.isArray(dataset?.dataSourceData)
+  ? dataset?.dataSourceData
+  : JSON.parse(dataset?.dataSourceData || "[]");
+
   console.log("save data", safeData)
   return (
     dataset && (
@@ -80,7 +102,7 @@ const DatasetView = ({ updateDataset, dataset, getSpecificDataset }) => {
               {isAddingColumn && (
                 <div className="add-column-inputs">
                   <input
-                    className="inp"
+                   className="inp-adding-button"
                     type="text"
                     placeholder="Enter Title"
                     value={newColumnTitle}
@@ -95,7 +117,7 @@ const DatasetView = ({ updateDataset, dataset, getSpecificDataset }) => {
                   </select>
                   {newColumnType === "Expression" && (
                     <input
-                      className="inp"
+                      className="inp-adding-button"
                       type="text"
                       placeholder="Enter Expression"
                       value={newColumnExpression}
@@ -124,7 +146,11 @@ const DatasetView = ({ updateDataset, dataset, getSpecificDataset }) => {
         {Object.keys(row).map((key, i) => (
           <td key={i}>{row[key]}</td>
         ))}
-        {isAddingColumn && <td>{row[newColumnTitle] || ''}</td>}
+           {isAddingColumn && (
+          <td>{newColumnType === 'Expression'
+            ? evaluateExpression(row, newColumnExpression)
+            : ''}</td>
+        )}
       </tr>
     ))}
   </tbody>
