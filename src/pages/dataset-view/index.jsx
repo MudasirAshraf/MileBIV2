@@ -22,6 +22,7 @@ export const evaluateExpression = (data, expression) => {
 };
 
 const DatasetView = ({ updateDataset, dataset, getSpecificDataset }) => {
+  console.log("Dataset",dataset)
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const datasetId = searchParams.get("id");
