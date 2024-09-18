@@ -76,6 +76,7 @@ const DatasetView = ({ updateDataset, dataset, getSpecificDataset, appendTransfo
   const safeData = dataset?.dataSourceData || [];
 // Generating columns for DataGrid
 const columns = Object.keys(safeData[0] || {}).map((key) => {
+  console.log("value" ,key)
   // const columnType = dataset.transformationSteps; 
   return {
     field: key,
