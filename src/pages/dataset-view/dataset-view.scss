@@ -1,58 +1,58 @@
-/* Apply more specific selectors if needed */
-.main-container-dataset-view .dataset-table-container table {
-    border-collapse: collapse;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    width: 100%; /* Ensure table takes the full width of the container */
-}
 
-.main-container-dataset-view .dataset-table-container thead {
-    background-color: #2F3743;
-    color: white;
-}
+// .main-container-dataset-view .dataset-table-container table {
+//     border-collapse: collapse;
+//     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+//     width: 100%; 
+// }
 
-.main-container-dataset-view .dataset-table-container th,
-.main-container-dataset-view .dataset-table-container td {
-    padding: 8px 75px;
-    text-align: left;
-    border: 1px solid #ddd;
-    font-size: 0.6rem;
-}
+// .main-container-dataset-view .dataset-table-container thead {
+//     background-color: #2F3743;
+//     color: white;
+// }
+
+// .main-container-dataset-view .dataset-table-container th,
+// .main-container-dataset-view .dataset-table-container td {
+//     padding: 8px 75px;
+//     text-align: left;
+//     border: 1px solid #ddd;
+//     font-size: 0.6rem;
+// }
 
 /* Media query for 1440px */
-@media (max-width: 1440px) {
-    .main-container-dataset-view .dataset-table-container th,
-    .main-container-dataset-view .dataset-table-container td {
-        padding: 10px 40px;
-        font-size: 0.7rem;
-    }
-}
+// @media (max-width: 1440px) {
+//     .main-container-dataset-view .dataset-table-container th,
+//     .main-container-dataset-view .dataset-table-container td {
+//         padding: 10px 40px;
+//         font-size: 0.7rem;
+//     }
+// }
 
 /* Media query for 1024px */
-@media (max-width: 1024px) {
-    .main-container-dataset-view .dataset-table-container th,
-    .main-container-dataset-view .dataset-table-container td {
-        padding: 4px 30px;
-        font-size: 0.6rem;
-    }
-}
+// @media (max-width: 1024px) {
+//     .main-container-dataset-view .dataset-table-container th,
+//     .main-container-dataset-view .dataset-table-container td {
+//         padding: 4px 30px;
+//         font-size: 0.6rem;
+//     }
+// }
 
 /* Media query for 768px */
-@media (max-width: 768px) {
-    .main-container-dataset-view .dataset-table-container th,
-    .main-container-dataset-view .dataset-table-container td {
-        padding: 4px 20px;
-        font-size: 0.5rem;
-    }
-}
+// @media (max-width: 768px) {
+//     .main-container-dataset-view .dataset-table-container th,
+//     .main-container-dataset-view .dataset-table-container td {
+//         padding: 4px 20px;
+//         font-size: 0.5rem;
+//     }
+// }
 
 /* Media query for 480px */
-@media (max-width: 480px) {
-    .main-container-dataset-view .dataset-table-container th,
-    .main-container-dataset-view .dataset-table-container td {
-        padding: 2px 10px;
-        font-size: 0.4rem;
-    }
-}
+// @media (max-width: 480px) {
+//     .main-container-dataset-view .dataset-table-container th,
+//     .main-container-dataset-view .dataset-table-container td {
+//         padding: 2px 10px;
+//         font-size: 0.4rem;
+//     }
+// }
 .add-column-inputs{
     display: flex;
     flex-direction: column;
@@ -70,3 +70,27 @@
     padding: 10px 0px;
     background-color: #2A374A; 
 }
+// .data-set-table-container .MuiDataGrid-root {
+//     border-left: 1px solid #ccc;  
+//     border-right: 1px solid #ccc; 
+//     background-color: #f5f5f5; 
+//     color: black;
+//   }
+  
+  .data-set-table-container .MuiDataGrid-cell {
+    border-right: 2px solid #ccc; 
+    color: white; 
+    background-color: #2F3743;
+  }
+  
+  .data-set-table-container .MuiDataGrid-columnHeaders { 
+    color: black; 
+  }
+  
+  .data-set-table-container .MuiDataGrid-footerContainer {
+    background-color: #007bff; 
+    color: #fff; 
+  }
+
+  
+  

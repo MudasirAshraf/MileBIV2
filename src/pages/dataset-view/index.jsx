@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useSearchParams } from "react-router-dom";
-import {
-  getSpecificDataset,
-  updateDataset,
-  appendTransformation,
-} from "../../actions/datasetActions";
+import { useSearchParams } from "react-router-dom";
+import { getSpecificDataset, updateDataset, appendTransformation } from "../../actions/datasetActions";
 import { evaluate } from "mathjs";
+import { DataGrid } from "@mui/x-data-grid";
 import "./dataset-view.scss";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
@@ -20,18 +17,17 @@ export const evaluateExpression = (data, expression) => {
   }
 };
 
-const DatasetView = ({ updateDataset, dataset, getSpecificDataset,appendTransformation }) => {
-  console.log("Dataset",dataset)
-  const location = useLocation();
+const DatasetView = ({ updateDataset, dataset, getSpecificDataset, appendTransformation }) => {
   const [searchParams] = useSearchParams();
   const datasetId = searchParams.get("id");
+
   useEffect(() => {
     datasetId && getSpecificDataset(datasetId);
-    //eslint-disable-next-line
   }, []);
+
   const [isAddingColumn, setIsAddingColumn] = useState(false);
   const [newColumnTitle, setNewColumnTitle] = useState("");
-  const [newColumnType, setNewColumnType] = useState("Regular");
+  const [newColumnType, setNewColumnType] = useState("");
   const [newColumnExpression, setNewColumnExpression] = useState("");
 
   const handleAddClick = () => {
@@ -51,27 +47,24 @@ const DatasetView = ({ updateDataset, dataset, getSpecificDataset,appendTransfor
       type: newColumnType,
       expression: newColumnExpression,
     };
-  
     try {
       // Update transformation steps first
-      const updatedTransformationSteps =[];
+      const updatedTransformationSteps = [];
       updatedTransformationSteps.push({
         column: newColumn.title,
         type: newColumnType,
         expression: newColumnExpression,
       });
-  appendTransformation(updatedTransformationSteps)
-      // Append new column to safe data
+      appendTransformation(updatedTransformationSteps);
       
-      const updatedSafeData = safeData?.map(row => ({
+
+      // Append new column to safe data
+      const updatedSafeData = dataset.dataSourceData.map((row) => ({
         ...row,
-        [newColumn.title]: newColumnType === 'Expression'
-          ? evaluateExpression(row, newColumn.expression)
-          : '',
+        [newColumn.title]: newColumnType === "Expression" ? evaluateExpression(row, newColumn.expression) : "",
       }));
-      // Update dataset after appending column and updating transformation steps
-     dataset.dataSourceData=updatedSafeData;
-      // Calling updateDataset 
+      dataset.dataSourceData = updatedSafeData;
+      // Calling updateDataset
       await updateDataset(dataset);
     } catch (error) {
       console.error("Failed to save dataset:", error);
@@ -79,13 +72,46 @@ const DatasetView = ({ updateDataset, dataset, getSpecificDataset,appendTransfor
 
     handleCancelClick();
   };
-  
-  
-  
 
-  const safeData = dataset?.dataSourceData || "[]";
+  const safeData = dataset?.dataSourceData || [];
+// Generating columns for DataGrid
+const columns = Object.keys(safeData[0] || {}).map((key) => {
+  // const columnType = dataset.transformationSteps; 
+  return {
+    field: key,
+    headerName: key,
+    width: 150,
+    // editable: columnType === 'Regular',
+    editable: dataset.transformationSteps?.find(col => col.column == key)?.type !=  'Expression',
+  };
+});
 
-  console.log("save data", safeData)
+
+  // Add new column
+  if (isAddingColumn) {
+    columns.push({
+      field: newColumnTitle,
+      headerName: newColumnTitle,
+      width: 150,
+      editable: newColumnType === 'Regular',
+      renderCell: (params) => {
+        return newColumnType === "Expression" ? evaluateExpression(params.row, newColumnExpression) : params.value;
+      },
+    });
+  }
+
+  //Updating  Data rows
+  const rows = safeData.map((row, index) => ({ id: index, ...row }));
+  const handleProcessRowUpdate = (newRow) => {
+    const updatedRows = rows.map(row => {
+      const { id, ...rowWithoutId } = row; // Exclude id when adding column
+      return row.id === newRow.id ? { ...newRow } : rowWithoutId;
+    });
+    dataset.dataSourceData = updatedRows;
+    updateDataset(dataset);
+    return newRow;
+  };
+
   return (
     dataset && (
       <div className="main-container-dataset-view">
@@ -96,16 +122,13 @@ const DatasetView = ({ updateDataset, dataset, getSpecificDataset,appendTransfor
               {isAddingColumn && (
                 <div className="add-column-inputs">
                   <input
-                   className="inp-adding-button"
+                    className="inp-adding-button"
                     type="text"
                     placeholder="Enter Title"
                     value={newColumnTitle}
                     onChange={(e) => setNewColumnTitle(e.target.value)}
                   />
-                  <select
-                    value={newColumnType}
-                    onChange={(e) => setNewColumnType(e.target.value)}
-                  >
+                  <select value={newColumnType} onChange={(e) => setNewColumnType(e.target.value)}>
                     <option value="Regular">Regular</option>
                     <option value="Expression">Expression</option>
                   </select>
@@ -118,37 +141,20 @@ const DatasetView = ({ updateDataset, dataset, getSpecificDataset,appendTransfor
                       onChange={(e) => setNewColumnExpression(e.target.value)}
                     />
                   )}
-                  <button onClick={handleSaveColumn }>Save</button>
+                  <button onClick={handleSaveColumn}>Save</button>
                   <button onClick={handleCancelClick}>Cancel</button>
                 </div>
               )}
             </div>
             <div className="data-set-table-container">
-            <table>
-  <thead>
-    <tr>
-      {safeData?.length > 0 &&
-        Object.keys(safeData[0] || {}).map((key) => (
-          <th key={key}>{key}</th>
-        ))}
-      {isAddingColumn && <th>{newColumnTitle}</th>}
-    </tr>
-  </thead>
-  <tbody>
-    {safeData?.map((row, index) => (
-      <tr key={index}>
-        {Object.keys(row).map((key, i) => (
-          <td key={i}>{row[key]}</td>
-        ))}
-           {isAddingColumn && (
-          <td>{newColumnType === 'Expression'
-            ? evaluateExpression(row, newColumnExpression)
-            : ''}</td>
-        )}
-      </tr>
-    ))}
-  </tbody>
-</table>
+              <DataGrid
+                rows={rows}
+                columns={columns}
+                pageSize={5}
+                rowsPerPageOptions={[5]}
+                autoHeight
+                processRowUpdate={handleProcessRowUpdate}
+              />
             </div>
           </div>
         </div>
@@ -156,12 +162,13 @@ const DatasetView = ({ updateDataset, dataset, getSpecificDataset,appendTransfor
     )
   );
 };
+
 DatasetView.propTypes = {
   getSpecificDataset: PropTypes.func.isRequired,
 };
+
 const mapStateToProps = (state) => ({
-  response: state.response.response,
   dataset: state.dataset.current,
 });
 
-export default connect(mapStateToProps, { getSpecificDataset ,appendTransformation,updateDataset})(DatasetView);
+export default connect(mapStateToProps, { getSpecificDataset, appendTransformation, updateDataset })(DatasetView);

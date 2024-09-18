@@ -42,7 +42,7 @@ const CardIV = ({dataset,setCurrent, deleteDataset}) => {
     </div>
     {/* third column */}
     <div className='third-column-card-iv'>
-          <p>{dataset.datasetTitle}</p>
+          <p>{dataset?.datasetTitle}</p>
     </div>
     {/* fourth column */}
     <div className='fourth-column-card-iv' onClick={handleDataSet}>
