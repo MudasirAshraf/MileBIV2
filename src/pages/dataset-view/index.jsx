@@ -55,8 +55,10 @@ const DatasetView = ({ updateDataset, dataset, getSpecificDataset, appendTransfo
         type: newColumnType,
         expression: newColumnExpression,
       });
-      appendTransformation(updatedTransformationSteps);
-      
+      //appendTransformation(updatedTransformationSteps);
+      const steps=dataset.transformationSteps===null?[]:dataset.transformationSteps;
+      steps.push(updatedTransformationSteps[0])
+       dataset.transformationSteps=[...steps]
 
       // Append new column to safe data
       const updatedSafeData = dataset.dataSourceData.map((row) => ({
