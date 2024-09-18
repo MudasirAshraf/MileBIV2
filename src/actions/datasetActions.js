@@ -247,7 +247,7 @@ export const updateDataset = (dataset) => async (dispatch) => {
           type: UPDATE_DATASET,
           payload: response.data,
         });
-        window.location.reload();
+        // window.location.reload();
         //generate cookie inside local system and redirect to home page as logged in user
       }
     })

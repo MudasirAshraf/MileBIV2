@@ -27,7 +27,7 @@ const DatasetView = ({ updateDataset, dataset, getSpecificDataset, appendTransfo
 
   const [isAddingColumn, setIsAddingColumn] = useState(false);
   const [newColumnTitle, setNewColumnTitle] = useState("");
-  const [newColumnType, setNewColumnType] = useState("");
+  const [newColumnType, setNewColumnType] = useState("Regular");
   const [newColumnExpression, setNewColumnExpression] = useState("");
 
   const handleAddClick = () => {
@@ -44,7 +44,7 @@ const DatasetView = ({ updateDataset, dataset, getSpecificDataset, appendTransfo
   const handleSaveColumn = async () => {
     const newColumn = {
       title: newColumnTitle,
-      type: newColumnType,
+      type: newColumnType || "Regular",
       expression: newColumnExpression,
     };
     try {
@@ -53,12 +53,13 @@ const DatasetView = ({ updateDataset, dataset, getSpecificDataset, appendTransfo
       updatedTransformationSteps.push({
         column: newColumn.title,
         type: newColumnType,
-        expression: newColumnExpression,
+        expression: newColumn.type === "Expression" ? newColumnExpression : "",
       });
       //appendTransformation(updatedTransformationSteps);
       const steps=dataset.transformationSteps===null?[]:dataset.transformationSteps;
       steps.push(updatedTransformationSteps[0])
        dataset.transformationSteps=[...steps]
+       console.log(steps)
 
       // Append new column to safe data
       const updatedSafeData = dataset.dataSourceData.map((row) => ({
@@ -78,12 +79,10 @@ const DatasetView = ({ updateDataset, dataset, getSpecificDataset, appendTransfo
   const safeData = dataset?.dataSourceData || [];
 // Generating columns for DataGrid
 const columns = Object.keys(safeData[0] || {}).map((key) => {
-  // const columnType = dataset.transformationSteps; 
   return {
     field: key,
     headerName: key,
     width: 150,
-    // editable: columnType === 'Regular',
     editable: dataset.transformationSteps?.find(col => col.column == key)?.type !=  'Expression',
   };
 });
