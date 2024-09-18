@@ -83,7 +83,7 @@ const columns = Object.keys(safeData[0] || {}).map((key) => {
     field: key,
     headerName: key,
     width: 150,
-    editable: dataset.transformationSteps?.find(col => col.column == key)?.type !=  'Expression',
+    editable: dataset.transformationSteps && dataset.transformationSteps.find(col => col.column === key)?dataset.transformationSteps.find(col => col.column === key).type !==  'Expression'?true:false:false,
   };
 });
 
