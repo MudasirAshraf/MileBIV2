@@ -169,6 +169,7 @@ DatasetView.propTypes = {
 };
 
 const mapStateToProps = (state) => ({
+  response: state.response.response,
   dataset: state.dataset.current,
 });
 
