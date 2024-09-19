@@ -23,38 +23,44 @@ const DatasetIII = ({ data }) => {
   };
 
   const handleDatasetIV = async () => {
-    try {      
-      selectedTables.map((tableName) =>{
-      const tableData = clickedTableData[tableName];
-      const safeData=JSON.parse(tableData.data)
-      
-      const requestPayload = {
-        ...payload, 
-        connectionString: "connectionString",
-        datasetTitle: tableName,
-        userName: "userName",
-        password: "password",
-        DataSourceData: safeData.Table,
-      };
-      
-      const config = {
-        headers: {
-          Authorization: `Bearer ${import.meta.env.VITE_API_TOKEN}`,
-        },
-      };
+    try {
+      // Loop through selected tables
+      for (const tableName of selectedTables) {
+        const tableData = clickedTableData[tableName];
+        const safeData = JSON.parse(tableData.data);
   
-      const response =  axios.post(
-        `${import.meta.env.VITE_BASE_URL_DASHBOARD}Dataset`,
-        requestPayload,
-        config
-      );
-      if (response.status === 200) {
-         navigate("/create-dataset-IV");
-      }})
+        const requestPayload = {
+          ...payload, 
+          connectionString: "connectionString",
+          datasetTitle: tableName,
+          userName: "userName",
+          password: "password",
+          DataSourceData: safeData.Table,
+        };
+  
+        const config = {
+          headers: {
+            Authorization: `Bearer ${import.meta.env.VITE_API_TOKEN}`,
+          },
+        };
+  
+        // Await the axios post request
+        const response = await axios.post(
+          `${import.meta.env.VITE_BASE_URL_DASHBOARD}Dataset`,
+          requestPayload,
+          config
+        );
+        
+        // Check if the response status is successful
+        if (response.status === 200) {
+          navigate("/create-dataset-IV");
+        }
+      }
     } catch (error) {
       console.error('Error saving dataset:', error);
     }
   };
+  
 
   const handleCheckboxChange = async (tableName) => {
     const newSelectedTables = selectedTables.includes(tableName)

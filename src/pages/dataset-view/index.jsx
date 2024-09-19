@@ -59,7 +59,7 @@ const DatasetView = ({ updateDataset, dataset, getSpecificDataset, appendTransfo
       const steps=dataset.transformationSteps===null?[]:dataset.transformationSteps;
       steps.push(updatedTransformationSteps[0])
        dataset.transformationSteps=[...steps]
-       console.log(steps)
+       console.log("Steps" ,steps);
 
       // Append new column to safe data
       const updatedSafeData = dataset.dataSourceData.map((row) => ({
@@ -86,7 +86,6 @@ const columns = Object.keys(safeData[0] || {}).map((key) => {
     editable: dataset.transformationSteps && dataset.transformationSteps.find(col => col.column === key)?dataset.transformationSteps.find(col => col.column === key).type !==  'Expression'?true:false:false,
   };
 });
-
 
   // Add new column
   if (isAddingColumn) {

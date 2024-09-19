@@ -29,7 +29,7 @@ const LoginPage = ({response,getAuth}) => {
 
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
-      getAuth(values); 
+     await getAuth(values); 
       if (response && response.success){
       sessionStorage.setItem("token", response.data.token)
       navigate('/create-dashboard'); 
@@ -41,7 +41,6 @@ const LoginPage = ({response,getAuth}) => {
       setSubmitting(false);
     }
   };
-  
   const handleCreateAccount = () => {
     navigate('/sign-up-page-I');
   };
