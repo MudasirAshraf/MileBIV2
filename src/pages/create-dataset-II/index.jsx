@@ -52,7 +52,7 @@ const DatasetII = ({ setData }) => {
       const response = await axios.post(`${import.meta.env.VITE_BASE_URL_CONNECTOR}PostgreConnector/getalltables`, payload, config);
       console.log('Response:', response.data);
       setData(response.data);
-      navigate("/create-dataset-III", { state: { payload } });  // Pass the payload when navigating
+      navigate("/create-dataset-III", { state: { payload } });  
     } catch (error) {
       console.error('Error:', error);
     }

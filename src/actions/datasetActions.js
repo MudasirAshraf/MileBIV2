@@ -7,7 +7,7 @@ import {
   DELETE_DATASET,
   GET_ALL_TABLES,
   GET_TABLE_DATA,TABLE_LOADING,SET_CURRENT_DATASET,
-  GET_SPECIFIC_DATASETS,ADD_TRANSFORMATION,
+  GET_SPECIFIC_DATASETS,ADD_TRANSFORMATION,SET_REQUEST_PAYLOAD,
 } from "./types";
 import axiosInstance from "../components/axios";
 import { store } from "../store";
@@ -304,5 +304,13 @@ export const appendTransformation = (step) => {
   return {
     type: ADD_TRANSFORMATION,
     payload: step,
+  };
+};
+// set Payload
+export const setRequestPayload = (payload) => {
+  console.log("Dispatching payload:", payload); // Log payload
+  return {
+    type: SET_REQUEST_PAYLOAD,
+    payload,
   };
 };

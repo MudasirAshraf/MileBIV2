@@ -7,7 +7,7 @@ const CreateDashboardModalV = () => {
   const navigate = useNavigate();
 
   const handleNavigate = ()=> {
-    navigate("/create-dashboard")
+    navigate("/create-dashboard ")
   }
 
   return (

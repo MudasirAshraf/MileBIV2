@@ -9,11 +9,14 @@ import Polygon from '../../assets/svg/Polygon 3.svg';
 import Line from '../../assets/svg/line.svg';
 import Ring from "../../assets/svg/ringround.svg";
 import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import { setRequestPayload } from '../../actions/datasetActions';
 
 const DatasetIII = ({ data }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { payload } = location.state || {};
+  const dispatch = useDispatch();
 
   const [clickedTableData, setClickedTableData] = useState({});
   const [selectedTables, setSelectedTables] = useState([]);
@@ -37,7 +40,6 @@ const DatasetIII = ({ data }) => {
           password: "password",
           DataSourceData: safeData.Table,
         };
-  
         const config = {
           headers: {
             Authorization: `Bearer ${import.meta.env.VITE_API_TOKEN}`,
@@ -84,11 +86,14 @@ const DatasetIII = ({ data }) => {
           `${import.meta.env.VITE_BASE_URL_CONNECTOR}PostgreConnector/gettabledata`,
           requestPayload,
           config
-        );
+        );  
+        console.log("Response Data", response)
         setClickedTableData(prevState => ({
           ...prevState,
           [tableName]: response.data
         }));
+        dispatch(setRequestPayload(requestPayload));
+        console.log("Structure Payload :",setRequestPayload(requestPayload) )
       } catch (error) {
         console.error('Error fetching table data:', error);
       }
