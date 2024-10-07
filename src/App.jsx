@@ -38,6 +38,7 @@ import TemplateIII from './pages/template-III';
 import { PersistGate } from "redux-persist/integration/react";
 import { persistor, store } from "./store";
 import { Provider } from "react-redux";
+import TransformationSteps from './pages/tranformation-steps';
 
 
 
@@ -90,6 +91,8 @@ function App() {
         <Route path="/create-dataset-II" element={<DatasetII setData={setData}/>} />
         <Route path="/create-dataset-III" element={<DatasetIII data={data} setData={setData}/>}/>
         <Route path="/create-dataset-IV" element={<DatasetIV/>}/>
+         {/* Show Transformation Steps */}
+         <Route path="/transformation-steps" element={<TransformationSteps/>}/>
       {/* Grid Wrapper */}
       <Route path="/grids" element={<Grids/>}/>
         </Routes>

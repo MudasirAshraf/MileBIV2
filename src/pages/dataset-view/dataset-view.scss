@@ -91,6 +91,11 @@
     background-color: #007bff; 
     color: #fff; 
   }
+  .dataset-table-header{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
 
   
   

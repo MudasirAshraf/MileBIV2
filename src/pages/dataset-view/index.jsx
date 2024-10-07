@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { getSpecificDataset, updateDataset, appendTransformation } from "../../actions/datasetActions";
 import { evaluate } from "mathjs";
 import { DataGrid } from "@mui/x-data-grid";
@@ -10,7 +10,7 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import { v4 as uuidv4 } from 'uuid';
 
-
+ 
 export const evaluateExpression = (data, expression) => {
   try {
     const context = { ...data };
@@ -22,11 +22,10 @@ export const evaluateExpression = (data, expression) => {
 };
 
 const DatasetView = ({ updateDataset, dataset, getSpecificDataset, appendTransformation }) => {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const datasetId = searchParams.get("id");
 
-  //  const state = useSelector(state => state);
-  //  console.log("Full Redux State: ", state); 
 
 const requestPayload = useSelector(state => state.dataset.requestPayload);
   const [mergedData, setMergedData] = useState([]);
@@ -36,11 +35,6 @@ const requestPayload = useSelector(state => state.dataset.requestPayload);
     fetchData(requestPayload);
   }, []);
 
-  useEffect(() => {
-    if (requestPayload && dataset?.dataSourceData) {
-      fetchDataAndMerge(requestPayload, dataset.dataSourceData);
-    }
-  }, []);
 
   const fetchDataAndMerge = async (requestPayload, dataSourceData) => {
     try {
@@ -124,6 +118,7 @@ const columns = Object.keys(safeData[0] || {}).map((key) => {
     editable: dataset.transformationSteps && dataset.transformationSteps.find(col => col.column === key)?dataset.transformationSteps.find(col => col.column === key).type !==  'Expression'?true:false:false,
   };
 });
+
  // Fetch Data from coonector API
  const fetchConnectorData = async (requestPayload) => {
   try {
@@ -157,6 +152,18 @@ const fetchData = async (requestPayload) => {
   }
 };
 
+// Refesh Button Functionality 
+const handleRefresh = async () => {
+  try {
+    if (requestPayload && dataset?.dataSourceData) {
+      await fetchDataAndMerge(requestPayload, dataset.dataSourceData);
+    }
+  } catch (error) {
+    console.error("Failed to refresh data:", error);
+  }
+};
+
+
   // Add new column
   if (isAddingColumn) {
     columns.push({
@@ -180,6 +187,10 @@ const fetchData = async (requestPayload) => {
     dataset.dataSourceData = updatedRows;
     updateDataset(dataset);
     return newRow;
+  };
+
+  const ShowTransformationSteps = () => {
+    navigate("/transformation-steps", { state: { steps: dataset.transformationSteps } });
   };
 
   return (
@@ -215,6 +226,8 @@ const fetchData = async (requestPayload) => {
                   <button onClick={handleCancelClick}>Cancel</button>
                 </div>
               )}
+              <button onClick={ShowTransformationSteps}>Show Transformation Steps</button>
+              <button onClick={handleRefresh}>Refresh Data</button>
             </div>
             <div className="data-set-table-container">
               <DataGrid
