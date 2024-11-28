@@ -9,7 +9,7 @@ import {
   RESET_EMAIL,
 } from "./types";
 import axiosInstance from "../components/axios";
-import {store} from "../store"
+import { store } from "../store";
 import urlswithoutgateway from "./urlswithoutgateway";
 
 const config = ({ id }) => ({
@@ -21,11 +21,15 @@ const config = ({ id }) => ({
 //getAuth
 export const getAuth = (user) => async (dispatch) => {
   try {
-    const response = await axiosInstance.post("/User/Login", JSON.stringify(user), {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await axiosInstance.post(
+      "/User/Login",
+      JSON.stringify(user),
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
     dispatch({
       type: RESPONSE,
       regresponse: response.data,
@@ -36,7 +40,7 @@ export const getAuth = (user) => async (dispatch) => {
         type: SET_LOGIN,
         payload: response.data.data,
       });
-      return response.data; 
+      return response.data;
     }
   } catch (error) {
     dispatch({
@@ -48,12 +52,12 @@ export const getAuth = (user) => async (dispatch) => {
       type: AUTH_ERROR,
       payload: error.response.statusText,
     });
-    throw error; 
+    throw error;
   }
 };
 //forgotPassword
 export const forgotPassword = (email) => async (dispatch) => {
-  axiosInstance.defaults.baseURL= urlswithoutgateway("admin");
+  axiosInstance.defaults.baseURL = urlswithoutgateway("admin");
   axiosInstance
     .post(`/User/forgetpassword/${email}`, {
       headers: {
@@ -69,12 +73,11 @@ export const forgotPassword = (email) => async (dispatch) => {
         dispatch({
           type: FORGOT_JOURNEY,
           payload: 2,
-          
         });
         dispatch({
-          type:RESET_EMAIL,
+          type: RESET_EMAIL,
           resetEmail: response.data.data.email,
-        })
+        });
       }
     })
     .catch((error) => {
@@ -91,7 +94,7 @@ export const forgotPassword = (email) => async (dispatch) => {
 
 //postResetDetails
 export const postResetDetails = (user) => async (dispatch) => {
-  axiosInstance.defaults.baseURL= urlswithoutgateway("admin");
+  axiosInstance.defaults.baseURL = urlswithoutgateway("admin");
   axiosInstance
     .post("/User/resetdetail/", JSON.stringify(user), {
       headers: {
@@ -108,8 +111,8 @@ export const postResetDetails = (user) => async (dispatch) => {
           window.location.href = "/update-password";
         }, 500);
       }
-        // Return the response data
-       return response.data;
+      // Return the response data
+      return response.data;
     })
     .catch((error) => {
       dispatch({
@@ -122,11 +125,15 @@ export const postResetDetails = (user) => async (dispatch) => {
 export const verifyCode = (user) => async (dispatch) => {
   try {
     axiosInstance.defaults.baseURL = urlswithoutgateway("admin");
-    const response = await axiosInstance.post("/User/resetcodevalidation/", JSON.stringify(user), {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await axiosInstance.post(
+      "/User/resetcodevalidation/",
+      JSON.stringify(user),
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
     dispatch({
       type: RESPONSE,
       regresponse: response.data,
@@ -152,10 +159,9 @@ export const verifyCode = (user) => async (dispatch) => {
   }
 };
 
-
 //validateAccess
 export const validateAccess = (id) => async (dispatch) => {
-  axiosInstance.defaults.baseURL= urlswithoutgateway("admin");
+  axiosInstance.defaults.baseURL = urlswithoutgateway("admin");
   axiosInstance
     .get("/Auth/ValidateAccess", config({ id }))
     .then((response) => {
