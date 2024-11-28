@@ -1,18 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import "./dataset-II.scss";
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import Back from "../../assets/svg/Back.svg";
-import Cross from '../../assets/svg/cross.svg';
+import Cross from "../../assets/svg/cross.svg";
 import DII from "../../assets/svg/D2.svg";
-import Polygon from '../../assets/svg/Polygon 3.svg';
-import Two from '../../assets/png/2.png';
-import Line from '../../assets/svg/line.svg';
+import Polygon from "../../assets/svg/Polygon 3.svg";
+import Two from "../../assets/png/2.png";
+import Line from "../../assets/svg/line.svg";
 import Ring from "../../assets/svg/ringround.svg";
-import axios from 'axios';
+import { connect } from "react-redux";
+import axios from "axios";
+import { setConnectingDetailPayload } from "../../actions/dataSourceActions";
+import { getDataDefinition, getJSONData } from "../../actions/datasetActions";
+import { Row } from "react-bootstrap";
+import { toast } from "react-toastify";
 
-const DatasetII = ({ setData }) => {
+const DatasetII = ({
+  setData,
+  getDataDefinition,
+  selectedDatabase,
+  getJSONData,
+}) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const location = useLocation();
+  const [authType, setAuthType] = useState(null);
+
   const { databaseType } = location.state || {};
 
   const handleDatasetI = () => {
@@ -25,7 +39,7 @@ const DatasetII = ({ setData }) => {
     password: "",
   });
 
-  let handleNameChange = (event) => {
+  let handleNameChange = async (event) => {
     let fieldValue = event.target.name;
     let newValue = event.target.value;
     setFormData((currData) => {
@@ -44,91 +58,281 @@ const DatasetII = ({ setData }) => {
         selectedDataSource: databaseType,
       };
 
-      const config = {
-        headers: {
-          Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IiIsImVtYWlsIjoibWFzaHJhZkBhYXRjLmNvLmluIiwibmFtZWlkIjoiNDMiLCJVc2VySWQiOiI0MyIsIk9yZ2FuaXphdGlvbklkIjoiMzMiLCJuYmYiOjE3MDE4NTUwOTAsImV4cCI6MTcwMjQ1OTg5MCwiaWF0IjoxNzAxODU1MDkwLCJpc3MiOiJ5b3VySXNzdWVyIiwiYXVkIjoieW91ckF1ZGllbmNlIn0.B1AleyHA1nH4xrOxEw-J7833e80lCi9hEZP4gXE-yk8`
-        }
-      };
-      const response = await axios.post(`${import.meta.env.VITE_BASE_URL_CONNECTOR}PostgreConnector/getalltables`, payload, config);
-      console.log('Response:', response.data);
-      setData(response.data);
-      navigate("/create-dataset-III", { state: { payload } });  
+      // setData(response.data);
+      await getDataDefinition(payload);
+      dispatch(setConnectingDetailPayload(payload));
+      navigate("/create-dataset-III", { state: { payload } });
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
     }
     console.log(formData);
   };
 
+  let handleJsonLink = async (event) => {
+    event.preventDefault();
+    console.log(formData);
+    const result = await getJSONData(formData);
+    if (result.success) {
+      navigate("/show-json-nodes");
+    } else {
+      toast.error("Something went wrong");
+    }
+  };
+
+  const handleExcelUpload = async (event) => {
+    const file = event.target.files[0];
+    const payload = {
+      connectionString: "excelfile",
+      userName: "",
+      password: "",
+      selectedDataSource: selectedDatabase,
+      file: file,
+    };
+
+    if (file) {
+      // Dispatch the action to upload the file
+      await getDataDefinition(payload);
+      navigate("/create-dataset-III", { state: null });
+      dispatch(setConnectingDetailPayload(payload));
+    }
+  };
+
   return (
-    <div className='main-container-dataset-II'>
-      <div className='header-dataset-II'>
+    <div className="main-container-dataset-II">
+      <div className="header-dataset-II">
         <div>
-          <img src={Back} alt="logo" style={{ cursor: "pointer" }} onClick={handleDatasetI} />
+          <img
+            src={Back}
+            alt="logo"
+            style={{ cursor: "pointer" }}
+            onClick={handleDatasetI}
+          />
         </div>
         <div>
           <img src={Cross} alt="logo" />
         </div>
       </div>
-      <div className='container-dataset-II'>
-        <div className='first-row-dataset-II'>
+      <div className="container-dataset-II">
+        <div className="first-row-dataset-II">
           <p>Create a Dataset</p>
           <img src={DII} alt="logo" />
-          <div className='second-row-dataset-II'>
+          <div className="second-row-dataset-II">
             <img src={Polygon} alt="logo" />
           </div>
-          <div className='ring-dataset-II'>
+          <div className="ring-dataset-II">
             <img src={Ring} alt="logo" />
           </div>
         </div>
-        <div className='third-row-dataset-II'>
+        <div className="third-row-dataset-II">
           <img src={Two} alt="logo" />
         </div>
-        <div className='header-dashboard-modals'>
-          <p>Enter Credentials</p>
-          <img src={Line} alt="logo" />
-        </div>
         <div>
-          <form className='form-container-dataset-II' onSubmit={handleSubmit}>
-            <div className='form-container-dataset-II-input-details'>
-              <div className='input-group-sign-in-row-I-dataset-II'>
-                <input className='input-details-sign-in-row-I-dataset-II'
-                  type='text'
-                  placeholder='Server'
-                  name='serverName'
-                  id='serverName'
-                  value={formData.serverName}
-                  onChange={handleNameChange}
-                  required />
-              </div>
-              <div className='input-group-sign-in-row-I-dataset-II'>
-                <input className='input-details-sign-in-row-I-dataset-II'
-                  type='text'
-                  placeholder='Username'
-                  name='userName'
-                  id='userName'
-                  value={formData.userName}
-                  onChange={handleNameChange}
-                  required />
-              </div>
-              <div className='input-group-sign-in-row-I-dataset-II'>
-                <input className='input-details-sign-in-row-I-dataset-II'
-                  type='password'
-                  placeholder='Password'
-                  name='password'
-                  id='password'
-                  value={formData.password}
-                  onChange={handleNameChange}
-                  required />
-              </div>
+          {selectedDatabase == "excel" ? (
+            <div className="excel-upload-container">
+              <label htmlFor="excelUpload" className="excel-upload-label">
+                Upload Excel File:
+              </label>
+              <input
+                type="file"
+                id="excelUpload"
+                name="excelUpload"
+                accept=".xlsx, .xls"
+                onChange={handleExcelUpload}
+                className="excel-upload-input"
+              />
             </div>
-            <div className='button-dataset-II'>
-              <button type='submit'>Connect</button>
+          ) : selectedDatabase == "json" ? (
+            <div className="container mt-4 excel-upload-container">
+              <h4 className="mb-3">JSON Configuration</h4>
+              <Row className="justify-content-center">
+                <div className="col-md-8 p-4">
+                  {/* Authentication Mode Selector */}
+                  <div className="mb-4">
+                    <label htmlFor="authType" className="form-label">
+                      Select Authentication Mode
+                    </label>
+                    <select
+                      id="authType"
+                      value={authType}
+                      onChange={(e) => setAuthType(e.target.value)}
+                      className="form-select"
+                    >
+                      <option value="Basic" className="text-center">
+                        Basic
+                      </option>
+                      <option value="Bearer" className="text-center">
+                        Bearer
+                      </option>
+                      {/* <MenuItem value="Basic">Basic</MenuItem>
+                          <MenuItem value="Bearer">Bearer</MenuItem> */}
+                    </select>
+                  </div>
+
+                  <form
+                    className="p-4 border rounded bg-light shadow-sm"
+                    onSubmit={handleJsonLink}
+                  >
+                    {/* Server Field */}
+                    <div className="mb-4">
+                      <label htmlFor="serverName" className="form-label">
+                        Server
+                      </label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        placeholder="Enter Server Address"
+                        name="serverName"
+                        id="serverName"
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            serverName: e.target.value,
+                          })
+                        }
+                        required
+                      />
+                    </div>
+
+                    {/* Conditional Rendering Based on Auth Type */}
+                    {authType === "Basic" && (
+                      <>
+                        <div className="mb-4">
+                          <label htmlFor="userName" className="form-label">
+                            Username
+                          </label>
+                          <input
+                            className="form-control"
+                            type="text"
+                            placeholder="Enter Username"
+                            name="userName"
+                            id="userName"
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                userName: e.target.value,
+                              })
+                            }
+                            required
+                          />
+                        </div>
+                        <div className="mb-4">
+                          <label htmlFor="password" className="form-label">
+                            Password
+                          </label>
+                          <input
+                            className="form-control"
+                            type="password"
+                            placeholder="Enter Password"
+                            name="password"
+                            id="password"
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                password: e.target.value,
+                              })
+                            }
+                            required
+                          />
+                        </div>
+                      </>
+                    )}
+
+                    {authType === "Bearer" && (
+                      <div className="mb-4">
+                        <label htmlFor="bearerToken" className="form-label">
+                          Bearer Token
+                        </label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          placeholder="Enter Bearer Token"
+                          name="bearerToken"
+                          id="bearerToken"
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              userName: e.target.value,
+                            })
+                          }
+                          required
+                        />
+                      </div>
+                    )}
+
+                    {/* Submit Button */}
+                    <div className="d-flex justify-content-end">
+                      <button type="submit" className="btn btn-primary px-4">
+                        Connect
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </Row>
             </div>
-          </form>
+          ) : (
+            <div>
+              <div className="header-dashboard-modals">
+                <p>Enter Credentials</p>
+                <img src={Line} alt="logo" />
+              </div>
+              <form
+                className="form-container-dataset-II"
+                onSubmit={handleSubmit}
+              >
+                <div className="form-container-dataset-II-input-details">
+                  <div className="input-group-sign-in-row-I-dataset-II">
+                    <input
+                      className="input-details-sign-in-row-I-dataset-II"
+                      type="text"
+                      placeholder="Server"
+                      name="serverName"
+                      id="serverName"
+                      value={formData.serverName}
+                      onChange={handleNameChange}
+                      required
+                    />
+                  </div>
+                  <div className="input-group-sign-in-row-I-dataset-II">
+                    <input
+                      className="input-details-sign-in-row-I-dataset-II"
+                      type="text"
+                      placeholder="Username"
+                      name="userName"
+                      id="userName"
+                      value={formData.userName}
+                      onChange={handleNameChange}
+                      required
+                    />
+                  </div>
+                  <div className="input-group-sign-in-row-I-dataset-II">
+                    <input
+                      className="input-details-sign-in-row-I-dataset-II"
+                      type="password"
+                      placeholder="Password"
+                      name="password"
+                      id="password"
+                      value={formData.password}
+                      onChange={handleNameChange}
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="button-dataset-II">
+                  <button type="submit">Connect</button>
+                </div>
+              </form>
+            </div>
+          )}
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default DatasetII;
+const mapStateToProps = (state) => ({
+  selectedDatabase: state.dataSource.selectedDatabase,
+});
+export default connect(mapStateToProps, {
+  getDataDefinition,
+  getJSONData,
+})(DatasetII);

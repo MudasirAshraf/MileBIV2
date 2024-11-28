@@ -1,20 +1,20 @@
-import React, { useState} from "react";
+import React, { useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./transformation-steps.scss";
 import { updateDataset } from "../../actions/datasetActions";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 
-
-const TransformationSteps = () => {
+const TransformationSteps = ({ updateDataset }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [isEditing, setIsEditing] = useState(null); 
-  const [editValue, setEditValue] = useState(""); 
-  const [transformationSteps, setTransformationSteps] = useState(location.state?.steps || []);
+  const [isEditing, setIsEditing] = useState(null);
+  const [editValue, setEditValue] = useState("");
+  const [transformationSteps, setTransformationSteps] = useState(
+    location.state?.dataset.transformationSteps || []
+  );
   const [dataset, setDataset] = useState(location.state?.dataset || {});
 
-  
   const handleSave = (uuid) => {
     const updatedSteps = transformationSteps.map((step) =>
       step.uuid === uuid ? { ...step, column: editValue } : step
@@ -24,28 +24,33 @@ const TransformationSteps = () => {
 
     // Update dataset with the new transformation steps
     const updatedDataset = { ...dataset, transformationSteps: updatedSteps };
-    setDataset(updatedDataset); 
-    updateDataset(updatedDataset); 
-    console.log("majid data: ",updatedDataset)
-    console.log('Updated transformation steps:', updatedSteps);
+    setDataset(updatedDataset);
+
+
+    // Call the action from props
+    updateDataset(updatedDataset); // Properly call the action
+    console.log("Updated transformation steps:", updatedSteps);
   };
-  
+
   const handleDelete = (uuid) => {
-    const updatedSteps = transformationSteps.filter((step) => step.uuid !== uuid);
+    const updatedSteps = transformationSteps.filter(
+      (step) => step.uuid !== uuid
+    );
     setTransformationSteps(updatedSteps);
 
     // Update dataset with the new transformation steps after deletion
     const updatedDataset = { ...dataset, transformationSteps: updatedSteps };
-    setDataset(updatedDataset); 
-    updateDataset(updatedDataset); 
-    // console.log(updatedDataset)
-    console.log('Updated transformation steps after delete:', updatedSteps);
+    setDataset(updatedDataset);
+
+    // Call the action from props
+    updateDataset(updatedDataset);
+    console.log("Updated transformation steps after delete:", updatedSteps);
   };
-  
-  // Function to handle editing 
+
+  // Function to handle editing
   const handleEdit = (uuid, currentValue) => {
-    setIsEditing(uuid); 
-    setEditValue(currentValue); 
+    setIsEditing(uuid);
+    setEditValue(currentValue);
   };
 
   // Define columns for the DataGrid
@@ -60,7 +65,7 @@ const TransformationSteps = () => {
             type="text"
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
-            onBlur={() => handleSave(params.row.uuid)} 
+            // onBlur={() => handleSave(params.row.uuid)}
             autoFocus
           />
         ) : (
@@ -76,25 +81,43 @@ const TransformationSteps = () => {
       renderCell: (params) => (
         <>
           {isEditing === params.row.uuid ? (
-            <button className="tranform-button-save" onClick={() => handleSave(params.row.uuid)}>Save</button>
+            <button
+              className="tranform-button-save"
+              onClick={() => handleSave(params.row.uuid)}
+            >
+              Save
+            </button>
           ) : (
-            <button className="tranform-button-edit" onClick={() => handleEdit(params.row.uuid, params.row.column)}>Edit</button>
+            <button
+              className="tranform-button-edit"
+              onClick={() => handleEdit(params.row.uuid, params.row.column)}
+            >
+              Edit
+            </button>
           )}
-          <button className="tranform-button" onClick={() => handleDelete(params.row.uuid)}>Delete</button>
+          <button
+            className="tranform-button"
+            onClick={() => handleDelete(params.row.uuid)}
+          >
+            Delete
+          </button>
         </>
       ),
     },
   ];
 
+  
   // Map transformationSteps to rows for the DataGrid
   const rows = transformationSteps.map((step) => ({
     id: step.uuid,
     column: step.column,
     type: step.type,
     expression: step.expression,
-    uuid: step.uuid,
+    uuid: step.uuid
   }));
 
+
+  
   return (
     <div className="data-set-table-container">
       <h2>Transformation Steps</h2>
@@ -105,14 +128,15 @@ const TransformationSteps = () => {
         rowsPerPageOptions={[5]}
         autoHeight
       />
-      <button className="back-button" onClick={() => navigate(-1)}>Back</button>
+      <button className="back-button" onClick={() => navigate(-1)}>
+        Back
+      </button>
     </div>
   );
 };
 
 const mapDispatchToProps = {
-    updateDataset,
-  };
-  export default connect(null, mapDispatchToProps)(TransformationSteps);
+  updateDataset,
+};
 
-
+export default connect(null, mapDispatchToProps)(TransformationSteps);

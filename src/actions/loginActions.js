@@ -88,6 +88,7 @@ export const forgotPassword = (email) => async (dispatch) => {
       });
     });
 };
+
 //postResetDetails
 export const postResetDetails = (user) => async (dispatch) => {
   axiosInstance.defaults.baseURL= urlswithoutgateway("admin");
@@ -108,7 +109,7 @@ export const postResetDetails = (user) => async (dispatch) => {
         }, 500);
       }
         // Return the response data
-    return response.data;
+       return response.data;
     })
     .catch((error) => {
       dispatch({

@@ -3,13 +3,13 @@ export default function urlswithoutgateway( key ) {
   
   switch (key) {
     case "connector":
-      valx = "https://milebiconnectors.dig-x.co.in/api/";
+      valx = "https://localhost:44342/api/";
       break;
     case "dashboard":
-      valx = "https://milebidashboards.dig-x.co.in/";
+      valx = "https://localhost:44336/";
       break;
     case "admin":
-      valx = "https://milebiadmin.dig-x.co.in/api/";
+      valx = "https://localhost:44381/api/";
       break;
 
     default:

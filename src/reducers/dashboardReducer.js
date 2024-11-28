@@ -32,7 +32,6 @@ export const dashboardReducer = (state = initialState, action) => {
         dashboards: action.payload,
         loading: false,
       };
-
     case DASHBOARD_LOADING:
       return {
         ...state,

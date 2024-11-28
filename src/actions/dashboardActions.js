@@ -20,6 +20,7 @@ const config = ({ id }) => ({
 
 //Currently windows.reload later on just update and remove in state after success message to avoid reloads
 export const getDataDefinition = (dashboard) => async (dispatch) => {
+  debugger
   axiosInstance.defaults.baseURL= urlswithoutgateway("connector");
   const source =
     dashboard.selectedDataSource == "postgre"

@@ -9,7 +9,7 @@ import { persistReducer, persistStore } from "redux-persist";
 const initialState = {};
 const persistConfig = {
   key: "root",
-  whitelist: ["loginReducer"],
+  whitelist: ["login","dataSource"],
   storage,
 };
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -18,7 +18,7 @@ const middleware = [thunk, logger];
 const store = createStore(
   persistedReducer,
   initialState,
-  composeWithDevTools(applyMiddleware(...middleware))
+  composeWithDevTools(applyMiddleware(...middleware)),
 );
 
 const persistor = persistStore(store);

@@ -9,6 +9,9 @@ import {
   GET_SPECIFIC_DATASETS,
   ADD_TRANSFORMATION,
   SET_REQUEST_PAYLOAD,
+  UPDATE_DATASET,
+  GET_SINGLE_TABLE_DATA,
+  RAW_JSON_DATA,
 } from "../actions/types";
 
 const initialState = {
@@ -18,7 +21,7 @@ const initialState = {
   tables: null,
   current: null,
   tabledatas: [],
-  requestPayload: {}, 
+  requestPayload: {},
 };
 
 export const datasetReducer = (state = initialState, action) => {
@@ -34,6 +37,18 @@ export const datasetReducer = (state = initialState, action) => {
         ...state,
         current: action.payload,
       };
+    case UPDATE_DATASET:
+      return {
+        ...state,
+        loading: false,
+        current: action.payload,
+      };
+    case ADD_NEW_DATASET:
+      return {
+        ...state,
+        loading: false,
+        current: action.payload,
+      };
     case SET_CURRENT_DATASET:
       return {
         ...state,
@@ -44,9 +59,10 @@ export const datasetReducer = (state = initialState, action) => {
         ...state,
         current: {
           ...state.current,
-          transformationSteps: state.current.transformationSteps === null 
-            ? action.payload 
-            : [...state.current.transformationSteps, action.payload[0]],
+          transformationSteps:
+            state.current.transformationSteps === null
+              ? action.payload
+              : [...state.current.transformationSteps, action.payload[0]],
         },
       };
     case GET_ALL_DATASETS:
@@ -67,6 +83,18 @@ export const datasetReducer = (state = initialState, action) => {
         loading: false,
         tabledatas: [...state.tabledatas, action.payload],
       };
+    case GET_SINGLE_TABLE_DATA:
+      return {
+        ...state,
+        loading: false,
+        tabledata: action.payload,
+      };
+    case RAW_JSON_DATA:
+      return {
+        ...state,
+        loading: false,
+        json: action.payload,
+      };
     case TABLE_LOADING:
       return {
         ...state,
@@ -76,10 +104,8 @@ export const datasetReducer = (state = initialState, action) => {
       return {
         ...state,
         requestPayload: action.payload,
- 
       };
     default:
       return state;
   }
- 
 };
