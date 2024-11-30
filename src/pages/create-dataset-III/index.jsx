@@ -48,6 +48,10 @@ const DatasetIII = ({
 
   const handleDatasetIV = async () => {
     try {
+      if (tableDatas.length == 0) {
+        toast.warn("Please select at least one dataset");
+        return;
+      }
       let hasError = false;
       const newErrors = {};
       tableDatas.forEach((_, index) => {
@@ -275,7 +279,12 @@ const DatasetIII = ({
           <div className="render-table-data">{renderTables()}</div>
         </div>
         <div className="row d-flex justify-content-center text-center mt-3">
-          <button type="submit" className="btn btn-primary w-auto" onClick={handleDatasetIV} disabled={loading}>
+          <button
+            type="submit"
+            className="btn btn-primary w-auto"
+            onClick={handleDatasetIV}
+            disabled={loading}
+          >
             {loading ? (
               <>
                 <span
@@ -286,7 +295,7 @@ const DatasetIII = ({
                 Submitting...
               </>
             ) : (
-              "Save"
+              "Save and Next"
             )}
           </button>
         </div>
