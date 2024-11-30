@@ -73,6 +73,7 @@ export const getDataDefinition = (dataset) => async (dispatch) => {
         type: GET_ALL_TABLES,
         payload: JSON.parse(response.data.data),
       });
+      return { success: true };
     }
   } catch (error) {
     // Dispatch error response
@@ -88,6 +89,7 @@ export const getDataDefinition = (dataset) => async (dispatch) => {
       type: GET_ALL_TABLES,
       payload: null,
     });
+    return { success: false };
   }
 };
 
@@ -499,7 +501,7 @@ export const setSpecificDataset = (dataset) => async (dispatch) => {
 };
 
 export const setSingleTableData = (tableData) => async (dispatch) => {
-  dispatch({
+  await dispatch({
     type: GET_SINGLE_TABLE_DATA,
     payload: JSON.parse(tableData),
   });

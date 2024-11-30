@@ -59,9 +59,11 @@ const DatasetII = ({
       };
 
       // setData(response.data);
-      await getDataDefinition(payload);
-      dispatch(setConnectingDetailPayload(payload));
-      navigate("/create-dataset-III", { state: { payload } });
+      const success = await getDataDefinition(payload);
+      if (success.success) {
+        dispatch(setConnectingDetailPayload(payload));
+        navigate("/create-dataset-III", { state: { payload } });
+      }
     } catch (error) {
       console.error("Error:", error);
     }

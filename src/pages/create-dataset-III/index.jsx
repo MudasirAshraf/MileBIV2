@@ -17,21 +17,16 @@ import {
   setRequestPayload,
 } from "../../actions/datasetActions";
 import { connect } from "react-redux";
-import {
-  Button,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Modal,
-} from "@mui/material";
+import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import { setDatabaseDataPayload } from "../../actions/dataSourceActions";
+import { toast } from "react-toastify";
 
 const DatasetIII = ({
   data,
   setDatabaseDataPayload,
   dataSource,
   tables,
+  loading,
   getSingleTableData,
   setSingleTableData,
   tabledata,
@@ -42,119 +37,182 @@ const DatasetIII = ({
   const location = useLocation();
   const { payload } = location.state || {};
   const dispatch = useDispatch();
-  // const tabledata = useSelector((state) => state.dataset.tabledata);
-  const [primaryKeyModal, setPrimaryKeyModal] = useState({
-    open: false,
-    columns: [],
-    onSelect: () => {},
-  });
 
-  const [clickedTableData, setClickedTableData] = useState({});
-  const [selectedTables, setSelectedTables] = useState([]);
-  const [selectedTable, setSelectedTable] = useState("");
-
+  const [selectedColumns, setSelectedColumns] = useState({});
+  const [errors, setErrors] = useState({});
+  const [selectedTables, setSelectedTables] = useState(new Set());
+  const [tableDatas, setTableDatas] = useState([]);
   const handleDatasetII = () => {
     navigate("/create-dataset-II");
   };
 
-  const closeModal = () => {
-    setPrimaryKeyModal((prev) => ({ ...prev, open: false }));
-  };
-
   const handleDatasetIV = async () => {
     try {
-      // Loop through selected tablesni
+      let hasError = false;
+      const newErrors = {};
+      tableDatas.forEach((_, index) => {
+        if (!selectedColumns[index]) {
+          newErrors[index] = "Primary key selection is required.";
+          hasError = true;
+        } else {
+          _.primaryKey = selectedColumns[index];
+        }
+      });
 
-      // for (const tableName of selectedTables) {
-      // const tableData = clickedTableData;
-      const safeData = tabledata;
+      setErrors(newErrors);
 
-      // Open modal to select primary key
-      const columns = Object.keys(safeData.Table[0]);
-      const primaryKey = await openPrimaryKeyModal(columns);
-
-      // Continue with the API request if primary key is selected
-      if (!primaryKey) {
-        alert("Primary key selection is required.");
-        return;
+      if (!hasError) {
+        tableDatas.forEach(async (_, index) => {
+          const requestPayload = {
+            ...payload,
+            connectionString: "connectionString",
+            datasetTitle: _.tableName,
+            userName: "userName",
+            PrimaryKeyColumn: _.primaryKey,
+            password: "password",
+            databaseType: selectedDatabase,
+            DataSourceData: _.Table,
+          };
+          await addDataset(requestPayload);
+        });
+        navigate("/create-dataset-IV");
+      } else {
+        toast.error("Please select primary key for all tables");
       }
-
-      const requestPayload = {
-        ...payload,
-        connectionString: "connectionString",
-        datasetTitle: selectedTable,
-        userName: "userName",
-        PrimaryKeyColumn: primaryKey,
-        password: "password",
-        databaseType: selectedDatabase,
-        DataSourceData: safeData.Table,
-      };
-
-      await addDataset(requestPayload);
-      navigate("/create-dataset-IV");
-      // }
     } catch (error) {
       console.error("Error saving dataset:", error);
     }
   };
 
+  const handleColumnChange = (value, tableIndex) => {
+    setSelectedColumns((prev) => ({
+      ...prev,
+      [tableIndex]: value,
+    }));
+
+    setErrors((prev) => ({
+      ...prev,
+      [tableIndex]: value ? "" : "Primary key selection is required.",
+    }));
+
+    setTableDatas((prev) =>
+      prev.map((tableData, index) =>
+        index === tableIndex ? { ...tableData, primaryKey: value } : tableData
+      )
+    );
+  };
+
   const handleCheckboxChange = async (tableName) => {
     try {
-      const requestPayload = {
-        ...payload,
-        tableName,
-      };
+      // Check if the table is already selected
+      if (selectedTables.has(tableName)) {
+        // If table is already selected, remove it
+        setSelectedTables((prev) => {
+          const newSelected = new Set(prev);
+          newSelected.delete(tableName);
+          return newSelected;
+        });
 
-      dispatch(setRequestPayload(requestPayload));
+        // Remove table data from tableDatas
+        setTableDatas((prev) =>
+          prev.filter((tableData) => tableData.tableName !== tableName)
+        );
+      } else {
+        // If table is not selected, fetch and add it
+        const requestPayload = {
+          ...payload,
+          tableName,
+        };
 
-      const databaseData = {
-        ...dataSource,
-        tableName: tableName,
-      };
+        dispatch(setRequestPayload(requestPayload));
 
-      dispatch(setDatabaseDataPayload(databaseData));
-      const value = await getSingleTableData(tableName, databaseData);
-      if (value) {
-        await setSingleTableData(value);
+        const databaseData = {
+          ...dataSource,
+          tableName: tableName,
+        };
+
+        dispatch(setDatabaseDataPayload(databaseData));
+
+        // Fetch data for the table
+        const value = await getSingleTableData(tableName, databaseData);
+        if (value) {
+          await setSingleTableData(value);
+          tabledata &&
+            setTableDatas((prev) => [
+              ...prev,
+              { tableName, primaryKey: "", Table: tabledata.Table },
+            ]);
+          // Add to selectedTables set
+          setSelectedTables((prev) => new Set(prev).add(tableName));
+        }
       }
-      setSelectedTable(tableName);
-      // setClickedTableData(tabledata);
     } catch (error) {
       console.error("Error fetching table data:", error);
     }
   };
 
   const renderTables = () => {
-    const parsedData = tabledata;
-    if (!parsedData || !parsedData?.Table?.length)
-      return (
-        <p key={dataSource.tableName}>No data available for {selectedTable}</p>
-      );
+    if (!tableDatas || tableDatas.length === 0) {
+      return <p>No tables available to display.</p>;
+    }
 
-    const columns = Object.keys(parsedData.Table[0]);
     return (
-      <div key={selectedTable} className="second-row-table-ds-III">
-        <h3>{selectedTable}</h3>
-        <table>
-          <thead>
-            <tr>
-              {columns.map((column) => (
-                <th key={column}>{column}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {parsedData.Table.map((row, index) => (
-              <tr key={index}>
-                {columns.map((column) => (
-                  <td className="text-primary" key={column}>
-                    {row[column]}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div>
+        {tableDatas.map((tableData, tableIndex) => {
+          if (!tableData || !tableData.Table || tableData.Table.length === 0) {
+            return (
+              <p key={tableIndex}>
+                No data available for{" "}
+                {tableData.tableName || `Table ${tableIndex + 1}`}
+              </p>
+            );
+          }
+          const columns = Object.keys(tableData.Table[0]);
+          return (
+            <div key={tableIndex} className="second-row-table-ds-III">
+              <div style={{ marginTop: "20px" }}>
+                <FormControl fullWidth>
+                  <InputLabel>Select Column</InputLabel>
+                  <Select
+                    value={selectedColumns[tableIndex] || ""}
+                    onChange={(e) =>
+                      handleColumnChange(e.target.value, tableIndex)
+                    }
+                  >
+                    <MenuItem value="" disabled>
+                      Choose a column
+                    </MenuItem>
+                    {columns.map((column) => (
+                      <MenuItem key={column} value={column}>
+                        {column}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </div>
+              <table>
+                <thead>
+                  <tr>
+                    {columns.map((column) => (
+                      <th key={column}>{column}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {tableData.Table.map((row, rowIndex) => (
+                    <tr key={rowIndex}>
+                      {columns.map((column) => (
+                        <td className="text-primary" key={column}>
+                          {row[column]}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          );
+        })}
       </div>
     );
   };
@@ -162,54 +220,6 @@ const DatasetIII = ({
   if (!tables) {
     return <p className="text-center">No data available</p>;
   }
-
-  // Component for Primary Key Modal
-  const PrimaryKeyModal = ({ open, onClose, columns, onSelect }) => (
-    <Modal open={open} onClose={onClose}>
-      <div
-        style={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          padding: "20px",
-          background: "#fff",
-          borderRadius: "8px",
-          boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
-          minWidth: "300px",
-        }}
-      >
-        <h2>Select Primary Key</h2>
-        <FormControl fullWidth>
-          <InputLabel>Select Primary Key</InputLabel>
-          <Select onChange={(e) => onSelect(e.target.value)} defaultValue="">
-            {columns.map((column) => (
-              <MenuItem key={column} value={column}>
-                {column}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <Button onClick={onClose} style={{ marginTop: "20px" }}>
-          Close
-        </Button>
-      </div>
-    </Modal>
-  );
-
-  // Function to open modal and wait for selection
-  const openPrimaryKeyModal = (columns) => {
-    return new Promise((resolve) => {
-      setPrimaryKeyModal({
-        open: true,
-        columns,
-        onSelect: (selectedColumn) => {
-          resolve(selectedColumn);
-          closeModal();
-        },
-      });
-    });
-  };
 
   return (
     <div className="main-container-dataset-III">
@@ -253,9 +263,8 @@ const DatasetIII = ({
               {tables.map((item, index) => (
                 <div className="first-column-ds-III" key={item.table_name}>
                   <input
-                    type="radio"
+                    type="checkbox"
                     name={index}
-                    checked={selectedTable == item.table_name}
                     onChange={() => handleCheckboxChange(item.table_name)}
                   />
                   <p>{item.table_name}</p>
@@ -265,36 +274,23 @@ const DatasetIII = ({
           </div>
           <div className="render-table-data">{renderTables()}</div>
         </div>
-        {/* <div className="button-dataset-III">
-          <button>Modify</button>
-        </div>
-        <div className="sql-query-ds-III">
-          <div className="input-data-ds-III">
-            <input
-              type="text"
-              placeholder="Enter SQL Query"
-              name="sql-query"
-              className="input-details-ds-III"
-            />
-          </div>
-        </div>
-        <div className="second-column-sql-query-ds-III">
-          <p>SQL Query Executed Successfully!</p>
-          <button>Execute</button>
-        </div> */}
-        <div className="load-data-btn-ds-III">
-          <button onClick={handleDatasetIV}>Save</button>
+        <div className="row d-flex justify-content-center text-center mt-3">
+          <button type="submit" className="btn btn-primary w-auto" onClick={handleDatasetIV} disabled={loading}>
+            {loading ? (
+              <>
+                <span
+                  className="spinner-border spinner-border-sm"
+                  role="status"
+                  aria-hidden="true"
+                ></span>{" "}
+                Submitting...
+              </>
+            ) : (
+              "Save"
+            )}
+          </button>
         </div>
       </div>
-
-      {primaryKeyModal.open && (
-        <PrimaryKeyModal
-          open={primaryKeyModal.open}
-          onClose={closeModal}
-          columns={primaryKeyModal.columns}
-          onSelect={primaryKeyModal.onSelect}
-        />
-      )}
     </div>
   );
 };
