@@ -4,6 +4,7 @@ import {
   GET_ALL_DASHBOARDS,
   DASHBOARD_LOADING,
   SET_CURRENT_DASHBOARD,
+  UPDATE_DASHBOARD,
 } from "../actions/types";
 
 const initialState = {
@@ -22,6 +23,11 @@ export const dashboardReducer = (state = initialState, action) => {
         loading: false,
       };
     case SET_CURRENT_DASHBOARD:
+      return {
+        ...state,
+        current: action.payload,
+      };
+    case UPDATE_DASHBOARD:
       return {
         ...state,
         current: action.payload,

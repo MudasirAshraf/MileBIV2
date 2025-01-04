@@ -1,4 +1,5 @@
 
+
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -17,8 +18,16 @@ body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  color: #fff !important;
   // font-family: 'Barlow';
 }
+
+
+.MuiChip-label{
+  color: white !important;
+}
+
+
 
 
 

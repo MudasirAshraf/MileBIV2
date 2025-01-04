@@ -11,6 +11,7 @@ const PieChart = ({
     chart: {
       width: 380,
       type: 'pie',
+      background:""
     },
     labels: ['Team A', 'Team B', 'Team C', 'Team D', 'Team E'],
     responsive: [
@@ -36,9 +37,6 @@ const PieChart = ({
         fontWeight: 'bold',
         color: '#263238'
       }
-    },
-    chart: {
-      background: backgroundColor
     }
   };
 
