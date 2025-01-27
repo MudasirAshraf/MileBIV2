@@ -1,0 +1,71 @@
+.dataset-joiner {
+    // max-width: 900px;
+    // margin: 0 auto;
+    margin: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+    color: black;
+    .heading {
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 24px;
+        color: #333;
+    }
+
+    .dataset-selection,
+    .join-config {
+        margin-bottom: 20px;
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .react-select__control {
+            min-height: 40px;
+            font-size: 14px;
+        }
+    }
+
+    .add-dataset-button,
+    .join-button {
+        padding: 10px 20px;
+        font-size: 16px;
+        color: white;
+        background-color: #007bff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 10px;
+
+        &:hover {
+            background-color: #0056b3;
+        }
+    }
+
+    .result {
+        margin-top: 30px;
+        ul {
+            list-style-type: none;
+            padding: 0;
+            li {
+                background-color: #f1f1f1;
+                margin: 5px 0;
+                padding: 10px;
+                border-radius: 5px;
+                font-size: 14px;
+                word-wrap: break-word;
+            }
+        }
+
+        p {
+            font-size: 16px;
+            color: #666;
+        }
+    }
+}

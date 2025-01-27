@@ -12,13 +12,19 @@ import CardIII from "../../components/card-III";
 import CardIV from "../../components/card-IV";
 import { getDatasets } from "../../actions/datasetActions";
 import { Row, Col } from "react-bootstrap";
-const CreateDashboard = ({ datasets, getDatasets }) => {
+import { getDashboards } from "../../actions/dashboardActions";
+import moment from "moment/moment";
+import Pagination from "@mui/material/Pagination";
+
+import { GridPagination } from "@mui/x-data-grid";
+const CreateDashboard = ({ datasets, getDatasets, getDashboards, dashboards }) => {
   const [activeTab, setActiveTab] = useState("create-dashboards");
   const [page, setPage] = useState(1);
   const itemsPerPage = activeTab === "datasets" ? 12 : 8;
 
   useEffect(() => {
     getDatasets();
+    getDashboards()
   }, []);
 
   const handleTabClick = (tab) => {
@@ -49,18 +55,18 @@ const CreateDashboard = ({ datasets, getDatasets }) => {
 
   const totalPages =
     activeTab === "create-dashboards"
-      ? Math.ceil(cardsData.length / itemsPerPage)
+      ? dashboards ? Math.ceil(dashboards.length / itemsPerPage) : 0
       : activeTab === "available-templates"
-      ? Math.ceil(cardsDataI.length / itemsPerPage)
-      : Math.ceil(datasets && datasets.length / itemsPerPage);
+        ? Math.ceil(cardsDataI.length / itemsPerPage)
+        : Math.ceil(datasets && datasets.length / itemsPerPage);
 
   const visiblePages = Array.from(
     { length: totalPages },
     (_, index) => index + 1
   );
 
-  const handlePageChange = (pageNumber) => {
-    setPage(pageNumber);
+  const handlePageChange = (event, value) => {
+    setPage(value);
   };
 
   return (
@@ -71,25 +77,23 @@ const CreateDashboard = ({ datasets, getDatasets }) => {
             {/* Adding header */}
             <div className="header-create-dasdhboard">
               <div
-                className={`header-I-create-dashboard ${
-                  activeTab === "create-dashboards" ? "active" : ""
-                }`}
+                className={`header-I-create-dashboard ${activeTab === "create-dashboards" ? "active" : ""
+                  }`}
               >
                 <a
                   href="#"
                   className="create-dashboard-links"
                   onClick={() => handleTabClick("create-dashboards")}
                 >
-                  Create Dashboards
+                  Dashboards
                 </a>
                 <div className="create-dashboard-circle">
                   {cardsData.length}
                 </div>
               </div>
               <div
-                className={`header-II-create-dashboard ${
-                  activeTab === "available-templates" ? "active" : ""
-                }`}
+                className={`header-II-create-dashboard ${activeTab === "available-templates" ? "active" : ""
+                  }`}
               >
                 <a
                   href="#"
@@ -103,9 +107,8 @@ const CreateDashboard = ({ datasets, getDatasets }) => {
                 </div>
               </div>
               <div
-                className={`header-III-create-dashboard ${
-                  activeTab === "datasets" ? "active" : ""
-                }`}
+                className={`header-III-create-dashboard ${activeTab === "datasets" ? "active" : ""
+                  }`}
               >
                 <a
                   href="#"
@@ -118,20 +121,21 @@ const CreateDashboard = ({ datasets, getDatasets }) => {
               </div>
             </div>
             <div>
-              <img src={Hline} alt="logo"  className="w-100"/>
+              <img src={Hline} alt="logo" className="w-100" />
             </div>
             {/* Create Dashboard */}
             {activeTab === "create-dashboards" && (
               <div className="main-container-create-dashboard-card-component">
-                {cardsData
+                {dashboards && dashboards
                   .slice((page - 1) * itemsPerPage, page * itemsPerPage)
                   .map((card, index) => (
                     <CardII
                       key={index}
-                      title={card.title}
-                      title1={card.publishedDate}
-                      title2={card.lastUpdatedDate}
-                      status={card.statusUpdate}
+                      title={card.dashboardTitle}
+                      title1={moment(card.modifiedDate).format("DD-MM-YYYY")}
+                      title2={moment(card.modifiedDate).format("DD-MM-YYYY")}
+                      dashboardId={card.dashboardId}
+                    // status={card.statusUpdate}
                     />
                   ))}
               </div>
@@ -146,7 +150,7 @@ const CreateDashboard = ({ datasets, getDatasets }) => {
                       key={index}
                       image={card.image}
                       title={card.title}
-                      id={card.id}
+                      id={card.dashboardId}
                     />
                   ))}
               </div>
@@ -154,40 +158,31 @@ const CreateDashboard = ({ datasets, getDatasets }) => {
             {/* Datasets */}
             {activeTab === "datasets" && (
               // <div className="main-container-datasets">
-                <Row className="d-flex align-items-center justify-content-center mx-0">
-                  {datasets
-                    .slice((page - 1) * itemsPerPage, page * itemsPerPage)
-                    .map((dataset, index) => (
-                      <Col xs={6} md={3} className="mt-4">
-                        <CardIV key={index} dataset={dataset} />
-                      </Col>
-                    ))}
-                </Row>
+              <Row className="d-flex align-items-center justify-content-center mx-0">
+                {datasets
+                  .slice((page - 1) * itemsPerPage, page * itemsPerPage)
+                  .map((dataset, index) => (
+                    <Col xs={6} md={3} className="mt-4">
+                      <CardIV key={index} dataset={dataset} />
+                    </Col>
+                  ))}
+              </Row>
               // </div>
             )}
             {/* Pagination controls for Create Dashboard, Available Templates, Data Sets */}
             <div className="pagination">
-              <button
-                onClick={() => handlePageChange(page - 1)}
-                disabled={page === 1}
-              >
-                {"<"}
-              </button>
-              {visiblePages.map((pageNumber) => (
-                <button
-                  key={pageNumber}
-                  onClick={() => handlePageChange(pageNumber)}
-                  className={pageNumber === page ? "active" : ""}
-                >
-                  {pageNumber}
-                </button>
-              ))}
-              <button
-                onClick={() => handlePageChange(page + 1)}
-                disabled={page === totalPages}
-              >
-                {">"}
-              </button>
+              <Pagination
+                count={totalPages}
+                page={page}
+                onChange={handlePageChange}
+                variant="outlined"
+                shape="rounded"
+              />
+              {/* <Pagination
+                totalPages={totalPages}
+                currentPage={page}
+                onPageChange={handlePageChange}
+              /> */}
             </div>
           </DashboardWrapper>
         </div>
@@ -198,9 +193,14 @@ const CreateDashboard = ({ datasets, getDatasets }) => {
 
 CreateDashboard.propTypes = {
   getDatasets: PropTypes.func.isRequired,
+  getDashboards: PropTypes.func.isRequired,
 };
 const mapStateToProps = (state) => ({
   response: state.response.response,
   datasets: state.dataset.datasets,
+  dashboards: state.dashboard.dashboards,
 });
-export default connect(mapStateToProps, { getDatasets })(CreateDashboard);
+export default connect(
+  mapStateToProps,
+  { getDatasets, getDashboards }
+)(CreateDashboard);

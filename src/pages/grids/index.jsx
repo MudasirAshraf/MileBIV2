@@ -15,79 +15,121 @@ const Grids = ({ dashboard, updateDashboard }) => {
   const [gridToMoveIndex, setGridToMoveIndex] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(null);
 
-  const handleCreateGrid = (rows, cols) => {
+  const handleCreateGrid = async (rows, cols, colsdata) => {
     const newGrid = { rows: rows, cols: cols, id: Date.now() };
     setGrid(newGrid);
+    if (colsdata) {
+      colsdata.forEach(async (col, index) => {
+        const newGrid = {
+          id: index,
+          rows: 1,
+          cols: cols,
+          colWidth: col.colWidth,
+        };
+
+        if (dashboard) {
+          dashboard = {
+            ...dashboard,
+            datasetsTree: [
+              ...(dashboard.datasetsTree || []),
+              {
+                datasetLabel: "Chart",
+                iconUrl: "",
+                grids: newGrid,
+              },
+            ],
+          };
+        } else {
+          dashboard = {
+            datasetsTree: [
+              {
+                datasetLabel: "Chart",
+                iconUrl: "",
+                grids: newGrid,
+              },
+            ],
+          };
+        }
+      });
+      await updateDashboard(dashboard);
+    }
   };
 
   const handleAddChartToGrid = async (chart) => {
     const options = getChartOptions(chart);
     setSelectedCharts([...selectedCharts, chart]);
     setChartOptions(options);
-    handleCreateGrid(1, 1);
+    // handleCreateGrid(1, 1);
     if (dashboard) {
       let datasetsTree = dashboard?.datasetsTree || [];
-      let newIndex = 0;
+      const exitsDatasetTree = datasetsTree.find((d, index) => index == selectedIndex);
 
-      if (dashboard.datasetsTree) {
-        newIndex =
-          datasetsTree.length > 0
-            ? Math.max(...datasetsTree.map((d) => d.index)) + 1
-            : 1;
+      if (exitsDatasetTree) {
+        exitsDatasetTree["chartType"] = options.chartType,
+          exitsDatasetTree["options"] = options
       }
-
-      datasetsTree.push({
-        index: newIndex,
-        chartType: options.chartType,
-        grids: { rows: 1, cols: 1, id: Date.now() },
-        options: options,
-      });
+      // else {
+      //   datasetsTree.push({
+      //     index: selectedIndex,
+      //     chartType: options.chartType,
+      //     grids: { rows: 1, cols: 1, id: Date.now(), colIndex: selectedIndex },
+      //     options: options,
+      //   });
+      // }
 
       const updatedDashboard = {
         ...dashboard,
         datasetsTree: datasetsTree,
       };
-
+      setSelectedChart(chart);
+      setChartOptions(options || {});
       await updateDashboard(updatedDashboard);
     }
   };
 
   const handleSelectGrid = (index, options) => {
-     setSelectedIndex(index);
+    setSelectedIndex(index);
     if (selectedGridIndex === null) {
       setSelectedGridIndex(index);
     } else if (gridToMoveIndex === null) {
       setGridToMoveIndex(index);
     } else {
-      // Swap if both indices are selected
-      // handleShuffleCharts();
     }
     setSelectedChart(selectedCharts[index]);
-    setChartOptions(options);
+    setChartOptions(options || {});
   };
 
   const handleUpdateChartOptions = async (updatedOptions) => {
-    if (!dashboard?.datasetsTree?.[selectedIndex]) {
-      console.warn(
-        "Unable to update chart options: Invalid dashboard or index."
-      );
+    // Find the dataset with the matching index
+    const datasetTree = dashboard.datasetsTree?.find((dataset, index) => index === selectedIndex);
+
+    if (!datasetTree) {
+      console.warn("Unable to update chart options: Invalid dashboard or index.");
       return;
     }
 
-    const updatedTree = [...dashboard.datasetsTree];
-    updatedTree[selectedIndex] = {
-      ...updatedTree[selectedIndex],
+    // Create the updated datasetTree with the new options
+    const updatedDatasetTree = {
+      ...datasetTree,
       options: updatedOptions,
     };
 
+    // Update the datasetsTree array with the modified datasetTree
     const updatedDashboard = {
       ...dashboard,
-      datasetsTree : updatedTree
-    }
-    await updateDashboard(updatedDashboard)
+      datasetsTree: dashboard.datasetsTree.map((dataset, index) =>
+        index === selectedIndex ? updatedDatasetTree : dataset
+      ),
+    };
+
+    // Perform the update
+    await updateDashboard(updatedDashboard);
+
+    // Set the updated chart options locally
     setChartOptions(updatedOptions);
     console.log("Chart options updated successfully.");
   };
+
 
   const handleDeleteChart = () => {
     if (selectedGridIndex !== null) {
@@ -95,7 +137,6 @@ const Grids = ({ dashboard, updateDashboard }) => {
         (_, i) => i !== selectedGridIndex
       );
       const updatedGrids = grids.filter((_, i) => i !== selectedGridIndex);
-
       setSelectedCharts(updatedCharts);
       setGrids(updatedGrids);
       setSelectedChart(null);
@@ -132,10 +173,6 @@ const Grids = ({ dashboard, updateDashboard }) => {
     }
   };
 
-  // onUpdateSeries = (series) => {
-  //   console.log(series);
-  // };
-
   return (
     <div className="main-container">
       <Dashboard
@@ -148,23 +185,29 @@ const Grids = ({ dashboard, updateDashboard }) => {
         handleShuffleCharts={handleShuffleCharts}
         selectedGridIndex={selectedGridIndex}
         gridToMoveIndex={gridToMoveIndex}
-        // onUpdateSeries={onUpdateSeries}
+      // onUpdateSeries={onUpdateSeries}
       >
-        <div className="container-grids">
-          <div className="content-grids">
-            {dashboard &&
-              dashboard.datasetsTree &&
-              dashboard.datasetsTree.map((d, index) => (
-                <Grid
-                  key={d.grids.id}
-                  chart={selectedCharts[index]}
-                  chartOptions={d.options}
-                  onSelect={() => handleSelectGrid(index, d.options)}
-                  isSelected={
-                    selectedIndex === index
-                  }
-                />
-              ))}
+        <div className="container-grids p-3">
+          <div className="content-grids p-0">
+            <div className="d-flex flex-wrap">
+              {dashboard && dashboard.datasetsTree && dashboard.datasetsTree.map((dataset, index) => {
+                // Find the dataset with the matching index
+                // const dataset = dashboard.datasetsTree?.find(dataset => dataset.index === index);
+                return (
+                  <Grid
+                    key={index}
+                    dataset={dataset}
+                    dashboard={dashboard}
+                    chart={dataset && dataset.options ? dataset.options || {} : {}}
+                    chartOptions={dataset && dataset.options ? dataset.options : {}}
+                    onSelect={(selectedIndex) => handleSelectGrid(selectedIndex, dataset && dataset.options ? dataset.options : {})}
+                    selectedIndex={selectedIndex}
+                    colWidth={dataset?.grids?.colWidth}
+                    index={index}
+                  />
+                );
+              })}
+            </div>
           </div>
         </div>
       </Dashboard>

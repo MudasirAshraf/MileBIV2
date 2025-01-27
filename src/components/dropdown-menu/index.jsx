@@ -5,14 +5,19 @@ import EDIT from "../../assets/svg/edit.svg";
 import Trash from "../../assets/svg/trash.svg";
 import Arrow from "../../assets/svg/arrow.svg";
 import SmallArrow from "../../assets/svg/smallarrow.svg";
+import { useNavigate } from "react-router-dom";
 
-const DropdownMenu = ({ deleteDataset, datasetId }) => {
+const DropdownMenu = ({ deleteDataset, datasetId, dashboardId }) => {
   const [showSubmenu, setShowSubmenu] = useState(false);
-
+  const navigate = useNavigate();
   const handleMoveToClick = (e) => {
     e.stopPropagation();
     setShowSubmenu(!showSubmenu);
   };
+
+  const handleEdit = () => {
+    navigate(`/grids/${dashboardId}`)
+  }
 
   const handleDelete = () => {
     deleteDataset(datasetId);
@@ -21,8 +26,8 @@ const DropdownMenu = ({ deleteDataset, datasetId }) => {
   return (
     <div className="dropdown-menu">
       <ul>
-        <li>
-          <img src={EDIT} alt="Edit" /> Edit
+        <li onClick={() => handleEdit()}>
+          <img src={EDIT}  alt="Edit" /> Edit
         </li>
         <li onClick={handleDelete}>
           <img src={Trash} alt="Delete" /> Delete

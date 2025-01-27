@@ -4,12 +4,13 @@
 .container-grids {
   padding: 10px;
 }
+
 .content-grids {
   background-color: white;
   width: 100%;
   height: auto;
   border-radius: 10px;
-  display: grid;
+  // display: grid;
   grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
   gap: 10px;
   padding: 10px;

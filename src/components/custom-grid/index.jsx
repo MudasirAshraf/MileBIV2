@@ -6,7 +6,14 @@ const CustomGrid = ({ onCreate }) => {
   const [cols, setCols] = useState(1);
 
   const handleCreate = () => {
-    onCreate(rows, cols);
+    const totalItems = rows * cols;
+    const getColumnWidth = `${100 / cols}%`;
+    const colData = Array.from({ length: totalItems }).map(() => {
+      return {
+        colWidth: getColumnWidth
+      };
+    });    
+    onCreate(rows, cols,colData);
   };
 
   return (

@@ -42,6 +42,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loader from "./components/loader";
 import ShowJsonNodes from "./pages/show-json-nodes";
+import DatasetJoiner from "./components/dataset-joiner";
 function App() {
   const [data, setData] = useState();
   return (
@@ -118,6 +119,10 @@ function App() {
                 path="/create-dashboard-V"
                 element={<CreateDashboardModalV />}
               />
+              <Route
+                path="/dataset-joiner"
+                element={<DatasetJoiner datasets={[]} />}
+              />
               {/* View Templates */}
               <Route path="/template-I" element={<TemplateI />} />
               <Route path="/template-II" element={<TemplateII />} />
@@ -144,6 +149,8 @@ function App() {
               />
               {/* Grid Wrapper */}
               <Route path="/grids" element={<Grids />} />
+              {/* Grid Wrapper */}
+              <Route path="/grids/:id" element={<Grids />} />
             </Routes>
           </Router>
           <ToastContainer />

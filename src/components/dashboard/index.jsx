@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Select from "react-select";
 import { TextField, MenuItem, Box, Chip } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -63,6 +63,7 @@ import {
   addDashboard,
   updateDashboard,
   saveDashboardChanges,
+  getSpecificDashboard,
 } from "../../actions/dashboardActions";
 import { toast } from "react-toastify";
 import { defaultChartOptions } from "../../data/chartData";
@@ -72,13 +73,14 @@ const Dashboard = ({
   children,
   onCreateGrid,
   onSelectChart,
-  selectedChart,
+  // chartOptions.chartType,
   onDeleteChart,
   onUpdateChartOptions,
   handleShuffleCharts,
   selectedGridIndex,
   gridToMoveIndex,
   getDatasets,
+  getSpecificDashboard,
   datasets,
   dashboard,
   updateDashboard,
@@ -98,31 +100,101 @@ const Dashboard = ({
   const [zAxisColumn, setZAxisColumn] = useState({});
   const [series, setSeries] = useState([]);
   const [yAxisColumn, setYAxisColumn] = useState({});
-  const [dashboardName, setDashboardName] = useState("");
+  const [dashboardName, setDashboardName] = useState(dashboard ? dashboard.dashboardTitle : "");
   const [selectedSeries, setSelectedSeries] = useState({});
+  const { id } = useParams();
+  const aggregateFunctions = {
+    SUM: (data, column) => data.reduce((sum, item) => sum + (item || 0), 0),
+    AVERAGE: (data, column) => {
+      const values = data.map(item => item || 0);
+      return values.length ? (values.reduce((sum, val) => sum + val, 0) / values.length).toFixed(2) : 0;
+    },
+    MIN: (data, column) => Math.min(...data.map(item => item || 0)),
+    MAX: (data, column) => Math.max(...data.map(item => item || 0)),
+    COUNT: (data) => data.length
+  };
 
   const handleSubmit = (values) => {
     let updatedOptions = { ...chartOptions };
-    const getAxisData = (axisColumn) => {
-      const dataset = selectedDatasets.find((dataset) =>
-        dataset.dataSourceData.some((row) =>
-          row.hasOwnProperty(axisColumn.column)
-        )
-      );
+    // Utility: Get data grouped by category and series
+    const groupData = (data, categoryColumn, seriesColumn) => {
+      return data.reduce((acc, row) => {
+        const category = row[categoryColumn];
+        const series = row[seriesColumn];
 
-      if (dataset && dataset.dataSourceData) {
-        return dataset.dataSourceData.map((row) => row[axisColumn.column]);
+        if (!category || series === undefined) return acc;
+
+        acc[category] = acc[category] || [];
+        acc[category].push(series);
+        return acc;
+      }, {});
+    };
+
+    const filterDataset = (dataset, filters = []) => {
+      let filteredData = dataset
+      if (filters.length > 0) {
+        filteredData = filteredData?.filter((row) => {
+          return filters.every((filter) => {
+            const { column, operator, value } = filter;
+            switch (operator) {
+              case '=':
+                return row[column] === value;
+              case '!=':
+                return row[column] !== value;
+              case '>':
+                return row[column] > value;
+              case '<':
+                return row[column] < value;
+              case '>=':
+                return row[column] >= value;
+              case '<=':
+                return row[column] <= value;
+              default:
+                return true;
+            }
+          });
+        });
       }
-      return [];
+      return filteredData;
+    }
+
+    // Utility: Process series data
+    const processSeries = (data, categories, seriesColumn, categoryColumn, groupBy, aggregateFunction, type = "") => {
+      if (groupBy === "yes") {
+        const groupedData = groupData(data, categoryColumn, seriesColumn);
+        const seriesValues = Array.from(new Set(data.map((item) => item[seriesColumn])));
+        return seriesValues.map((value) => ({
+          name: value,
+          type: type,
+          data: categories.map((category) => {
+            const values = groupedData[category] || [];
+            const filteredValues = values.filter((v) => v === value);
+            return aggregateFunctions[aggregateFunction](filteredValues);
+          }),
+        }));
+      } else {
+        return categories.reduce((result, category) => {
+          const rows = data.filter((item) => item[categoryColumn] === category);
+          const seriesValues = Array.from(new Set(rows.map((item) => item[seriesColumn])));
+          seriesValues.forEach((value) => {
+            result.push({
+              name: value,
+              type: type,
+              data: rows.filter((item) => item[seriesColumn] === value).map((item) => item[seriesColumn]),
+            });
+          });
+          return result;
+        }, []);
+      }
     };
 
     switch (updatedOptions.chartType) {
       case "bubblechart":
       case "bubblechart3d":
         const processedItems = values.datasets.map((item) => {
-          const xAxisData = getAxisData(item.data.x);
-          const yAxisData = getAxisData(item.data.y);
-          const zAxisData = getAxisData(item.data.z);
+          const xAxisData = getAxisData(item.data.x, "no", "");
+          const yAxisData = getAxisData(item.data.y, "no", "");
+          const zAxisData = getAxisData(item.data.z, "no", "");
 
           return {
             name: item.name,
@@ -131,6 +203,7 @@ const Dashboard = ({
             zData: zAxisData,
           };
         });
+
         const bubblechartData = processedItems.map((item) => ({
           name: item.name,
           data: item.xData.map((x, index) => ({
@@ -160,14 +233,25 @@ const Dashboard = ({
       case "horizontalbarchart":
       case "100stackedverticalbarchart":
       case "area":
-        const categories = getAxisData(values.category);
-        const series = values.series.map((item) => {
-          return {
-            name: `${item.name}=>(${item.datasetName})`,
-            type: item.type,
-            data: getAxisData(item)
-          }
-        });
+        const dataset = filterDataset(chartOptions?.datasets?.dataSourceData, values.whereConditions)
+        const { category, series, groupBy, aggregateFunction } = values;
+        let categories = [];
+        let processedSeries = [];
+        if (groupBy == "yes") {
+          categories = Array.from(new Set(dataset.map((row) => row[category.column])));
+          // Process each series dynamically
+          processedSeries = series.map((item) => ({
+            name: item.datasetName,
+            data: processSeries(dataset, categories, item.column, category.column, groupBy, aggregateFunction),
+          }));
+        } else {
+          categories = dataset.map((row) => row[category.column]);
+          // Process each series dynamically
+          processedSeries = series.map((item) => ({
+            name: item.datasetName,
+            data: { name: item.column, data: dataset.map((row) => row[item.column]) },
+          }));
+        }
 
         updatedOptions = {
           ...updatedOptions,
@@ -178,17 +262,20 @@ const Dashboard = ({
               ...updatedOptions.options.xaxis,
               categories: categories,
             },
-            series: series,
+            series: processedSeries.flatMap(p => p.data),
           },
         };
         break;
       case "treemap":
-        const treeMapData = getAxisData(values.x).map((m, index) => {
+        const treeMapDataset = filterDataset(chartOptions?.datasets?.dataSourceData, values.whereConditions)
+        const xData = treeMapDataset.map((row) => row[values.x.column]);
+        const treeMapData = xData.map((m, index) => {
           return {
             x: m,
-            y: getAxisData(values.y)[index]
+            y: treeMapDataset.map((row) => row[values.y.column])[index]
           }
         })
+
         updatedOptions = {
           ...updatedOptions,
           formValues: values,
@@ -205,15 +292,135 @@ const Dashboard = ({
       case "pie":
       case "donut":
       case "radialBar":
+        const pieDataset = filterDataset(chartOptions?.datasets?.dataSourceData, values.whereConditions)
+        const piecategory = values.category;
+        const pieseries = values.series;
+        const piegroupBy = values.groupBy;
+        const pieaggregateFunction = values.aggregateFunction;
+
+        let piecategories = [];
+        let pieprocessedSeries = [];
+        if (piegroupBy == "yes") {
+          piecategories = Array.from(new Set(pieDataset.map((row) => row[piecategory.column])));
+          pieprocessedSeries = processSeries(pieDataset, piecategories, pieseries.column, piecategory.column, piegroupBy, pieaggregateFunction)
+        } else {
+          piecategories = pieDataset.map((row) => row[piecategory.column]);
+          pieprocessedSeries = pieDataset.map((row) => row[pieseries.column])
+        }
         updatedOptions = {
           ...updatedOptions,
           formValues: values,
           options: {
             ...updatedOptions.options,
-            labels: getAxisData(values.category),
-            series: getAxisData(values.series),
+            labels: piecategories,
+            series: pieprocessedSeries,
           },
         };
+        break;
+      case "mixed":
+        const mdataset = filterDataset(chartOptions?.datasets?.dataSourceData, values.whereConditions)
+        const mcategory = values.category;
+        const mseries = values.series
+        const mgroupBy = values.groupBy
+        const maggregateFunction = values.aggregateFunction
+        let mcategories = [];
+        let mprocessedSeries = [];
+        if (mgroupBy == "yes") {
+          mcategories = Array.from(new Set(mdataset.map((row) => row[mcategory.column])));
+          // Process each series dynamically
+          mprocessedSeries = mseries.map((item) => ({
+            name: item.datasetName,
+            type: item.type,
+            data: processSeries(mdataset, mcategories, item.column, mcategory.column, mgroupBy, maggregateFunction, item.type),
+          }));
+        } else {
+          mcategories = mdataset.map((row) => row[mcategory.column]);
+          // Process each series dynamically
+          mprocessedSeries = mseries.map((item) => ({
+            name: item.datasetName,
+            data: { name: item.column, type: item.type, data: mdataset.map((row) => row[item.column]) },
+          }));
+        }
+
+        updatedOptions = {
+          ...updatedOptions,
+          formValues: values,
+          options: {
+            ...updatedOptions.options,
+            labels: mcategories,
+            series: mprocessedSeries.flatMap(p => p.data),
+          },
+        };
+
+        break;
+      case "scatter":
+        const filteredDataset = filterDataset(chartOptions?.datasets?.dataSourceData, values.whereConditions);
+
+        if (values.series?.length > 0) {
+          const seriesData = values.series.map((item) => {
+            const { name, x, y } = item;
+
+            const xData = filteredDataset.map((row) => row[x.column]);
+            const yData = filteredDataset.map((row) => row[y.column]);
+
+            const dataArray = xData.map((xValue, index) => ({
+              x: xValue,
+              y: yData[index],
+            }));
+
+            return {
+              name,
+              data: dataArray,
+            };
+          });
+
+          updatedOptions = {
+            ...updatedOptions,
+            formValues: values,
+            options: {
+              ...updatedOptions.options,
+              series: seriesData,
+            },
+          };
+        }
+
+      case "card":
+        const cardDataset = filterDataset(chartOptions?.datasets?.dataSourceData, values.whereConditions)
+        const cardData = cardDataset.map((row) => row[values.column.column]);
+        const value = aggregateFunctions[values.function](cardData);
+        updatedOptions = {
+          ...updatedOptions,
+          formValues: values,
+          options: {
+            ...updatedOptions.options,
+            value: value
+          },
+        };
+        break;
+      case "table":
+        const tableDataset = filterDataset(
+          chartOptions?.datasets?.dataSourceData,
+          values.whereConditions
+        );
+
+        const selectedColumns = values?.columns?.map((col) => col.column); // Extract column names
+        const data = tableDataset?.map((row) =>
+          selectedColumns.reduce((acc, column) => {
+            acc[column] = row[column];
+            return acc;
+          }, {})
+        );
+
+        updatedOptions = {
+          ...updatedOptions,
+          formValues: values,
+          options: {
+            ...updatedOptions.options,
+            data: data
+          },
+        };
+        break;
+
         break;
       default:
         console.warn("Unsupported chart type:", updatedOptions.chartType);
@@ -223,20 +430,34 @@ const Dashboard = ({
     onUpdateChartOptions(updatedOptions);
   };
 
-
   const handleDashboardName = async (value) => {
-    setDashboardName(value);
-  };
 
-  const seriesOptions = columns.flatMap((col) =>
-    col.columns.map((columnName) => ({
-      value: JSON.stringify({
-        column: columnName,
-        datasetName: col.datasetName,
-      }),
-      label: `${col.datasetName}: ${columnName}`,
-    }))
-  );
+    const updatedDashboard = {
+      ...dashboard,
+      dashboardTitle: value,
+    };
+
+    // Determine whether to update or add
+    if (dashboard && dashboard.dashboardId != null) {
+      console.log("Updating dashboard...");
+      await updateDashboard(updatedDashboard);
+    } else {
+      console.log("Adding new dashboard...");
+      await addDashboard(updatedDashboard);
+    }
+  }
+
+  const chartTypes = [
+    {
+      label: "Line", value: "line"
+    },
+    {
+      label: "area", value: "area"
+    },
+    {
+      label: "column", value: "column"
+    }
+  ]
 
   const categoriesOptions = columns.flatMap((col) =>
     col.columns.map((columnName) => ({
@@ -248,265 +469,65 @@ const Dashboard = ({
     }))
   );
 
+  const handleColumns = (rows, cols, colData) => {
+    onCreateGrid(rows, cols, colData);
+  }
+
+
+  useEffect(() => {
+    if (dashboard) {
+      setDashboardName(dashboard.dashboardTitle)
+    }
+    if (chartOptions && chartOptions["datasets"]) {
+      const selectedDataset = chartOptions["datasets"];
+
+      if (selectedDataset && selectedDataset.dataSourceData && selectedDataset.dataSourceData.length > 0) {
+        const firstItem = selectedDataset.dataSourceData[0];
+        const newColumns = [{
+          datasetName: selectedDataset.datasetTitle,
+          datasetId: selectedDataset.datasetId,
+          columns: Object.keys(firstItem),
+        }];
+        setColumns(newColumns);
+      } else {
+        setColumns([]);
+      }
+    } else {
+      setColumns([]);
+    }
+  }, [chartOptions]);
+
+
   const handleCreateDashboard = () => {
     navigate("/create-dashboard-modals");
   };
 
-  const handleSeriesChange = (e) => {
-    const selectedValue = e.value
-    const { column, datasetName } = JSON.parse(selectedValue);
-    setSelectedSeries({ column, datasetName });
-  };
-
-  const addSeries = () => {
-    if (
-      selectedSeries &&
-      !series.some((cat) => cat.columnName === selectedSeries.column)
-    ) {
-      setSeries((prevSeries) => [
-        ...prevSeries,
-        {
-          columnName: selectedSeries.column,
-          datasetName: selectedSeries.datasetName,
-        },
-      ]);
-    }
-    // setSelectedSeries(null);
-  };
-
-  const deleteSeries = (columnName) => {
-    if (columnName) {
-      setSeries((prevSeries) =>
-        prevSeries.filter((s) => s.columnName !== columnName.split("=>")[0].trim())
-      );
-    }
-  };
-
-  const updateSeriesType = (index, newType) => {
-    const updatedSeries = series.map((s, i) =>
-      i === index ? { ...s, type: newType } : s
-    );
-    setSeries(updatedSeries); // Update the series state
-  };
-
-  const handleXAxisChange = (e) => {
-    const selectedValue = e.value;
-    const { column, datasetName } = JSON.parse(selectedValue);
-    setXAxisColumn({ column, datasetName });
-  };
-
-  const handleCategories = (e) => {
-    const selectedValue = e.value;
-    const { column, datasetName } = JSON.parse(selectedValue);
-    setXAxisColumn({ column, datasetName });
-  };
-
-  // Handle Y-Axis Column Selection
-  const handleYAxisChange = (e) => {
-    const selectedValue = e.value;
-    const { column, datasetName } = JSON.parse(selectedValue);
-    setYAxisColumn({ column, datasetName });
-  };
 
   const handleChange = (event) => {
-    const items = event.target.value;
-    setSelectedDatasets(items);
-    const newColumns = items
-      .map((item) => {
-        if (item && item.dataSourceData && item.dataSourceData.length > 0) {
-          const firstItem = item.dataSourceData[0];
-          if (firstItem) {
-            return {
-              datasetName: item.datasetTitle,
-              datasetId: firstItem.datasetId,
-              columns: Object.keys(firstItem),
-            };
-          }
-        }
-        return null;
-      })
-      .filter((obj) => obj !== null);
-    setColumns(newColumns);
+    if (event) {
+      const selectedDataset = datasets.find(
+        (dataset) => dataset.datasetId === event.datasetId
+      );
+
+      if (selectedDataset) {
+        chartOptions["datasets"] = selectedDataset;
+
+        const newColumns = selectedDataset.dataSourceData && selectedDataset.dataSourceData.length > 0
+          ? [{
+            datasetName: selectedDataset.datasetTitle,
+            datasetId: selectedDataset.datasetId,
+            columns: Object.keys(selectedDataset.dataSourceData[0]),
+          }]
+          : [];
+
+        setColumns(newColumns);
+      }
+    } else {
+      setSelectedDatasets([]);
+      setColumns([]);
+      chartOptions["datasets"] = null;
+    }
   };
-
-
-  useEffect(() => {
-    if (!xAxisColumn || !yAxisColumn) return;
-    // Find the dataset corresponding to the selected x-axis column
-    const xDataset = selectedDatasets.find((dataset) =>
-      dataset.dataSourceData.some((row) =>
-        row.hasOwnProperty(xAxisColumn.column)
-      )
-    );
-
-
-    // Extract x-axis data (categories)
-    let xAxisData = [];
-    if (xDataset && xDataset.dataSourceData) {
-      xAxisData = xDataset.dataSourceData.map(
-        (row) => row[xAxisColumn.column]
-      );
-    }
-
-    // Generate series data
-    const seriesData = series
-      .map((seriesItem) => {
-        const dataset = selectedDatasets.find(
-          (ds) => ds.datasetTitle === seriesItem.datasetName
-        );
-
-        if (dataset) {
-          const data = xAxisData.map((category) => {
-            const row = dataset.dataSourceData.find(
-              (r) => r[xAxisColumn.column] === category
-            );
-            return row ? row[seriesItem.columnName] : null;
-          });
-
-          return {
-            name: `${seriesItem.columnName}=>(${seriesItem.datasetName})`,
-            type: seriesItem.type,
-            data,
-          };
-        }
-        return null;
-      })
-      .filter(Boolean);
-
-    // Find the dataset corresponding to the selected y-axis column
-    const yDataset = selectedDatasets.find((dataset) =>
-      dataset.dataSourceData.some((row) =>
-        row.hasOwnProperty(yAxisColumn.column)
-      )
-    );
-
-    // Extract y-axis data
-    let yAxisData = [];
-    if (yDataset && yDataset.dataSourceData) {
-      yAxisData = yDataset.dataSourceData.map(
-        (row) => row[yAxisColumn.column]
-      );
-    }
-
-    // Configure chart options
-    let updatedOptions = { ...chartOptions };
-
-    switch (updatedOptions.chartType) {
-      case "pie":
-      case "donut":
-      case "radialBar":
-        updatedOptions = {
-          ...updatedOptions,
-          options: {
-            ...updatedOptions.options,
-            labels: xAxisData,
-            series: yAxisData,
-          },
-        };
-        break;
-      case "treemap":
-        const treeMapData = xAxisData.map((x, index) => ({
-          x,
-          y: yAxisData[index],
-        }));
-        updatedOptions = {
-          ...updatedOptions,
-          options: {
-            ...updatedOptions.options,
-            series: [
-              {
-                data: [...treeMapData],
-              },
-            ],
-          },
-        };
-        break;
-      case "bubblechart":
-        const bubblechart = xAxisData.map((x, index) => ({
-          x,
-          y: yAxisData[index],
-          z: yAxisData[index],
-        }));
-        updatedOptions = {
-          ...updatedOptions,
-          options: {
-            ...updatedOptions.options,
-            series: [
-              {
-                data: [...bubblechart],
-              },
-            ],
-          },
-        };
-        break;
-      case "mixed":
-        updatedOptions = {
-          ...updatedOptions,
-          options: {
-            ...updatedOptions.options,
-            labels: xAxisData,
-            series: seriesData,
-          },
-        };
-        break;
-      case "scatter":
-        const scatterData = xAxisData.map((x, index) => ({
-          x,
-          y: yAxisData[index],
-        }));
-
-        updatedOptions = {
-          ...updatedOptions,
-          options: {
-            ...updatedOptions.options,
-            series: [
-              {
-                name: `${yAxisColumn.column} vs ${xAxisColumn.column}`,
-                data: scatterData,
-              },
-            ],
-          },
-        };
-        break;
-      case "radialBar":
-        updatedOptions = {
-          ...updatedOptions,
-          options: {
-            ...updatedOptions.options,
-            labels: [...xAxisData],
-            series: [...yAxisData],
-          },
-        };
-        break;
-      case "line":
-      case "bar":
-      case "stackedhorizontalbar":
-      case "100stackedhorizontalbarchart":
-      case "stackedverticalbar":
-      case "verticalbarchart":
-      case "horizontalbarchart":
-      case "100stackedverticalbarchart":
-      case "area":
-        updatedOptions = {
-          ...updatedOptions,
-          options: {
-            ...updatedOptions.options,
-            xaxis: {
-              ...updatedOptions.options.xaxis,
-              categories: xAxisData, // Set categories for x-axis
-            },
-            series: seriesData, // Set dynamic series data
-          },
-        };
-        break;
-      default:
-        console.warn("Unsupported chart type:", updatedOptions.chartType);
-        break;
-    }
-
-    // Update chart options state
-    onUpdateChartOptions(updatedOptions);
-  }, [xAxisColumn, yAxisColumn, selectedDatasets, series]);
 
   const handleCreateDataset = () => {
     navigate("/create-dataset-I");
@@ -518,23 +539,17 @@ const Dashboard = ({
       event?.preventDefault();
 
       // Validate the dashboard title
-      if (!dashboardName || dashboardName.trim() === "") {
+      if (!dashboard || !dashboard.dashboardTitle || dashboard.dashboardTitle.trim() === "") {
         toast.warn("Dashboard name is required!!");
         return;
       }
-      // Create updated dashboard object
-      const updatedDashboard = {
-        ...dashboard,
-        dashboardTitle: dashboardName,
-      };
-
       // Determine whether to update or add
       if (dashboard && dashboard.dashboardId != null) {
         console.log("Updating dashboard...");
-        await updateDashboard(updatedDashboard);
+        await updateDashboard(dashboard);
       } else {
         console.log("Adding new dashboard...");
-        await addDashboard(updatedDashboard);
+        await addDashboard(dashboard);
       }
 
       console.log("Dashboard saved successfully!");
@@ -545,6 +560,9 @@ const Dashboard = ({
 
   useEffect(() => {
     getDatasets();
+    if (id) {
+      getSpecificDashboard(id);
+    }
   }, []);
 
   // Handle Selection of Charts
@@ -560,7 +578,6 @@ const Dashboard = ({
 
   const handlePropertyChange = async (e) => {
     const { name, value } = e.target;
-
     // Clone the chartOptions object to avoid mutating the original state
     const updatedOptions = {
       ...chartOptions,
@@ -574,16 +591,14 @@ const Dashboard = ({
     const searchAndUpdateKey = (obj, keyToFind, value) => {
       for (const key in obj) {
         if (key === keyToFind) {
-          // Key found, update its value
           obj[key] = value;
-          return true; // Exit after updating
+          return true;
         } else if (typeof obj[key] === "object" && obj[key] !== null) {
-          // Recursively search in nested objects
           const found = searchAndUpdateKey(obj[key], keyToFind, value);
-          if (found) return true; // Stop searching once key is found
+          if (found) return true;
         }
       }
-      return false; // Key not found
+      return false;
     };
 
     // Handle deep update for nested properties like xaxis.title.text
@@ -616,7 +631,7 @@ const Dashboard = ({
     return (
       <div className="chart-properties">
         {/* Horizontal Bar Chart */}
-        {selectedChart === "horizontalbarchart" && (
+        {chartOptions.chartType === "horizontalbarchart" && (
           <>
             {/* Title */}
             <label className="chart-properties-labels">
@@ -750,7 +765,7 @@ const Dashboard = ({
           </>
         )}
         {/* VERTICAL BAR CHART */}
-        {selectedChart === "verticalbarchart" && (
+        {chartOptions.chartType === "verticalbarchart" && (
           <>
             {/* Title */}
             <label className="chart-properties-labels">
@@ -884,7 +899,7 @@ const Dashboard = ({
           </>
         )}
         {/* STACKED Horizontal BAR CHART */}
-        {selectedChart === "stackedhorizontalbar" && (
+        {chartOptions.chartType === "stackedhorizontalbar" && (
           <>
             {/* Title */}
             <label className="chart-properties-labels">
@@ -977,7 +992,7 @@ const Dashboard = ({
           </>
         )}
         {/* STACKED Vertical BAR CHART */}
-        {selectedChart === "stackedverticalbar" && (
+        {chartOptions.chartType === "stackedverticalbar" && (
           <>
             {/* Title */}
             <label className="chart-properties-labels">
@@ -1070,7 +1085,7 @@ const Dashboard = ({
           </>
         )}
         {/* STACKED Horizontal BAR CHART I */}
-        {selectedChart === "100stackedhorizontalbarchart" && (
+        {chartOptions.chartType === "100stackedhorizontalbarchart" && (
           <>
             {/* Title */}
             <label className="chart-properties-labels">
@@ -1163,7 +1178,7 @@ const Dashboard = ({
           </>
         )}
         {/* STACKED Vertical BAR CHART I */}
-        {selectedChart === "100stackedverticalbarchart" && (
+        {chartOptions.chartType === "100stackedverticalbarchart" && (
           <>
             {/* Title */}
             <label className="chart-properties-labels">
@@ -1256,7 +1271,7 @@ const Dashboard = ({
           </>
         )}
         {/* PIE CHART */}
-        {selectedChart === "pie" && (
+        {chartOptions.chartType === "pie" && (
           <>
             {/* Title */}
             <label className="chart-properties-labels">
@@ -1297,7 +1312,7 @@ const Dashboard = ({
           </>
         )}
         {/* Donut CHART */}
-        {selectedChart === "donut" && (
+        {chartOptions.chartType === "donut" && (
           <>
             {/* Title */}
             <label className="chart-properties-labels">
@@ -1338,7 +1353,7 @@ const Dashboard = ({
           </>
         )}
         {/* Line Chart */}
-        {selectedChart === "line" && (
+        {chartOptions.chartType === "line" && (
           <>
             {/* Title */}
             <label className="chart-properties-labels">
@@ -1440,7 +1455,7 @@ const Dashboard = ({
             </label>
           </>
         )}
-        {selectedChart === "area" && (
+        {chartOptions.chartType === "area" && (
           <>
             {/* Title */}
             <label className="chart-properties-labels">
@@ -1579,7 +1594,7 @@ const Dashboard = ({
           </>
         )}
         {/* Scatter Chart */}
-        {selectedChart === "scatter" && (
+        {chartOptions.chartType === "scatter" && (
           <>
             {/* Title */}
             <label className="chart-properties-labels">
@@ -1756,7 +1771,7 @@ const Dashboard = ({
           </>
         )}
         {/* Bubble Chart */}
-        {selectedChart === "bubblechart" && (
+        {chartOptions.chartType === "bubblechart" && (
           <>
             {/* Title */}
             <label className="chart-properties-labels">
@@ -1982,7 +1997,7 @@ const Dashboard = ({
           </>
         )}
         {/* 3D Bubble Chart */}
-        {selectedChart === "bubblechart3d" && (
+        {chartOptions.chartType === "bubblechart3d" && (
           <>
             {/* Title */}
             <label className="chart-properties-labels">
@@ -2207,7 +2222,7 @@ const Dashboard = ({
             </label>
           </>
         )}
-        {selectedChart === "Gantt Chart" && (
+        {chartOptions.chartType === "Gantt Chart" && (
           <>
             {/* Title */}
             <label className="chart-properties-labels">
@@ -2473,7 +2488,7 @@ const Dashboard = ({
           </>
         )}
         {/* TREEMAP CHART */}
-        {selectedChart === "treemap" && (
+        {chartOptions.chartType === "treemap" && (
           <>
             {/* Title */}
             <label className="chart-properties-labels">
@@ -2695,7 +2710,7 @@ const Dashboard = ({
           </>
         )}
         {/* Mixed Chart */}
-        {selectedChart === "mixed" && (
+        {chartOptions.chartType === "mixed" && (
           <>
             {/* Title */}
             <label className="chart-properties-labels">
@@ -2826,7 +2841,7 @@ const Dashboard = ({
           </>
         )}
         {/* Gauge Chart */}
-        {selectedChart === "radialBar" && (
+        {chartOptions.chartType === "radialBar" && (
           <>
             {/* Title */}
             <label className="chart-properties-labels">
@@ -2899,113 +2914,47 @@ const Dashboard = ({
             </label>
           </>
         )}
-        {selectedChart === "Card" && (
+        {chartOptions.chartType === "card" && (
           <>
             {/* Title */}
             <label className="chart-properties-labels">
               Title:
               <input
                 type="text"
-                name="title"
-                value={properties.title || ""}
+                name="options.title"
+                value={properties["options.title"] || ""}
                 onChange={handlePropertyChange}
               />
             </label>
-            {/* Subtitle */}
+            {/* Background Color */}
             <label className="chart-properties-labels">
-              Subtitle:
+              Background Color:
               <input
-                type="text"
-                name="subtitle"
-                value={properties.subtitle || ""}
+                type="color"
+                name="options.background"
+                value={properties["options.background"] || "#ffffff"}
                 onChange={handlePropertyChange}
               />
             </label>
           </>
         )}
         {/* TABLE */}
-        {selectedChart === "Table" && (
+        {chartOptions.chartType === "table" && (
           <>
             {/* Title */}
             <label className="chart-properties-labels">
               Title:
               <input
                 type="text"
-                name="title"
-                value={properties.title || ""}
+                name="options.title"
+                value={properties["options.title"] || ""}
                 onChange={handlePropertyChange}
-              />
-            </label>
-
-            {/* Header Labels */}
-            <label className="chart-properties-labels">
-              Text Header:
-              <input
-                type="text"
-                name="headerText"
-                value={properties.headers ? properties.headers.text : "Text"}
-                onChange={(e) =>
-                  handlePropertyChange({
-                    target: {
-                      name: "headers",
-                      value: { ...properties.headers, text: e.target.value },
-                    },
-                  })
-                }
-              />
-            </label>
-            <label className="chart-properties-labels">
-              Sum Header:
-              <input
-                type="text"
-                name="headerSum"
-                value={properties.headers ? properties.headers.sum : "Sum"}
-                onChange={(e) =>
-                  handlePropertyChange({
-                    target: {
-                      name: "headers",
-                      value: { ...properties.headers, sum: e.target.value },
-                    },
-                  })
-                }
-              />
-            </label>
-            <label className="chart-properties-labels">
-              Price Header:
-              <input
-                type="text"
-                name="headerPrice"
-                value={properties.headers ? properties.headers.price : "Price"}
-                onChange={(e) =>
-                  handlePropertyChange({
-                    target: {
-                      name: "headers",
-                      value: { ...properties.headers, price: e.target.value },
-                    },
-                  })
-                }
-              />
-            </label>
-            <label className="chart-properties-labels">
-              Date Header:
-              <input
-                type="text"
-                name="headerDate"
-                value={properties.headers ? properties.headers.date : "Date"}
-                onChange={(e) =>
-                  handlePropertyChange({
-                    target: {
-                      name: "headers",
-                      value: { ...properties.headers, date: e.target.value },
-                    },
-                  })
-                }
               />
             </label>
           </>
         )}
         {/* Image */}
-        {selectedChart === "Image" && (
+        {chartOptions.chartType === "Image" && (
           <>
             {/* Title */}
             <label className="chart-properties-labels">
@@ -3020,7 +2969,7 @@ const Dashboard = ({
           </>
         )}
         {/* Typography */}
-        {selectedChart === "Typography" && (
+        {chartOptions.chartType === "Typography" && (
           <>
             {/* Title */}
             <label className="chart-properties-labels">
@@ -3114,22 +3063,22 @@ const Dashboard = ({
             </div>
             <div className="another-container-grid-data">
               <div className="c1">
-                <img src={C1} alt="logo" />
+                <img src={C1} alt="logo" onClick={() => handleColumns(1, 1, [{ colWidth: "100%" }])} />
               </div>
               <div className="c1">
-                <img src={C2} alt="logo" />
+                <img src={C2} alt="logo" onClick={() => handleColumns(1, 2, [{ colWidth: "50%" }, { colWidth: "50%" }])} />
               </div>
               <div className="c1">
-                <img src={C3} alt="logo" />
+                <img src={C3} alt="logo" onClick={() => handleColumns(1, 3, [{ colWidth: "33.33%" }, { colWidth: "33.33%" }, { colWidth: "33.33%" }])} />
               </div>
               <div className="c1">
-                <img src={C4} alt="logo" />
+                <img src={C4} alt="logo" onClick={() => handleColumns(1, 4, [{ colWidth: "25%" }, { colWidth: "25%" }, { colWidth: "25%" }, { colWidth: "25%" }])} />
               </div>
               <div className="c1">
-                <img src={C5} alt="logo" />
+                <img src={C5} alt="logo" onClick={() => handleColumns(1, 2, [{ colWidth: "20%" }, { colWidth: "80%" }])} />
               </div>
               <div className="c1">
-                <img src={C6} alt="logo" />
+                <img src={C6} alt="logo" onClick={() => handleColumns(1, 2, [{ colWidth: "80%" }, { colWidth: "20%" }])} />
               </div>
               <div className="c1">
                 <CustomGrid onCreate={onCreateGrid} />
@@ -3323,7 +3272,7 @@ const Dashboard = ({
                 {/* Simple Card */}
                 <div
                   className="b-chart"
-                  onClick={() => handleChartSelection("Card")}
+                  onClick={() => handleChartSelection("card")}
                 >
                   <img src={W1} alt="logo" />
                   <p>Card</p>
@@ -3331,7 +3280,7 @@ const Dashboard = ({
                 {/* Table */}
                 <div
                   className="b-chart"
-                  onClick={() => handleChartSelection("Table")}
+                  onClick={() => handleChartSelection("table")}
                 >
                   <img src={Table} alt="logo" />
                   <p>Table</p>
@@ -3350,6 +3299,7 @@ const Dashboard = ({
               <p>Typography</p>
               <div className="grid-data-circle">10</div>
             </div>
+
             {selectedComponent === "Typography" && (
               <div className="chart-list">
                 {/* Typography */}
@@ -3368,40 +3318,45 @@ const Dashboard = ({
         return (
           <div className="editor-data">
             <div className="editor-data-c-1">
-              <p className="text-primary text-center">{selectedChart}</p>
+              <p className="text-primary text-center">{chartOptions.chartType}</p>
               <hr />
             </div>
-            <TextField
-              select
-              label="Select Primary Key"
-              value={selectedDatasets}
-              multiple
-              onChange={handleChange}
-              fullWidth
-              SelectProps={{
-                multiple: true,
-                renderValue: (selected) => (
-                  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                    {selected.map((item) => (
-                      <Chip key={item.datasetId} label={item.datasetTitle} />
-                    ))}
-                  </Box>
-                ),
-              }}
-            >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              {datasets.map((key) => (
-                <MenuItem key={key.datasetId} value={key}>
-                  {key.datasetTitle}{" "}
-                </MenuItem>
-              ))}
-            </TextField>
+            {/* Dataset */}
+            {chartOptions?.chartType && <div>
+              <Select
+                options={datasets ? datasets.map(item => ({
+                  label: item.datasetTitle,
+                  value: item.datasetId,
+                })) : []}
+                value={chartOptions && chartOptions["datasets"]
+                  ? {
+                    label: chartOptions["datasets"].datasetTitle,
+                    value: chartOptions["datasets"].datasetId,
+                  }
+                  : null}
+                onChange={(selectedOption) => {
+                  handleChange(
+                    selectedOption
+                      ? {
+                        datasetTitle: selectedOption.label,
+                        datasetId: selectedOption.value,
+                      }
+                      : null
+                  );
+                }}
+                // isMulti={true}
+                placeholder="Select dataset"
+                closeMenuOnSelect={false}
+              />
 
+            </div>}
+            <div>
+              <a onClick={() => navigate('/dataset-joiner')}>Make new dataset</a>
+            </div>
             {/* Series */}
             {
-              ["line",
+              [
+                "line",
                 "verticalbarchart",
                 "horizontalbarchart",
                 "horizontalbarchart",
@@ -3417,24 +3372,37 @@ const Dashboard = ({
                 <div>
                   <Formik
                     initialValues={
-                      chartOptions.formValues ||
-                      {
-                        category: { column: "", datasetName: "" },
+                      chartOptions.formValues || {
+                        category: { column: "", datasetName: "", function: "" },
                         series: [{ type: "", name: "", column: "", datasetName: "" }],
-                      }}
+                        whereConditions: [{ operator: "", value: "", column: "", datasetName: "" }],
+                        groupBy: "no",
+                        aggregateFunction: ""
+                      }
+                    }
                     enableReinitialize={true}
                     validationSchema={Yup.object().shape({
                       category: Yup.object().shape({
                         column: Yup.string().required("Category column is required"),
                         datasetName: Yup.string().required("Category dataset name is required"),
+                        function: Yup.string(),
                       }),
+                      whereConditions: Yup.array().of(
+                        Yup.object().shape({
+                          operator: Yup.string().required('Operator is required'),
+                          value: Yup.string().required('Value is required'),
+                          column: Yup.string().required('Column is required'),
+                          datasetName: Yup.string().required('Dataset is required')
+                        })
+                      ),
                       series: Yup.array().of(
                         Yup.object().shape({
                           column: Yup.string().required("Series column is required"),
                           datasetName: Yup.string().required("Series dataset name is required"),
-                          name: Yup.string().required("Name is required"),
+                          name: Yup.string(),
+                          type: Yup.string()
                         })
-                      ),
+                      )
                     })}
                     onSubmit={(values) => {
                       handleSubmit(values);
@@ -3472,14 +3440,67 @@ const Dashboard = ({
                           )}
                         </div>
 
+                        {/* Group By Radio Buttons */}
+                        <div className="mt-3">
+                          <label>Group By:</label>
+                          <div>
+                            <label>
+                              <Field
+                                type="radio"
+                                name="groupBy"
+                                value="yes"
+                                checked={values.groupBy === "yes"}
+                                onChange={() => setFieldValue("groupBy", "yes")}
+                              />
+                              Yes
+                            </label>
+                            <label style={{ marginLeft: "20px" }}>
+                              <Field
+                                type="radio"
+                                name="groupBy"
+                                value="no"
+                                checked={values.groupBy === "no"}
+                                onChange={() => setFieldValue("groupBy", "no")}
+                              />
+                              No
+                            </label>
+                          </div>
+                        </div>
+
+                        {/* Aggregate Function Dropdown (Visible if Group By is "Yes") */}
+                        {values.groupBy === "yes" && (
+                          <div className="mt-2">
+                            <label htmlFor="aggregateFunction">Select Aggregate Function:</label>
+                            <Select
+                              options={Object.keys(aggregateFunctions).map((func) => ({
+                                label: func,
+                                value: func,
+                              }))}
+                              value={
+                                values.aggregateFunction
+                                  ? { label: values.aggregateFunction, value: values.aggregateFunction }
+                                  : null
+                              }
+                              onChange={(selectedFunc) => {
+                                setFieldValue("aggregateFunction", selectedFunc.value);
+                              }}
+                              className="react-select-container"
+                              classNamePrefix="react-select"
+                              placeholder="Select function"
+                            />
+                            {errors.aggregateFunction && touched.aggregateFunction && (
+                              <div style={{ color: "red" }}>{errors.aggregateFunction}</div>
+                            )}
+                          </div>
+                        )}
+
                         {/* Series Field Array */}
                         <FieldArray name="series">
                           {({ push, remove }) => (
                             <>
-                              {values && values.series.map((seriesItem, index) => (
-                                <div key={index} style={{ border: "1px solid #ccc", padding: "5px" }}>
-                                  {/* Name Field */}
-                                  <div>
+                              {values.series.map((seriesItem, index) => (
+                                <div key={index}>
+                                  {/* <div>
                                     <label htmlFor={`series[${index}].name`}>Name:</label>
                                     <Field
                                       className="form-control"
@@ -3491,67 +3512,186 @@ const Dashboard = ({
                                       errors.series[index]?.name &&
                                       touched.series &&
                                       touched.series[index]?.name && (
+                                        <div style={{ color: "red" }}>{errors.series[index].name}</div>
+                                      )}
+                                  </div> */}
+                                  {
+                                    chartOptions.chartType == "mixed" &&
+                                    <div>
+                                      <label htmlFor={`series[${index}]`}>Chart Type:</label>
+                                      <Select
+                                        options={chartTypes}
+                                        value={chartTypes.find((type) => {
+                                          return type.value === seriesItem.type
+                                        })}
+                                        onChange={(selectedType) => {
+                                          setFieldValue(`series[${index}]`, {
+                                            ...seriesItem,
+                                            type: selectedType.value
+                                          });
+                                        }}
+                                        className="react-select-container"
+                                        classNamePrefix="react-select"
+                                        placeholder="Choose Series"
+                                      />
+                                      {errors.series &&
+                                        errors.series[index]?.type &&
+                                        touched.series &&
+                                        touched.series[index]?.type && (
+                                          <div style={{ color: "red" }}>
+                                            {errors.series[index].type}
+                                          </div>
+                                        )}
+                                    </div>
+                                  }
+
+                                  <div>
+                                    <label htmlFor={`series[${index}]`}>Series {index + 1}:</label>
+                                    <Select
+                                      options={categoriesOptions}
+                                      value={categoriesOptions.find((option) => {
+                                        const parsedValue = JSON.parse(option.value);
+                                        return (
+                                          parsedValue.column === seriesItem.column &&
+                                          parsedValue.datasetName === seriesItem.datasetName
+                                        );
+                                      })}
+                                      onChange={(selectedOption) => {
+                                        const parsedValue = JSON.parse(selectedOption.value);
+                                        setFieldValue(`series[${index}]`, {
+                                          ...seriesItem,
+                                          column: parsedValue.column,
+                                          datasetName: parsedValue.datasetName,
+                                        });
+                                      }}
+                                      className="react-select-container"
+                                      classNamePrefix="react-select"
+                                      placeholder="Choose Series"
+                                    />
+                                    {errors.series &&
+                                      errors.series[index]?.column &&
+                                      touched.series &&
+                                      touched.series[index]?.column && (
                                         <div style={{ color: "red" }}>
-                                          {errors.series[index].name}
+                                          {errors.series[index].column || errors.series[index].datasetName}
                                         </div>
                                       )}
                                   </div>
 
-                                  {/* Series Dropdown */}
-                                  <label htmlFor={`series[${index}]`}>Series {index + 1}:</label>
-                                  <Select
-                                    options={categoriesOptions}
-                                    value={categoriesOptions.find((option) => {
-                                      const parsedValue = JSON.parse(option.value);
-                                      return (
-                                        parsedValue.column === seriesItem.column &&
-                                        parsedValue.datasetName === seriesItem.datasetName
-                                      );
-                                    })}
-                                    onChange={(selectedOption) => {
-                                      const parsedValue = JSON.parse(selectedOption.value);
-                                      setFieldValue(`series[${index}]`, {
-                                        ...values.series[index],  // Spread the existing values of the current series
-                                        column: parsedValue.column,
-                                        datasetName: parsedValue.datasetName,
-                                      });
-                                    }}
-                                    className="react-select-container"
-                                    classNamePrefix="react-select"
-                                    placeholder="Choose Series"
-                                  />
-                                  {errors.series &&
-                                    errors.series[index] &&
-                                    touched.series &&
-                                    touched.series[index] && (
-                                      <div style={{ color: "red" }}>
-                                        {errors.series[index].column ||
-                                          errors.series[index].datasetName}
-                                      </div>
-                                    )}
-
-                                  {/* Remove Series Button */}
                                   <a
                                     type="button"
                                     onClick={() => remove(index)}
                                     style={{ marginTop: "10px" }}
-                                    className="text-end"
+                                    className="text-end mt-2"
                                   >
-                                    <FontAwesomeIcon icon={faTrash} size="2x"></FontAwesomeIcon>
+                                    <FontAwesomeIcon className="ms-2  text-danger" icon={faTrash} size="2x"></FontAwesomeIcon>
                                   </a>
                                 </div>
                               ))}
-
-                              <a
+                              <button
                                 type="button"
                                 onClick={() =>
                                   push({ column: "", name: "", type: "", datasetName: "" })
                                 }
-                                style={{ marginTop: "10px" }}
+                                style={{ cursor: "pointer", color: "green", background: "none", border: "none" }}
                                 className="text-center"
                               >
-                                <FontAwesomeIcon icon={faPlusCircle} size="2x"></FontAwesomeIcon>
-                              </a>
+                                <FontAwesomeIcon icon={faPlusCircle} size="1x" /> Add
+                              </button>
+                            </>
+                          )}
+                        </FieldArray>
+
+                        {/* Where Conditions Field */}
+                        <FieldArray name='whereConditions'>
+                          {({ push, remove }) => (
+                            <>
+                              <p className="mb-0 mt-2 mb-1">Conditions</p>
+                              {values?.whereConditions?.map((condition, condIndex) => (
+                                <div className="border border-primary p-2 mb-2" key={condIndex}>
+                                  <div>
+                                    <label htmlFor={`whereConditions[${condIndex}].operator`}>Column:</label>
+                                    <Select
+                                      options={categoriesOptions}
+                                      value={categoriesOptions.find((option) => {
+                                        const parsedValue = JSON.parse(option.value);
+                                        return (
+                                          parsedValue.column === condition.column &&
+                                          parsedValue.datasetName === condition.datasetName
+                                        );
+                                      })}
+                                      onChange={(selectedOption) => {
+                                        const parsedValue = JSON.parse(selectedOption.value);
+                                        setFieldValue(`whereConditions[${condIndex}]`, {
+                                          ...condition,
+                                          column: parsedValue.column,
+                                          datasetName: parsedValue.datasetName,
+                                        });
+                                      }}
+                                      className="react-select-container"
+                                      classNamePrefix="react-select"
+                                      placeholder="Choose Series"
+                                    />
+                                    {errors.whereConditions &&
+                                      errors.whereConditions[condIndex]?.column &&
+                                      touched.whereConditions &&
+                                      touched.whereConditions[condIndex]?.column && (
+                                        <div style={{ color: "red" }}>
+                                          {errors.whereConditions[condIndex].column || errors.whereConditions[condIndex].datasetName}
+                                        </div>
+                                      )}
+                                  </div>
+                                  {/* Condition Fields */}
+                                  <div>
+                                    <label htmlFor={`whereConditions[${condIndex}].operator`}>
+                                      Operator:
+                                    </label>
+                                    <Field as="select" className="form-control" name={`whereConditions[${condIndex}].operator`}>
+                                      <option value={null}>Select</option>
+                                      <option value="=">Equals</option>
+                                      <option value="!=">Not Equals</option>
+                                      <option value=">">Greater Than</option>
+                                      <option value="<">Less Than</option>
+                                      <option value=">=">Greater or Equal</option>
+                                      <option value="<=">Less or Equal</option>
+                                    </Field>
+                                  </div>
+                                  {errors.whereConditions &&
+                                    errors.whereConditions[condIndex]?.operator &&
+                                    touched.whereConditions &&
+                                    touched.whereConditions[condIndex]?.operator && (
+                                      <div style={{ color: "red" }}>
+                                        {errors.whereConditions[condIndex].operator}
+                                      </div>
+                                    )}
+                                  <div>
+                                    <label htmlFor={`whereConditions[${condIndex}].value`}>
+                                      Value:
+                                    </label>
+                                    <Field className="form-control"
+                                      name={`whereConditions[${condIndex}].value`}
+                                      placeholder="Enter Value"
+                                    />
+                                    {errors.whereConditions &&
+                                      errors.whereConditions[condIndex]?.value &&
+                                      touched.whereConditions &&
+                                      touched.whereConditions[condIndex]?.value && (
+                                        <div style={{ color: "red" }}>
+                                          {errors.whereConditions[condIndex].value}
+                                        </div>
+                                      )}
+                                  </div>
+                                  {/* Remove Condition */}
+                                  <a className="text-center mt-2" type="button" onClick={() => remove(condIndex)}>
+                                    <FontAwesomeIcon className="text-danger" icon={faTrash} size="2x" />
+                                  </a>
+                                </div>
+                              ))}
+                              <button type="button"
+                                style={{ cursor: "pointer", color: "green", background: "none", border: "none" }}
+                                onClick={() => push({ operator: '', value: '' })}>
+                                <FontAwesomeIcon icon={faPlusCircle} size="1x" /> Add Condition
+                              </button>
                             </>
                           )}
                         </FieldArray>
@@ -3562,6 +3702,7 @@ const Dashboard = ({
                       </Form>
                     )}
                   </Formik>
+
                 </div>
               </>
             }
@@ -3576,8 +3717,9 @@ const Dashboard = ({
                 <Formik
                   initialValues={
                     chartOptions.formValues || {
-                      category: { column: "", datasetName: "" },
-                      series: { column: "", datasetName: "" },
+                      category: { column: "", datasetName: "", function: "" },
+                      whereConditions: [{ operator: "", value: "", column: "", datasetName: "" }],
+                      series: { column: "", datasetName: "", whereConditions: [] },
                     }
                   }
                   enableReinitialize={true}
@@ -3586,9 +3728,17 @@ const Dashboard = ({
                       column: Yup.string().required("Category column is required"),
                       datasetName: Yup.string().required("Category dataset name is required"),
                     }),
+                    whereConditions: Yup.array().of(
+                      Yup.object().shape({
+                        operator: Yup.string().required('Operator is required'),
+                        value: Yup.string().required('Value is required'),
+                        column: Yup.string().required('Column is required'),
+                        datasetName: Yup.string().required('Dataset is required')
+                      })
+                    ),
                     series: Yup.object().shape({
                       column: Yup.string().required("Series column is required"),
-                      datasetName: Yup.string().required("Series dataset name is required"),
+                      datasetName: Yup.string().required("Series dataset name is required")
                     }),
                   })}
                   onSubmit={(values) => {
@@ -3644,20 +3794,114 @@ const Dashboard = ({
                             const parsedValue = JSON.parse(selectedOption.value);
                             setFieldValue("series", {
                               column: parsedValue.column,
-                              datasetName: parsedValue.datasetName,
+                              datasetName: parsedValue.datasetName
                             });
                           }}
+
                           className="react-select-container"
                           classNamePrefix="react-select"
                           placeholder="Choose Series"
                         />
+
                         {touched.series && errors.series && (
                           <div style={{ color: "red" }}>
                             {errors.series.column || errors.series.datasetName}
                           </div>
                         )}
                       </div>
-
+                      {/* Where Conditions Field */}
+                      <FieldArray name='whereConditions'>
+                        {({ push, remove }) => (
+                          <>
+                            <p className="mb-0 mt-2 mb-1">Conditions</p>
+                            {values?.whereConditions?.map((condition, condIndex) => (
+                              <div className="border border-primary p-2 mb-2" key={condIndex}>
+                                <div>
+                                  <label htmlFor={`whereConditions[${condIndex}].operator`}>Column:</label>
+                                  <Select
+                                    options={categoriesOptions}
+                                    value={categoriesOptions.find((option) => {
+                                      const parsedValue = JSON.parse(option.value);
+                                      return (
+                                        parsedValue.column === condition.column &&
+                                        parsedValue.datasetName === condition.datasetName
+                                      );
+                                    })}
+                                    onChange={(selectedOption) => {
+                                      const parsedValue = JSON.parse(selectedOption.value);
+                                      setFieldValue(`whereConditions[${condIndex}]`, {
+                                        ...condition,
+                                        column: parsedValue.column,
+                                        datasetName: parsedValue.datasetName,
+                                      });
+                                    }}
+                                    className="react-select-container"
+                                    classNamePrefix="react-select"
+                                    placeholder="Choose Series"
+                                  />
+                                  {errors.whereConditions &&
+                                    errors.whereConditions[condIndex]?.column &&
+                                    touched.whereConditions &&
+                                    touched.whereConditions[condIndex]?.column && (
+                                      <div style={{ color: "red" }}>
+                                        {errors.whereConditions[condIndex].column || errors.whereConditions[condIndex].datasetName}
+                                      </div>
+                                    )}
+                                </div>
+                                {/* Condition Fields */}
+                                <div>
+                                  <label htmlFor={`whereConditions[${condIndex}].operator`}>
+                                    Operator:
+                                  </label>
+                                  <Field as="select" className="form-control" name={`whereConditions[${condIndex}].operator`}>
+                                    <option value={null}>Select</option>
+                                    <option value="=">Equals</option>
+                                    <option value="!=">Not Equals</option>
+                                    <option value=">">Greater Than</option>
+                                    <option value="<">Less Than</option>
+                                    <option value=">=">Greater or Equal</option>
+                                    <option value="<=">Less or Equal</option>
+                                  </Field>
+                                </div>
+                                {errors.whereConditions &&
+                                  errors.whereConditions[condIndex]?.operator &&
+                                  touched.whereConditions &&
+                                  touched.whereConditions[condIndex]?.operator && (
+                                    <div style={{ color: "red" }}>
+                                      {errors.whereConditions[condIndex].operator}
+                                    </div>
+                                  )}
+                                <div>
+                                  <label htmlFor={`whereConditions[${condIndex}].value`}>
+                                    Value:
+                                  </label>
+                                  <Field className="form-control"
+                                    name={`whereConditions[${condIndex}].value`}
+                                    placeholder="Enter Value"
+                                  />
+                                  {errors.whereConditions &&
+                                    errors.whereConditions[condIndex]?.value &&
+                                    touched.whereConditions &&
+                                    touched.whereConditions[condIndex]?.value && (
+                                      <div style={{ color: "red" }}>
+                                        {errors.whereConditions[condIndex].value}
+                                      </div>
+                                    )}
+                                </div>
+                                {/* Remove Condition */}
+                                <a className="text-center mt-2" type="button" onClick={() => remove(condIndex)}>
+                                  <FontAwesomeIcon className="text-danger" icon={faTrash} size="2x" />
+                                </a>
+                              </div>
+                            ))}
+                            <button type="button"
+                              style={{ cursor: "pointer", color: "green", background: "none", border: "none" }}
+                              onClick={() => push({ operator: '', value: '' })}>
+                              <FontAwesomeIcon icon={faPlusCircle} size="1x" /> Add Condition
+                            </button>
+                          </>
+                        )}
+                      </FieldArray>
                       {/* Submit Button */}
                       <button type="submit" style={{ marginTop: "20px" }}>
                         Load Chart
@@ -3679,6 +3923,7 @@ const Dashboard = ({
                     x: chartOptions?.formValues?.x || { column: "", datasetName: "" },
                     y: chartOptions?.formValues?.y || { column: "", datasetName: "" }
                   }}
+
                   validationSchema={Yup.object().shape({
                     x: Yup.object({
                       column: Yup.string().required("X column is required"),
@@ -3690,7 +3935,6 @@ const Dashboard = ({
                     }).required()
                   })}
                   onSubmit={(values) => {
-                    console.log("Submitted Values:", values);
                     handleSubmit(values);
                   }}
                 >
@@ -3766,6 +4010,285 @@ const Dashboard = ({
               </>
             }
             {
+              [
+                "scatter"
+              ].includes(chartOptions.chartType)
+              &&
+              <>
+                <Formik
+                  enableReinitialize={true}
+                  initialValues={
+                    chartOptions?.formValues || {
+                      series: [
+                        {
+                          name: '',
+                          x: { column: "", datasetName: "" },
+                          y: { column: "", datasetName: "" }
+                        }
+                      ],
+                      whereConditions: []
+                    }
+                  }
+                  validationSchema={Yup.object().shape({
+                    series: Yup.array().of(
+                      Yup.object().shape({
+                        name: Yup.string().required("Series name is required"),
+
+                        x: Yup.object().shape({
+                          column: Yup.string().required("X column is required"),
+                          datasetName: Yup.string().required("X dataset name is required")
+                        }).required("X object is required"),
+
+                        y: Yup.object().shape({
+                          column: Yup.string().required("Y column is required"),
+                          datasetName: Yup.string().required("Y dataset name is required")
+                        }).required("Y object is required")
+                      })
+                    ).required("Series is required"),
+                    whereConditions: Yup.array().of(
+                      Yup.object().shape({
+                        operator: Yup.string().required('Operator is required'),
+                        value: Yup.string().required('Value is required'),
+                        column: Yup.string().required('Column is required'),
+                        datasetName: Yup.string().required('Dataset is required')
+                      })
+                    ),
+                  })}
+                  onSubmit={(values) => {
+                    handleSubmit(values);
+                  }}
+                >
+                  {({ values, errors, touched, setFieldValue }) => (
+                    <Form>
+                      {/* Field Array for Series */}
+                      <FieldArray name="series">
+                        {({ push, remove }) => (
+                          <>
+                            {values?.series?.map((seriesItem, index) => (
+                              <div key={index} style={{ marginBottom: "20px", border: "1px solid #ccc", padding: "10px", borderRadius: "5px" }}>
+                                {/* Name Input */}
+                                <div>
+                                  <label htmlFor={`series[${index}].name`}>Value:</label>
+                                  <Field
+                                    className="form-control"
+                                    name={`series[${index}].name`}
+                                    placeholder="Enter Value"
+                                  />
+                                  {errors.series &&
+                                    errors.series[index]?.name &&
+                                    touched.series &&
+                                    touched.series[index]?.name && (
+                                      <div style={{ color: "red" }}>
+                                        {errors.series[index]?.name}
+                                      </div>
+                                    )}
+                                </div>
+
+                                {/* Dropdown for X */}
+                                <div>
+                                  <label htmlFor={`series[${index}].x`}>X:</label>
+                                  <Select
+                                    options={categoriesOptions}
+                                    value={categoriesOptions.find((option) => {
+                                      const parsedValue = JSON.parse(option.value);
+                                      return (
+                                        parsedValue.column === seriesItem?.x?.column &&
+                                        parsedValue.datasetName === seriesItem?.x?.datasetName
+                                      );
+                                    })}
+                                    onChange={(selectedOption) => {
+                                      const parsedValue = JSON.parse(selectedOption.value);
+                                      setFieldValue(`series[${index}].x`, {
+                                        column: parsedValue.column,
+                                        datasetName: parsedValue.datasetName,
+                                      });
+                                    }}
+                                    className="react-select-container"
+                                    classNamePrefix="react-select"
+                                    placeholder="Choose X"
+                                  />
+                                  {errors.series &&
+                                    errors.series[index]?.x &&
+                                    touched.series &&
+                                    touched.series[index]?.x && (
+                                      <div style={{ color: "red" }}>
+                                        {errors.series[index]?.x?.column || errors.series[index]?.x?.datasetName}
+                                      </div>
+                                    )}
+                                </div>
+
+                                {/* Dropdown for Y */}
+                                <div>
+                                  <label htmlFor={`series[${index}].y`}>Y:</label>
+                                  <Select
+                                    options={categoriesOptions}
+                                    value={categoriesOptions.find((option) => {
+                                      const parsedValue = JSON.parse(option.value);
+                                      return (
+                                        parsedValue.column === seriesItem?.y?.column &&
+                                        parsedValue.datasetName === seriesItem?.y?.datasetName
+                                      );
+                                    })}
+                                    onChange={(selectedOption) => {
+                                      const parsedValue = JSON.parse(selectedOption.value);
+                                      setFieldValue(`series[${index}].y`, {
+                                        column: parsedValue.column,
+                                        datasetName: parsedValue.datasetName,
+                                      });
+                                    }}
+                                    className="react-select-container"
+                                    classNamePrefix="react-select"
+                                    placeholder="Choose Y"
+                                  />
+                                  {errors.series &&
+                                    errors.series[index]?.y &&
+                                    touched.series &&
+                                    touched.series[index]?.y && (
+                                      <div style={{ color: "red" }}>
+                                        {errors.series[index]?.y?.column || errors.series[index]?.y?.datasetName}
+                                      </div>
+                                    )}
+                                </div>
+
+                                {/* Remove Button */}
+                                <div className="text-center mt-2">
+                                  <a
+                                    type="button"
+                                    onClick={() => remove(index)}
+                                    style={{ cursor: "pointer", color: "red" }}
+                                    title="Remove this condition"
+                                  >
+                                    <FontAwesomeIcon icon={faTrash} size="2x" />
+                                  </a>
+                                </div>
+                              </div>
+                            ))}
+
+                            {/* Add Button */}
+                            <div style={{ marginTop: "10px" }}>
+                              <button
+                                type="button"
+                                onClick={() => push({
+                                  name: "",
+                                  x: { column: "", datasetName: "" },
+                                  y: { column: "", datasetName: "" },
+                                })}
+                                style={{ cursor: "pointer", color: "green", background: "none", border: "none" }}
+                                title="Add a new condition"
+                              >
+                                <FontAwesomeIcon icon={faPlusCircle} size="1x" /> Add
+                              </button>
+                            </div>
+                          </>
+                        )}
+                      </FieldArray>
+
+                      {/* Where Conditions Field */}
+                      <FieldArray name='whereConditions'>
+                        {({ push, remove }) => (
+                          <>
+                            <p className="mb-0 mt-2 mb-1">Conditions</p>
+                            {values?.whereConditions?.map((condition, condIndex) => (
+                              <div className="border border-primary p-2 mb-2" key={condIndex}>
+                                <div>
+                                  <label htmlFor={`whereConditions[${condIndex}].operator`}>Column:</label>
+                                  <Select
+                                    options={categoriesOptions}
+                                    value={categoriesOptions.find((option) => {
+                                      const parsedValue = JSON.parse(option.value);
+                                      return (
+                                        parsedValue.column === condition.column &&
+                                        parsedValue.datasetName === condition.datasetName
+                                      );
+                                    })}
+                                    onChange={(selectedOption) => {
+                                      const parsedValue = JSON.parse(selectedOption.value);
+                                      setFieldValue(`whereConditions[${condIndex}]`, {
+                                        ...condition,
+                                        column: parsedValue.column,
+                                        datasetName: parsedValue.datasetName,
+                                      });
+                                    }}
+                                    className="react-select-container"
+                                    classNamePrefix="react-select"
+                                    placeholder="Choose Series"
+                                  />
+                                  {errors.whereConditions &&
+                                    errors.whereConditions[condIndex]?.column &&
+                                    touched.whereConditions &&
+                                    touched.whereConditions[condIndex]?.column && (
+                                      <div style={{ color: "red" }}>
+                                        {errors.whereConditions[condIndex].column || errors.whereConditions[condIndex].datasetName}
+                                      </div>
+                                    )}
+                                </div>
+                                {/* Condition Fields */}
+                                <div>
+                                  <label htmlFor={`whereConditions[${condIndex}].operator`}>
+                                    Operator:
+                                  </label>
+                                  <Field as="select" className="form-control" name={`whereConditions[${condIndex}].operator`}>
+                                    <option value={null}>Select</option>
+                                    <option value="=">Equals</option>
+                                    <option value="!=">Not Equals</option>
+                                    <option value=">">Greater Than</option>
+                                    <option value="<">Less Than</option>
+                                    <option value=">=">Greater or Equal</option>
+                                    <option value="<=">Less or Equal</option>
+                                  </Field>
+                                </div>
+                                {errors.whereConditions &&
+                                  errors.whereConditions[condIndex]?.operator &&
+                                  touched.whereConditions &&
+                                  touched.whereConditions[condIndex]?.operator && (
+                                    <div style={{ color: "red" }}>
+                                      {errors.whereConditions[condIndex].operator}
+                                    </div>
+                                  )}
+                                <div>
+                                  <label htmlFor={`whereConditions[${condIndex}].value`}>
+                                    Value:
+                                  </label>
+                                  <Field className="form-control"
+                                    name={`whereConditions[${condIndex}].value`}
+                                    placeholder="Enter Value"
+                                  />
+                                  {errors.whereConditions &&
+                                    errors.whereConditions[condIndex]?.value &&
+                                    touched.whereConditions &&
+                                    touched.whereConditions[condIndex]?.value && (
+                                      <div style={{ color: "red" }}>
+                                        {errors.whereConditions[condIndex].value}
+                                      </div>
+                                    )}
+                                </div>
+                                {/* Remove Condition */}
+                                <a className="text-center mt-2" type="button" onClick={() => remove(condIndex)}>
+                                  <FontAwesomeIcon className="text-danger" icon={faTrash} size="2x" />
+                                </a>
+                              </div>
+                            ))}
+                            <button type="button"
+                              style={{ cursor: "pointer", color: "green", background: "none", border: "none" }}
+                              onClick={() => push({ operator: '', value: '' })}>
+                              <FontAwesomeIcon icon={faPlusCircle} size="1x" /> Add Condition
+                            </button>
+                          </>
+                        )}
+                      </FieldArray>
+
+
+                      {/* Submit Button */}
+                      <button type="submit" style={{ marginTop: "20px" }}>
+                        Load Data
+                      </button>
+                    </Form>
+                  )}
+                </Formik>
+
+              </>
+            }
+            {
               ["bubblechart", "bubblechart3d"].includes(chartOptions.chartType)
               &&
               <>
@@ -3773,7 +4296,7 @@ const Dashboard = ({
                   enableReinitialize={true}
                   initialValues={
                     chartOptions.formValues && chartOptions.formValues.datasets
-                     && Array.isArray(chartOptions.formValues.datasets) && chartOptions.formValues.datasets.length > 0
+                      && Array.isArray(chartOptions.formValues.datasets) && chartOptions.formValues.datasets.length > 0
                       ? { datasets: chartOptions.formValues.datasets }
                       : {
                         datasets: [
@@ -3938,7 +4461,7 @@ const Dashboard = ({
                             ))}
 
                             {/* Add Dataset Button */}
-                            <a
+                            <button
                               type="button"
                               onClick={() =>
                                 push({
@@ -3950,11 +4473,11 @@ const Dashboard = ({
                                   },
                                 })
                               }
-                              style={{ marginTop: '10px' }}
+                              style={{ cursor: "pointer", color: "green", background: "none", border: "none" }}
                               className="text-center"
                             >
-                              <FontAwesomeIcon icon={faPlusCircle} size="2x"></FontAwesomeIcon>
-                            </a>
+                              <FontAwesomeIcon icon={faPlusCircle} size="1x" /> Add
+                            </button>
                           </>
                         )}
                       </FieldArray>
@@ -3966,9 +4489,172 @@ const Dashboard = ({
                     </Form>
                   )}
                 </Formik>
-
-
               </>
+            }
+            {
+              [
+                "card"
+              ].includes(chartOptions.chartType)
+              &&
+              <>
+                <Formik
+                  enableReinitialize={true}
+                  initialValues={chartOptions?.formValues || {
+                    column: { column: "", datasetName: "" },
+                    function: ""
+                  }}
+
+                  validationSchema={Yup.object().shape({
+                    column: Yup.object({
+                      column: Yup.string().required("X column is required"),
+                      datasetName: Yup.string().required("X datasetName is required")
+                    }).required(),
+                    function: Yup.string().required("Function is required")
+                  })}
+                  onSubmit={(values) => {
+                    handleSubmit(values);
+                  }}
+                >
+                  {({ values, errors, touched, setFieldValue }) => (
+                    <Form>
+                      {/* Dropdown for Column */}
+                      <div>
+                        <label htmlFor="column">Select Column:</label>
+                        <Select
+                          options={categoriesOptions}
+                          value={categoriesOptions.find((option) => {
+                            const parsedValue = JSON.parse(option.value);
+                            return (
+                              parsedValue.column === values.column.column &&
+                              parsedValue.datasetName === values.column.datasetName
+                            );
+                          })}
+                          onChange={(selectedOption) => {
+                            const parsedValue = JSON.parse(selectedOption.value);
+                            setFieldValue("column", {
+                              column: parsedValue.column,
+                              datasetName: parsedValue.datasetName
+                            });
+                          }}
+                          className="react-select-container"
+                          classNamePrefix="react-select"
+                          placeholder="Choose Column"
+                        />
+                        {touched.column && errors.column && (
+                          <div style={{ color: "red" }}>
+                            {errors.column.column || errors.column.datasetName}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Dropdown for Function */}
+                      <div className="mt-2">
+                        <label htmlFor="function">Select Aggregate Function:</label>
+                        <Select
+                          options={Object.keys(aggregateFunctions).map((func) => ({
+                            label: func,
+                            value: func,
+                          }))}
+                          value={
+                            values.function
+                              ? { label: values.function, value: values.function }
+                              : null
+                          }
+                          onChange={(selectedFunc) => {
+                            setFieldValue("function", selectedFunc.value);
+                          }}
+                          className="react-select-container"
+                          classNamePrefix="react-select"
+                          placeholder="Select function"
+                        />
+                        {errors.function && touched.function && (
+                          <div style={{ color: "red" }}>{errors.function}</div>
+                        )}
+                      </div>
+
+                      {/* Submit Button */}
+                      <button type="submit" style={{ marginTop: "20px" }}>
+                        Load Data
+                      </button>
+                    </Form>
+                  )}
+                </Formik>
+              </>
+            }
+            {
+              [
+                "table"
+              ].includes(chartOptions.chartType)
+              &&
+              <>
+                <Formik
+                  enableReinitialize={true}
+                  initialValues={chartOptions?.formValues || { columns: [] }}
+                  validationSchema={Yup.object().shape({
+                    columns: Yup.array()
+                      .of(
+                        Yup.object().shape({
+                          column: Yup.string().required("Column is required"),
+                          datasetName: Yup.string().required("Dataset Name is required")
+                        })
+                      )
+                      .required("At least one column must be selected")
+                  })}
+                  onSubmit={(values) => {
+                    handleSubmit(values);
+                  }}
+                >
+                  {({ values, errors, touched, setFieldValue }) => (
+                    <Form>
+                      {/* Multi-Select Dropdown for Columns */}
+                      <div>
+                        <label htmlFor="columns">Select Columns:</label>
+                        <Select
+                          options={categoriesOptions}
+                          isMulti
+                          value={values.columns.map((col) =>
+                            categoriesOptions.find((option) => {
+                              const parsedValue = JSON.parse(option.value);
+                              return (
+                                parsedValue.column === col.column &&
+                                parsedValue.datasetName === col.datasetName
+                              );
+                            })
+                          )}
+                          onChange={(selectedOptions) => {
+                            // Parse and ensure no duplicate entries
+                            const selectedColumns = selectedOptions.map((option) =>
+                              JSON.parse(option.value)
+                            );
+                            const uniqueColumns = selectedColumns.filter(
+                              (col, index, self) =>
+                                index ===
+                                self.findIndex(
+                                  (c) =>
+                                    c.column === col.column &&
+                                    c.datasetName === col.datasetName
+                                )
+                            );
+                            setFieldValue("columns", uniqueColumns);
+                          }}
+                          className="react-select-container"
+                          classNamePrefix="react-select"
+                          placeholder="Choose Columns"
+                        />
+                        {touched.columns && errors.columns && (
+                          <div style={{ color: "red" }}>{errors.columns}</div>
+                        )}
+                      </div>
+
+                      {/* Submit Button */}
+                      <button type="submit" style={{ marginTop: "20px" }}>
+                        Load Data
+                      </button>
+                    </Form>
+                  )}
+                </Formik>
+              </>
+
             }
             {renderProperties()}
           </div >
@@ -4045,6 +4731,8 @@ const Dashboard = ({
                 type="text"
                 className="form-control"
                 placeholder="Enter dashboard title"
+                value={dashboardName}
+                onChange={(e) => setDashboardName(e.target.value)}
                 onBlur={(e) => handleDashboardName(e.target.value)}
               />
               {/* <img src={Pen} alt="logo" /> */}
@@ -4180,4 +4868,5 @@ export default connect(mapStateToProps, {
   updateDashboard,
   addDashboard,
   saveDashboardChanges,
+  getSpecificDashboard
 })(Dashboard);

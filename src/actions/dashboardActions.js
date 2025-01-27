@@ -116,6 +116,9 @@ export const saveDashboardChanges = (dashboard) => async (dispatch) => {
 
 export const updateDashboard = (dashboard) => async (dispatch) => {
   console.log(dashboard, "dashboard");
+  dispatch({
+    type: DASHBOARD_LOADING,
+  });
   axiosInstance.defaults.baseURL = urlswithoutgateway("dashboard");
   axiosInstance
     .put("Dashboard", JSON.stringify(dashboard), {
@@ -131,7 +134,7 @@ export const updateDashboard = (dashboard) => async (dispatch) => {
       if (response.data.messageType !== 2) {
         dispatch({
           type: UPDATE_DASHBOARD,
-          payload: dashboard
+          payload: dashboard,
         });
         // window.location.reload();
         //generate cookie inside local system and redirect to home page as logged in user
@@ -147,6 +150,10 @@ export const updateDashboard = (dashboard) => async (dispatch) => {
 
 export const getDashboards = () => async (dispatch) => {
   axiosInstance.defaults.baseURL = urlswithoutgateway("dashboard");
+  
+  dispatch({
+    type: DASHBOARD_LOADING,
+  });
   axiosInstance
     .get("Dashboard", {
       headers: {
@@ -175,6 +182,9 @@ export const getDashboards = () => async (dispatch) => {
 
 export const deleteDashboard = (id) => async (dispatch) => {
   axiosInstance.defaults.baseURL = urlswithoutgateway("dashboard");
+  dispatch({
+    type: DASHBOARD_LOADING,
+  });
   axiosInstance
     .delete(`PaymentCredential/delete/${id}`, {
       headers: {
@@ -204,6 +214,9 @@ export const deleteDashboard = (id) => async (dispatch) => {
 
 export const getSpecificDashboard = (id) => async (dispatch) => {
   axiosInstance.defaults.baseURL = urlswithoutgateway("dashboard");
+  dispatch({
+    type: DASHBOARD_LOADING,
+  });
   axiosInstance
     .get(`Dashboard/${id}`, {
       headers: {

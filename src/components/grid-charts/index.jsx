@@ -1,68 +1,172 @@
-import React from "react";
+import React, { useState } from "react";
 import "./grid.scss";
-import HorizontalBarChart from "../../chart-components/horizontal-bar-chart";
-import VerticalBarChart from "../../chart-components/vertical-bar-chart";
-import StackedHorizontalBarChart from "../../chart-components/stacked-horizontal-bar";
-import StackedVerticalBarChart from "../../chart-components/stacked-vertical-bar";
-import StackedHorizontalBarChartI from "../../chart-components/stacked-horizontal-bar-chart-I";
-import StackedVerticalBarChartI from "../../chart-components/stacked-vertical-bar-I";
-import PieChart from "../../chart-components/pie-chart";
-import DonutChart from "../../chart-components/donut-chart";
-import LineChart from "../../chart-components/line-chart";
-import AreaChart from "../../chart-components/area-chart";
-import ScatterChart from "../../chart-components/scatter-chart";
-import BubbleChart from "../../chart-components/bubble-chart";
-import BubbleChart3D from "../../chart-components/3d-bubble-chart";
-import GanttChart from "../../chart-components/gantt-chart";
-import TreemapChart from "../../chart-components/treemap-chart";
-import MixedChart from "../../chart-components/mixed-chart";
-import GaugeChart from "../../chart-components/gauge-chart";
-// Component Data
-import Image from "../../chart-components/image";
+import Chart from "../../chart-components/chart/chart";
+import { connect } from "react-redux";
+import { updateDashboard } from "../../actions/dashboardActions";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSave } from "@fortawesome/free-solid-svg-icons";
 import Card from "../../chart-components/card";
 import SimpleTable from "../../chart-components/table";
-// Typography
-import Typography from "../../chart-components/typography";
-import Chart from "../../chart-components/chart/chart";
 
-const Grid = ({ chart, chartOptions, onSelect, isSelected }) => {
-  return (
+const Grid = ({
+  rows,
+  cols,
+  chart,
+  colWidth,
+  index,
+  dataset,
+  dashboard,
+  chartOptions,
+  onSelect,
+  selectedIndex,
+  updateDashboard,
+}) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [datasetLabel, setDatasetLabel] = useState(dataset.datasetLabel || "");
+  const [iconUrl, setIconUrl] = useState(dataset.iconUrl || ""); // Load initial icon URL
+
+  const handleToggleEdit = () => {
+    setIsEditing(true);
+  };
+
+  const handleInputChange = (event) => {
+    setDatasetLabel(event.target.value);
+  };
+
+  const handleIconUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const base64String = e.target.result;
+        setIconUrl(base64String); // Update iconUrl state
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSave = async () => {
+    setIsEditing(false);
+    const updatedDashboard = {
+      ...dashboard,
+      datasetsTree: dashboard.datasetsTree.map((item, i) => {
+        if (i === index) {
+          return {
+            ...item,
+            datasetLabel: datasetLabel,
+            iconUrl: iconUrl, // Save icon URL to dataset
+          };
+        }
+        return item;
+      }),
+    };
+    await updateDashboard(updatedDashboard); // Save changes to Redux
+  };
+
+  const renderGrid = () => (
     <div
-      className={`grid-item ${isSelected ? "selected-chart" : ""}`}
-      onClick={onSelect}
+      key={`grid-item-${index}`}
+      className={`grid-item p-0 m-0 mb-2 ${index === selectedIndex ? "selected-chart" : ""
+        }`}
+      style={{
+        flex: `0 0 ${colWidth}`,
+        maxWidth: colWidth,
+        height: "auto",
+        minHeight: "400px",
+      }}
+      onClick={() => onSelect(index)}
     >
+      <div
+        className="grid-header"
+        style={{
+          background: "#1c9ca7",
+          textAlign: "center",
+          fontSize: "20px",
+          padding: "5px",
+        }}
+      >
+        {!isEditing ? (
+          <div
+            className="grid-title"
+            onClick={handleToggleEdit}
+            style={{ cursor: "pointer" }}
+          >
+            <span>
+              {iconUrl && (
+                <img
+                  src={iconUrl}
+                  alt="icon"
+                  style={{
+                    width: "25px",
+                    height: "25px",
+                    marginBottom: "5px",
+                    marginRight: "5px",
+                    verticalAlign: "middle"
+                  }}
+                />
+              )}
+              {datasetLabel || "Chart"}
+            </span>
+          </div>
+        ) : (
+          <>
+            <input
+              type="text"
+              value={datasetLabel}
+              onChange={handleInputChange}
+              style={{
+                fontSize: "23px",
+                textAlign: "center",
+                padding: "5px",
+                width: "90%",
+                marginBottom: "10px",
+              }}
+            />
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleIconUpload}
+              style={{ marginTop: "5px", marginBottom: "10px", marginLeft: "30px" }}
+            />
+            <button
+              onClick={handleSave}
+              style={{
+                padding: "5px 10px",
+                background: "#007bff",
+                color: "#fff",
+                border: "none",
+                borderRadius: "4px",
+                cursor: "pointer",
+              }}
+            >
+              <FontAwesomeIcon size="1x" icon={faSave} />
+            </button>
+          </>
+        )}
+      </div>
       <div className="grid-body">
         {chart ? (
           <div className="uploaded-file-container">
-            {/* {chart === 'Horizontal Bar Chart' && <HorizontalBarChart {...chartOptions} />}
-            {chart === 'Vertical Bar Chart' && <VerticalBarChart chartOptions={chartOptions} />}
-            {chart === 'Stacked Horizontal Bar Chart' && <StackedHorizontalBarChart {...chartOptions} />} 
-            {chart === 'Stacked Vertical Bar Chart' && <StackedVerticalBarChart {...chartOptions}/>}
-            {chart === '100% Stacked Horizontal Bar Chart' && <StackedHorizontalBarChartI {...chartOptions}/>}
-            {chart === '100% Stacked Vertical Bar Chart' && <StackedVerticalBarChartI {...chartOptions}/>}
-            {chart === 'Pie Chart' && <PieChart {...chartOptions} />}
-            {chart === 'Donut Chart' && <DonutChart {...chartOptions} />}
-            {chart === 'line chart' && <LineChart {...chartOptions}/>}
-            {chart === 'Area Chart' && <AreaChart {...chartOptions}/>}
-            {chart === 'Scatter Chart' && <ScatterChart {...chartOptions}/>}
-            {chart === 'Bubble Chart' && <BubbleChart {...chartOptions}/>}
-            {chart === '3D Bubble Chart' && <BubbleChart3D {...chartOptions}/>}
-            {chart === 'Gantt Chart' && <GanttChart {...chartOptions}/>}
-            {chart === 'Treemap Chart' && <TreemapChart{...chartOptions}/>}
-            {chart === 'Mixed Chart' && <MixedChart {...chartOptions}/>}
-            {chart === 'Gauge Chart' && <GaugeChart {...chartOptions}/>}
-            {chart === 'Card' && <Card {...chartOptions}/>}
-            {chart === 'Table' && <SimpleTable {...chartOptions}/>}
-            {chart === 'Image' && <Image {...chartOptions}/>}
-            {chart === 'Typography' && <Typography {...chartOptions}/>} */}
-            <Chart option={chartOptions} />
+            {chart.chartType === 'card' && chartOptions && <Card option={chartOptions} />}
+            {chart.chartType === 'table' && chartOptions && <SimpleTable option={chartOptions} />}
+            {chart.chartType !== 'card' && chart.chartType !== 'table' && chartOptions && <Chart option={chartOptions} />}
           </div>
         ) : (
-          <div className="empty-grid"></div>
+          <div className="empty-grid d-flex justify-content-center align-items-center">
+            <span>No Chart Selected</span>
+          </div>
         )}
       </div>
+
+
     </div>
   );
+
+  return <>{renderGrid()}</>;
 };
 
-export default Grid;
+const mapStateToProps = (state) => ({});
+
+export default connect(mapStateToProps, {
+  updateDashboard,
+})(Grid);

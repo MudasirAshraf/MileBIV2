@@ -15,8 +15,8 @@ const Chart = ({ option }) => {
 
   const isValidOptions =
     option &&
-    Array.isArray(option.options.series) &&
-    option.options.series.length > 0 &&
+    Array.isArray(option?.options?.series) &&
+    option?.options?.series?.length > 0 &&
     option.chartType;
 
   return (
@@ -24,7 +24,7 @@ const Chart = ({ option }) => {
       id="chart-container"
       style={{
         width: "100%",
-        maxWidth: "600px",
+        // maxWidth: "600px",
         margin: "0 auto",
         borderRadius: "8px",
         // padding: "0.5rem 0.5rem",

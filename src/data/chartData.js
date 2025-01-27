@@ -68,7 +68,7 @@ const options = [
           borderRadiusApplication: 0,
           dataLabels: {
             position: "top", // top, center, bottom
-            colors: [],
+            colors: ["#263238"],
           },
           // horizontal: true,
         },
@@ -122,9 +122,6 @@ const options = [
         // },
         labels: {
           show: false,
-          formatter: function (val) {
-            return val + "%";
-          },
         },
         title: {
           text: "",
@@ -164,7 +161,7 @@ const options = [
           borderRadiusApplication: 0,
           dataLabels: {
             position: "top", // top, center, bottom
-            colors: [],
+            colors: ["#263238"],
           },
           horizontal: true,
         },
@@ -399,9 +396,9 @@ const options = [
           text: "x-axis",
         },
         labels: {
-          formatter: function (val) {
-            return val + "K";
-          },
+          // formatter: function (val) {
+          //   return val + "K";
+          // },
         },
       },
       yaxis: {
@@ -411,9 +408,9 @@ const options = [
       },
       tooltip: {
         y: {
-          formatter: function (val) {
-            return val + "K";
-          },
+          // formatter: function (val) {
+          //   return val + "K";
+          // },
         },
       },
       fill: {
@@ -460,6 +457,7 @@ const options = [
           borderRadius: 10,
           borderRadiusApplication: "end",
           borderRadiusWhenStacked: "last",
+          color: ["#263238"],
           dataLabels: {
             total: {
               enabled: true,
@@ -540,9 +538,9 @@ const options = [
           text: "",
         },
         labels: {
-          formatter: function (val) {
-            return val + "K";
-          },
+          // formatter: function (val) {
+          //   return val + "K";
+          // },
         },
       },
       yaxis: {
@@ -552,9 +550,9 @@ const options = [
       },
       tooltip: {
         y: {
-          formatter: function (val) {
-            return val + "K";
-          },
+          // formatter: function (val) {
+          //   return val + "K";
+          // },
         },
       },
       fill: {
@@ -705,9 +703,9 @@ const options = [
           },
         },
         labels: {
-          formatter: function (val) {
-            return parseFloat(val).toFixed(1);
-          },
+          // formatter: function (val) {
+          //   return parseFloat(val).toFixed(1);
+          // },
         },
       },
       yaxis: {
@@ -832,7 +830,7 @@ const options = [
       },
       xaxis: {
         tickAmount: 12,
-        type: "datetime",
+        // type: "datetime",
         labels: {
           rotate: 0,
         },
@@ -869,14 +867,14 @@ const options = [
         align: "left",
       },
       xaxis: {
-        tickAmount: 12,
-        type: "datetime",
-        labels: {
-          rotate: 0,
+        title: {
+          text: "X-Axis",
         },
       },
       yaxis: {
-        max: 0,
+        title: {
+          text: "Y-Axis",
+        },
       },
       fill: {
         type: "gradient",
@@ -892,6 +890,71 @@ const options = [
         position: "top",
       },
       colors: "",
+    },
+  },
+  {
+    chartType: "scatter",
+    options: {
+      chart: {
+        height: 385,
+        type: "scatter",
+        background: "",
+        zoom: {
+          enabled: true,
+          type: "xy",
+        },
+      },
+      title: {
+        text: "",
+        align: "left",
+      },
+      xaxis: {
+        tickAmount: 10,
+        title: {
+          text: "",
+          style: {
+            fontSize: "12px",
+            fontWeight: "bold",
+            color: "#263238",
+          },
+        },
+        labels: {},
+      },
+      yaxis: {
+        tickAmount: 7,
+        title: {
+          text: "",
+          style: {
+            fontSize: "12px",
+            fontWeight: "bold",
+            color: "#263238",
+          },
+        },
+      },
+      tooltip: {
+        enabled: false,
+      },
+      legend: {
+        show: true,
+        position: "top",
+      },
+      colors: [],
+    },
+  },
+  {
+    chartType: "card",
+    options: {
+      background: "",
+      title: "",
+      subtitle: "",
+      value: "",
+    },
+  },
+  {
+    chartType: "table",
+    options: {
+      data: [],
+      title:""
     },
   },
 ];
@@ -1068,3 +1131,298 @@ export const defaultChartOptions = {
     paraII: "",
   },
 };
+
+// const handleSubmit = (values) => {
+//   let updatedOptions = { ...chartOptions };
+//   const getAxisData = (axisColumn, groupBy, aggregateFunction, filters = []) => {
+//     const dataset = chartOptions?.datasets
+
+//     if (!dataset || !dataset.dataSourceData) return [];
+
+//     // Apply filtering logic
+//     let filteredData = dataset.dataSourceData;
+//     if (filters.length > 0) {
+//       filteredData = filteredData.filter((row) => {
+//         return filters.every((filter) => {
+//           const { column, operator, value } = filter;
+//           switch (operator) {
+//             case '=':
+//               return row[column] === value;
+//             case '!=':
+//               return row[column] !== value;
+//             case '>':
+//               return row[column] > value;
+//             case '<':
+//               return row[column] < value;
+//             case '>=':
+//               return row[column] >= value;
+//             case '<=':
+//               return row[column] <= value;
+//             default:
+//               return true;
+//           }
+//         });
+//       });
+//     }
+
+//     if (groupBy === "yes" && aggregateFunction) {
+//       // Perform grouping and aggregation on filtered data
+//       const groupedData = filteredData.reduce((acc, row) => {
+//         const groupKey = row[values.category.column]; // Use the category column as the group key
+//         if (!acc[groupKey]) acc[groupKey] = [];
+//         acc[groupKey].push(row[axisColumn.column]);
+//         return acc;
+//       }, {});
+
+//       // Apply aggregation function to each group
+//       return Object.keys(groupedData).map((key) => ({
+//         group: key,
+//         value: aggregateFunctions[aggregateFunction](groupedData[key]),
+//       }));
+//     }
+
+//     // Return raw filtered data if grouping is not applied
+//     return filteredData.map((row) => row[axisColumn.column]);
+//   };
+
+//   switch (updatedOptions.chartType) {
+//     case "bubblechart":
+//     case "bubblechart3d":
+//       const processedItems = values.datasets.map((item) => {
+//         const xAxisData = getAxisData(item.data.x, "no", "");
+//         const yAxisData = getAxisData(item.data.y, "no", "");
+//         const zAxisData = getAxisData(item.data.z, "no", "");
+
+//         return {
+//           name: item.name,
+//           xData: xAxisData,
+//           yData: yAxisData,
+//           zData: zAxisData,
+//         };
+//       });
+
+//       const bubblechartData = processedItems.map((item) => ({
+//         name: item.name,
+//         data: item.xData.map((x, index) => ({
+//           x,
+//           y: item.yData[index],
+//           z: item.zData[index],
+//         })),
+//       }));
+
+//       updatedOptions = {
+//         ...updatedOptions,
+//         formValues: values,
+//         options: {
+//           ...updatedOptions.options,
+//           series: [
+//             ...bubblechartData
+//           ],
+//         },
+//       };
+//       break;
+//     case "line":
+//     case "bar":
+//     case "stackedhorizontalbar":
+//     case "100stackedhorizontalbarchart":
+//     case "stackedverticalbar":
+//     case "verticalbarchart":
+//     case "horizontalbarchart":
+//     case "100stackedverticalbarchart":
+//     case "area":
+//       const categories =
+//         values.groupBy === "yes"
+//           ? getAxisData(values.category, "yes", values.aggregateFunction).map(
+//             (group) => group.group
+//           )
+//           : getAxisData(values.category);
+
+//       // Process series
+//       const series = values.series.map((item) => {
+//         if (item.whereConditions) {
+//           item.whereConditions = item.whereConditions.map(wh => {
+//             return {
+//               ...wh,
+//               column: item.column
+//             }
+//           })
+//         }
+
+//         const groupedSeriesData =
+//           values.groupBy === "yes"
+//             ? getAxisData(item, "yes", values.aggregateFunction, item.whereConditions)
+//             : getAxisData(item);
+
+//         // Map series data to categories
+//         if (values.groupBy === "yes") {
+//           const dataMap = new Map(
+//             groupedSeriesData.map((group) => [group.group, group.value])
+//           );
+
+//           const data = categories.map((category) =>
+//             dataMap.has(category) ? dataMap.get(category) : null // Fill missing values with null
+//           );
+
+//           return {
+//             name: `${item.name}=>(${item.datasetName})`,
+//             type: item.type,
+//             data: data,
+//           };
+//         }
+
+//         return {
+//           name: `${item.name}=>(${item.datasetName})`,
+//           type: item.type,
+//           data: groupedSeriesData,
+//         };
+//       });
+
+//       updatedOptions = {
+//         ...updatedOptions,
+//         formValues: values,
+//         options: {
+//           ...updatedOptions.options,
+//           xaxis: {
+//             ...updatedOptions.options.xaxis,
+//             categories: categories,
+//           },
+//           series: series,
+//         },
+//       };
+//       break;
+//     case "treemap":
+//       const treeMapData = getAxisData(values.x, "no", "").map((m, index) => {
+//         return {
+//           x: m,
+//           y: getAxisData(values.y, "no", "")[index]
+//         }
+//       })
+
+//       updatedOptions = {
+//         ...updatedOptions,
+//         formValues: values,
+//         options: {
+//           ...updatedOptions.options,
+//           series: [
+//             {
+//               data: [...treeMapData],
+//             },
+//           ],
+//         },
+//       };
+//       break;
+//     case "pie":
+//     case "donut":
+//     case "radialBar":
+//       const labels2 =
+//         values.groupBy === "yes"
+//           ? getAxisData(values.category, "yes", values.aggregateFunction).map(
+//             (group) => group.group
+//           )
+//           : getAxisData(values.category);
+
+//       // Process series
+//       let series2 = [];
+//       if (values.series && values.series.whereConditions) {
+//         values.series.whereConditions = values.series.whereConditions.map(wh => {
+//           return {
+//             ...wh,
+//             column: item.column
+//           }
+//         })
+//       }
+
+//       const groupedSeriesData =
+//         values.groupBy === "yes"
+//           ? getAxisData(values.series, "yes", values.aggregateFunction, values.series.whereConditions)
+//           : getAxisData(values.series);
+
+//       // Map series data to categories
+//       if (values.groupBy === "yes") {
+//         const dataMap = new Map(
+//           groupedSeriesData.map((group) => [group.group, group.value])
+//         );
+
+//         const data = labels2.map((category) =>
+//           dataMap.has(category) ? dataMap.get(category) : null // Fill missing values with null
+//         );
+
+//         series2 = data;
+//       } else {
+//         series2 = groupedSeriesData
+//       }
+
+//       updatedOptions = {
+//         ...updatedOptions,
+//         formValues: values,
+//         options: {
+//           ...updatedOptions.options,
+//           labels: labels2,
+//           series: series2,
+//         },
+//       };
+//       break;
+//     case "mixed":
+//       const labels =
+//         values.groupBy === "yes"
+//           ? getAxisData(values.category, "yes", values.aggregateFunction).map(
+//             (group) => group.group
+//           )
+//           : getAxisData(values.category);
+
+//       // Process series
+//       const mixedSeries = values.series.map((item) => {
+//         if (item.whereConditions) {
+//           item.whereConditions = item.whereConditions.map(wh => {
+//             return {
+//               ...wh,
+//               column: item.column
+//             }
+//           })
+//         }
+
+//         const groupedSeriesData =
+//           values.groupBy === "yes"
+//             ? getAxisData(item, "yes", values.aggregateFunction, item.whereConditions)
+//             : getAxisData(item);
+
+//         // Map series data to categories
+//         if (values.groupBy === "yes") {
+//           const dataMap = new Map(
+//             groupedSeriesData.map((group) => [group.group, group.value])
+//           );
+
+//           const data = labels.map((category) =>
+//             dataMap.has(category) ? dataMap.get(category) : null // Fill missing values with null
+//           );
+
+//           return {
+//             name: `${item.name}=>(${item.datasetName})`,
+//             type: item.type,
+//             data: data,
+//           };
+//         }
+//         return {
+//           name: `${item.name}=>(${item.datasetName})`,
+//           type: item.type,
+//           data: data,
+//         };
+//       });
+
+//       updatedOptions = {
+//         ...updatedOptions,
+//         options: {
+//           ...updatedOptions.options,
+//           labels: labels,
+//           series: mixedSeries,
+//         },
+//       };
+
+//       break;
+//     default:
+//       console.warn("Unsupported chart type:", updatedOptions.chartType);
+//       break;
+//   }
+//   // Update chart options state
+//   onUpdateChartOptions(updatedOptions);
+// };
