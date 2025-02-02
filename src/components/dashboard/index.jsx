@@ -68,6 +68,7 @@ import {
 import { toast } from "react-toastify";
 import { defaultChartOptions } from "../../data/chartData";
 import { Debounce } from "react-lodash";
+import WhereConditions from "../where-conditions";
 
 const Dashboard = ({
   children,
@@ -104,10 +105,10 @@ const Dashboard = ({
   const [selectedSeries, setSelectedSeries] = useState({});
   const { id } = useParams();
   const aggregateFunctions = {
-    SUM: (data, column) => data.reduce((sum, item) => sum + (item || 0), 0),
+    SUM: (data, column) => data.reduce((sum, item) => sum + (Number(item) || 0), 0),
     AVERAGE: (data, column) => {
       const values = data.map(item => item || 0);
-      return values.length ? (values.reduce((sum, val) => sum + val, 0) / values.length).toFixed(2) : 0;
+      return values.length ? (values.reduce((sum, val) => Number(sum) + Number(val), 0) / values.length).toFixed(2) : 0;
     },
     MIN: (data, column) => Math.min(...data.map(item => item || 0)),
     MAX: (data, column) => Math.max(...data.map(item => item || 0)),
@@ -116,7 +117,7 @@ const Dashboard = ({
 
   const handleSubmit = (values) => {
     let updatedOptions = { ...chartOptions };
-    // Utility: Get data grouped by category and series
+    // Utility: Group data by category and series
     const groupData = (data, categoryColumn, seriesColumn) => {
       return data.reduce((acc, row) => {
         const category = row[categoryColumn];
@@ -131,38 +132,49 @@ const Dashboard = ({
     };
 
     const filterDataset = (dataset, filters = []) => {
-      let filteredData = dataset
-      if (filters.length > 0) {
-        filteredData = filteredData?.filter((row) => {
-          return filters.every((filter) => {
-            const { column, operator, value } = filter;
-            switch (operator) {
-              case '=':
-                return row[column] === value;
-              case '!=':
-                return row[column] !== value;
-              case '>':
-                return row[column] > value;
-              case '<':
-                return row[column] < value;
-              case '>=':
-                return row[column] >= value;
-              case '<=':
-                return row[column] <= value;
-              default:
-                return true;
-            }
-          });
+      if (!dataset || !Array.isArray(dataset)) return [];
+
+      return dataset.filter((row) => {
+        return filters.every((filter) => {
+          const { column, operator, value } = filter;
+          if (!row.hasOwnProperty(column)) return false; // Validate column existence
+
+          const rowValue = row[column];
+          const filterValue = value?.toString(); // Ensure string comparison
+
+          switch (operator) {
+            case "=":
+              return rowValue == filterValue;
+            case "!=":
+              return rowValue != filterValue;
+            case ">":
+              return rowValue > filterValue;
+            case "<":
+              return rowValue < filterValue;
+            case ">=":
+              return rowValue >= filterValue;
+            case "<=":
+              return rowValue <= filterValue;
+            case "IN":
+              return filterValue.split(",").includes(rowValue?.toString());
+            case "NOT IN":
+              return !filterValue.split(",").includes(rowValue?.toString());
+            case "LIKE":
+              return new RegExp(filterValue.replace(/%/g, ".*"), "i").test(rowValue?.toString());
+            default:
+              return true;
+          }
         });
-      }
-      return filteredData;
-    }
+      });
+    };
+
 
     // Utility: Process series data
     const processSeries = (data, categories, seriesColumn, categoryColumn, groupBy, aggregateFunction, type = "") => {
       if (groupBy === "yes") {
         const groupedData = groupData(data, categoryColumn, seriesColumn);
         const seriesValues = Array.from(new Set(data.map((item) => item[seriesColumn])));
+
         return seriesValues.map((value) => ({
           name: value,
           type: type,
@@ -233,38 +245,88 @@ const Dashboard = ({
       case "horizontalbarchart":
       case "100stackedverticalbarchart":
       case "area":
-        const dataset = filterDataset(chartOptions?.datasets?.dataSourceData, values.whereConditions)
+        // Validate inputs
+        if (!chartOptions?.datasets?.dataSourceData || !values.whereConditions || !values.category || !values.series) {
+          toast.error("Invalid input data or missing required fields.");
+        }
+
+        // Process data in chunks
+        const processDataInChunks = (data, chunkSize, processFn) => {
+          const results = [];
+          for (let i = 0; i < data.length; i += chunkSize) {
+            const chunk = data.slice(i, i + chunkSize);
+            results.push(...processFn(chunk));
+          }
+          return results;
+        };
+
+        // Filter dataset with chunking
+        const newfilteredDataset = processDataInChunks(
+          chartOptions.datasets.dataSourceData,
+          1000,
+          (chunk) => filterDataset(chunk, values.whereConditions)
+        );
+
         const { category, series, groupBy, aggregateFunction } = values;
+
         let categories = [];
         let processedSeries = [];
-        if (groupBy == "yes") {
-          categories = Array.from(new Set(dataset.map((row) => row[category.column])));
-          // Process each series dynamically
-          processedSeries = series.map((item) => ({
-            name: item.datasetName,
-            data: processSeries(dataset, categories, item.column, category.column, groupBy, aggregateFunction),
-          }));
+
+        if (groupBy === "yes") {
+          // Get unique categories
+          const seriesGroup = series[0]?.groupBy
+          categories = Array.from(new Set(newfilteredDataset.map((row) => row[category.column])));
+          if (seriesGroup == "yes") {
+            categories.map((category1) => {
+              const seriesData = series.map((item) => {
+                const values = newfilteredDataset.filter((row) => row[category.column] === category1).map((row) => row[item.column]);
+                return aggregateFunctions[aggregateFunction](values);
+              });
+
+              processedSeries.push({
+                name: category,
+                data: {
+                  name: category1 == "" ? "Blank" : category1,
+                  data: seriesData
+                }
+              });
+            })
+          } else {
+            // Process series data in chunks
+            processedSeries = series.map((item) => ({
+              name: item.datasetName,
+              data: processDataInChunks(
+                newfilteredDataset,
+                1000,
+                (chunk) => processSeries(chunk, categories, item.column, category.column, groupBy, aggregateFunction)
+              ),
+            }));
+          }
         } else {
-          categories = dataset.map((row) => row[category.column]);
-          // Process each series dynamically
+          // Process without grouping
+          categories = newfilteredDataset.map((row) => row[category.column]);
           processedSeries = series.map((item) => ({
             name: item.datasetName,
-            data: { name: item.column, data: dataset.map((row) => row[item.column]) },
+            data: { name: item.column, data: [newfilteredDataset.map((row) => row[item.column]).length] },
           }));
         }
 
-        updatedOptions = {
-          ...updatedOptions,
-          formValues: values,
-          options: {
-            ...updatedOptions.options,
-            xaxis: {
-              ...updatedOptions.options.xaxis,
-              categories: categories,
+        if (processedSeries.length < 30) {
+          updatedOptions = {
+            ...updatedOptions,
+            formValues: values,
+            options: {
+              ...updatedOptions.options,
+              xaxis: {
+                ...updatedOptions.options.xaxis,
+                categories: categories,
+              },
+              series: processedSeries.flatMap((p) => p.data),
             },
-            series: processedSeries.flatMap(p => p.data),
-          },
-        };
+          };
+        } else {
+          toast.error("Too many series to display. Please reduce the number of series.");
+        }
         break;
       case "treemap":
         const treeMapDataset = filterDataset(chartOptions?.datasets?.dataSourceData, values.whereConditions)
@@ -399,27 +461,83 @@ const Dashboard = ({
         break;
       case "table":
         const tableDataset = filterDataset(
-          chartOptions?.datasets?.dataSourceData,
-          values.whereConditions
+          chartOptions?.datasets?.dataSourceData || [], // Ensure dataset is not null
+          values.whereConditions || [] // Ensure conditions are not null
         );
 
-        const selectedColumns = values?.columns?.map((col) => col.column); // Extract column names
-        const data = tableDataset?.map((row) =>
-          selectedColumns.reduce((acc, column) => {
-            acc[column] = row[column];
+        const selectedColumns = values?.columns || []; // Ensure it's an array
+        const groupColumns = values?.groupColumns || []; // Multiple group columns
+
+        if (groupColumns.length > 0) {
+          const groupedData = tableDataset.reduce((acc, row) => {
+            if (!row) return acc;
+
+            const groupKey = groupColumns
+              .map((groupCol) => row?.[groupCol.column] ?? "Unknown") // Handle undefined values
+              .join("_");
+
+            if (!acc[groupKey]) {
+              acc[groupKey] = [];
+            }
+
+            const rowData = selectedColumns.reduce((obj, col) => {
+              obj[col.column] = row?.[col.column] ?? 0; // Handle null/undefined values
+              return obj;
+            }, {});
+
+            acc[groupKey].push(rowData);
             return acc;
-          }, {})
-        );
+          }, {});
 
-        updatedOptions = {
-          ...updatedOptions,
-          formValues: values,
-          options: {
-            ...updatedOptions.options,
-            data: data
-          },
-        };
-        break;
+          const aggregatedData = Object.keys(groupedData).map((groupKey) => {
+            const groupRows = groupedData[groupKey];
+
+            let aggregatedRow = {};
+
+            const groupValues = groupKey.split("_");
+            groupColumns.forEach((groupCol, index) => {
+              aggregatedRow[groupCol.column] = groupValues[index] ?? "Unknown";
+            });
+
+            selectedColumns.forEach((col) => {
+              if (!col.function || !aggregateFunctions[col.function]) {
+                console.warn(`⚠️ Aggregate function "${col.function}" not found for column "${col.column}". Skipping.`);
+                aggregatedRow[col.column] = 0;
+              } else {
+                const columnValues = groupRows.map((row) => row[col.column] ?? 0);
+                aggregatedRow[col.column] = aggregateFunctions[col.function](columnValues, col.column);
+              }
+            });
+
+            return aggregatedRow;
+          });
+
+          updatedOptions = {
+            ...updatedOptions,
+            formValues: values,
+            options: {
+              ...updatedOptions.options,
+              data: aggregatedData,
+            },
+          };
+        } else {
+          const data = tableDataset?.map((row) =>
+            selectedColumns.reduce((acc, col) => {
+              acc[col.column] = row?.[col.column] ?? 0;
+              return acc;
+            }, {})
+          );
+
+          updatedOptions = {
+            ...updatedOptions,
+            formValues: values,
+            options: {
+              ...updatedOptions.options,
+              data: data,
+            },
+          };
+        }
+
 
         break;
       default:
@@ -3374,7 +3492,7 @@ const Dashboard = ({
                     initialValues={
                       chartOptions.formValues || {
                         category: { column: "", datasetName: "", function: "" },
-                        series: [{ type: "", name: "", column: "", datasetName: "" }],
+                        series: [{ type: "", name: "", column: "", datasetName: "", groupBy: "" }],
                         whereConditions: [{ operator: "", value: "", column: "", datasetName: "" }],
                         groupBy: "no",
                         aggregateFunction: ""
@@ -3500,53 +3618,27 @@ const Dashboard = ({
                             <>
                               {values.series.map((seriesItem, index) => (
                                 <div key={index}>
-                                  {/* <div>
-                                    <label htmlFor={`series[${index}].name`}>Name:</label>
-                                    <Field
-                                      className="form-control"
-                                      id={`series[${index}].name`}
-                                      name={`series[${index}].name`}
-                                      placeholder="Enter a name"
-                                    />
-                                    {errors.series &&
-                                      errors.series[index]?.name &&
-                                      touched.series &&
-                                      touched.series[index]?.name && (
-                                        <div style={{ color: "red" }}>{errors.series[index].name}</div>
-                                      )}
-                                  </div> */}
-                                  {
-                                    chartOptions.chartType == "mixed" &&
+                                  {chartOptions.chartType === "mixed" && (
                                     <div>
-                                      <label htmlFor={`series[${index}]`}>Chart Type:</label>
+                                      <label htmlFor={`series[${index}].type`}>Chart Type:</label>
                                       <Select
                                         options={chartTypes}
-                                        value={chartTypes.find((type) => {
-                                          return type.value === seriesItem.type
-                                        })}
+                                        value={chartTypes.find((type) => type.value === seriesItem.type)}
                                         onChange={(selectedType) => {
-                                          setFieldValue(`series[${index}]`, {
-                                            ...seriesItem,
-                                            type: selectedType.value
-                                          });
+                                          setFieldValue(`series[${index}].type`, selectedType.value);
                                         }}
                                         className="react-select-container"
                                         classNamePrefix="react-select"
                                         placeholder="Choose Series"
                                       />
-                                      {errors.series &&
-                                        errors.series[index]?.type &&
-                                        touched.series &&
-                                        touched.series[index]?.type && (
-                                          <div style={{ color: "red" }}>
-                                            {errors.series[index].type}
-                                          </div>
-                                        )}
+                                      {errors.series?.[index]?.type && touched.series?.[index]?.type && (
+                                        <div style={{ color: "red" }}>{errors.series[index].type}</div>
+                                      )}
                                     </div>
-                                  }
+                                  )}
 
                                   <div>
-                                    <label htmlFor={`series[${index}]`}>Series {index + 1}:</label>
+                                    <label htmlFor={`series[${index}].column`}>Series {index + 1}:</label>
                                     <Select
                                       options={categoriesOptions}
                                       value={categoriesOptions.find((option) => {
@@ -3558,143 +3650,83 @@ const Dashboard = ({
                                       })}
                                       onChange={(selectedOption) => {
                                         const parsedValue = JSON.parse(selectedOption.value);
-                                        setFieldValue(`series[${index}]`, {
-                                          ...seriesItem,
-                                          column: parsedValue.column,
-                                          datasetName: parsedValue.datasetName,
-                                        });
+                                        setFieldValue(`series[${index}].column`, parsedValue.column);
+                                        setFieldValue(`series[${index}].datasetName`, parsedValue.datasetName);
                                       }}
                                       className="react-select-container"
                                       classNamePrefix="react-select"
                                       placeholder="Choose Series"
                                     />
-                                    {errors.series &&
-                                      errors.series[index]?.column &&
-                                      touched.series &&
-                                      touched.series[index]?.column && (
-                                        <div style={{ color: "red" }}>
-                                          {errors.series[index].column || errors.series[index].datasetName}
-                                        </div>
-                                      )}
+                                    {errors.series?.[index]?.column && touched.series?.[index]?.column && (
+                                      <div style={{ color: "red" }}>
+                                        {errors.series[index].column || errors.series[index].datasetName}
+                                      </div>
+                                    )}
                                   </div>
 
-                                  <a
+                                  {chartOptions.chartType != "mixed" &&
+                                    <div className="mt-3">
+                                      <label>Group By:</label>
+                                      <div>
+                                        <label>
+                                          <Field
+                                            type="radio"
+                                            name={`series[${index}].groupBy`}
+                                            value="yes"
+                                            checked={seriesItem.groupBy === "yes"}
+                                            onChange={() => setFieldValue(`series[${index}].groupBy`, "yes")}
+                                          />
+                                          Yes
+                                        </label>
+                                        <label style={{ marginLeft: "20px" }}>
+                                          <Field
+                                            type="radio"
+                                            name={`series[${index}].groupBy`}
+                                            value="no"
+                                            checked={seriesItem.groupBy === "no"}
+                                            onChange={() => setFieldValue(`series[${index}].groupBy`, "no")}
+                                          />
+                                          No
+                                        </label>
+                                      </div>
+                                    </div>
+                                  }
+
+                                  <button
                                     type="button"
                                     onClick={() => remove(index)}
-                                    style={{ marginTop: "10px" }}
+                                    style={{ marginTop: "10px", cursor: "pointer", color: "red", background: "none", border: "none" }}
                                     className="text-end mt-2"
                                   >
-                                    <FontAwesomeIcon className="ms-2  text-danger" icon={faTrash} size="2x"></FontAwesomeIcon>
-                                  </a>
+                                    <FontAwesomeIcon className="ms-2 text-danger" icon={faTrash} size="2x" />
+                                  </button>
                                 </div>
                               ))}
-                              <button
+
+                              {chartOptions.chartType == "mixed" && <button
                                 type="button"
                                 onClick={() =>
-                                  push({ column: "", name: "", type: "", datasetName: "" })
+                                  push({ column: "", name: "", type: "", datasetName: "", groupBy: "no" })
                                 }
                                 style={{ cursor: "pointer", color: "green", background: "none", border: "none" }}
                                 className="text-center"
                               >
                                 <FontAwesomeIcon icon={faPlusCircle} size="1x" /> Add
                               </button>
+                              }
                             </>
                           )}
                         </FieldArray>
 
-                        {/* Where Conditions Field */}
-                        <FieldArray name='whereConditions'>
-                          {({ push, remove }) => (
-                            <>
-                              <p className="mb-0 mt-2 mb-1">Conditions</p>
-                              {values?.whereConditions?.map((condition, condIndex) => (
-                                <div className="border border-primary p-2 mb-2" key={condIndex}>
-                                  <div>
-                                    <label htmlFor={`whereConditions[${condIndex}].operator`}>Column:</label>
-                                    <Select
-                                      options={categoriesOptions}
-                                      value={categoriesOptions.find((option) => {
-                                        const parsedValue = JSON.parse(option.value);
-                                        return (
-                                          parsedValue.column === condition.column &&
-                                          parsedValue.datasetName === condition.datasetName
-                                        );
-                                      })}
-                                      onChange={(selectedOption) => {
-                                        const parsedValue = JSON.parse(selectedOption.value);
-                                        setFieldValue(`whereConditions[${condIndex}]`, {
-                                          ...condition,
-                                          column: parsedValue.column,
-                                          datasetName: parsedValue.datasetName,
-                                        });
-                                      }}
-                                      className="react-select-container"
-                                      classNamePrefix="react-select"
-                                      placeholder="Choose Series"
-                                    />
-                                    {errors.whereConditions &&
-                                      errors.whereConditions[condIndex]?.column &&
-                                      touched.whereConditions &&
-                                      touched.whereConditions[condIndex]?.column && (
-                                        <div style={{ color: "red" }}>
-                                          {errors.whereConditions[condIndex].column || errors.whereConditions[condIndex].datasetName}
-                                        </div>
-                                      )}
-                                  </div>
-                                  {/* Condition Fields */}
-                                  <div>
-                                    <label htmlFor={`whereConditions[${condIndex}].operator`}>
-                                      Operator:
-                                    </label>
-                                    <Field as="select" className="form-control" name={`whereConditions[${condIndex}].operator`}>
-                                      <option value={null}>Select</option>
-                                      <option value="=">Equals</option>
-                                      <option value="!=">Not Equals</option>
-                                      <option value=">">Greater Than</option>
-                                      <option value="<">Less Than</option>
-                                      <option value=">=">Greater or Equal</option>
-                                      <option value="<=">Less or Equal</option>
-                                    </Field>
-                                  </div>
-                                  {errors.whereConditions &&
-                                    errors.whereConditions[condIndex]?.operator &&
-                                    touched.whereConditions &&
-                                    touched.whereConditions[condIndex]?.operator && (
-                                      <div style={{ color: "red" }}>
-                                        {errors.whereConditions[condIndex].operator}
-                                      </div>
-                                    )}
-                                  <div>
-                                    <label htmlFor={`whereConditions[${condIndex}].value`}>
-                                      Value:
-                                    </label>
-                                    <Field className="form-control"
-                                      name={`whereConditions[${condIndex}].value`}
-                                      placeholder="Enter Value"
-                                    />
-                                    {errors.whereConditions &&
-                                      errors.whereConditions[condIndex]?.value &&
-                                      touched.whereConditions &&
-                                      touched.whereConditions[condIndex]?.value && (
-                                        <div style={{ color: "red" }}>
-                                          {errors.whereConditions[condIndex].value}
-                                        </div>
-                                      )}
-                                  </div>
-                                  {/* Remove Condition */}
-                                  <a className="text-center mt-2" type="button" onClick={() => remove(condIndex)}>
-                                    <FontAwesomeIcon className="text-danger" icon={faTrash} size="2x" />
-                                  </a>
-                                </div>
-                              ))}
-                              <button type="button"
-                                style={{ cursor: "pointer", color: "green", background: "none", border: "none" }}
-                                onClick={() => push({ operator: '', value: '' })}>
-                                <FontAwesomeIcon icon={faPlusCircle} size="1x" /> Add Condition
-                              </button>
-                            </>
-                          )}
-                        </FieldArray>
+                        <WhereConditions
+                          values={values}
+                          errors={errors}
+                          touched={touched}
+                          setFieldValue={setFieldValue}
+                          categoriesOptions={categoriesOptions}
+                          dataset={chartOptions["datasets"]}
+                        />
+
                         {/* Submit Button */}
                         <button type="submit" style={{ marginTop: "20px" }}>
                           Load Chart
@@ -4277,7 +4309,6 @@ const Dashboard = ({
                         )}
                       </FieldArray>
 
-
                       {/* Submit Button */}
                       <button type="submit" style={{ marginTop: "20px" }}>
                         Load Data
@@ -4501,7 +4532,8 @@ const Dashboard = ({
                   enableReinitialize={true}
                   initialValues={chartOptions?.formValues || {
                     column: { column: "", datasetName: "" },
-                    function: ""
+                    function: "",
+                    whereConditions: []
                   }}
 
                   validationSchema={Yup.object().shape({
@@ -4509,7 +4541,15 @@ const Dashboard = ({
                       column: Yup.string().required("X column is required"),
                       datasetName: Yup.string().required("X datasetName is required")
                     }).required(),
-                    function: Yup.string().required("Function is required")
+                    function: Yup.string().required("Function is required"),
+                    whereConditions: Yup.array().of(
+                      Yup.object().shape({
+                        operator: Yup.string().required('Operator is required'),
+                        value: Yup.string().required('Value is required'),
+                        column: Yup.string().required('Column is required'),
+                        datasetName: Yup.string().required('Dataset is required')
+                      })
+                    ),
                   })}
                   onSubmit={(values) => {
                     handleSubmit(values);
@@ -4572,6 +4612,16 @@ const Dashboard = ({
                         )}
                       </div>
 
+                      {/* Where Conditions Component */}
+                      <WhereConditions
+                        values={values}
+                        errors={errors}
+                        touched={touched}
+                        setFieldValue={setFieldValue}
+                        categoriesOptions={categoriesOptions}
+                        dataset={chartOptions["datasets"]}
+                      />
+
                       {/* Submit Button */}
                       <button type="submit" style={{ marginTop: "20px" }}>
                         Load Data
@@ -4589,16 +4639,35 @@ const Dashboard = ({
               <>
                 <Formik
                   enableReinitialize={true}
-                  initialValues={chartOptions?.formValues || { columns: [] }}
+                  initialValues={chartOptions?.formValues || {
+                    columns: [{ column: "", datasetName: "", function: "" }], // Function added
+                    groupColumns: [], // Changed from single object to an array
+                    whereConditions: [],
+                  }}
                   validationSchema={Yup.object().shape({
                     columns: Yup.array()
                       .of(
                         Yup.object().shape({
                           column: Yup.string().required("Column is required"),
-                          datasetName: Yup.string().required("Dataset Name is required")
+                          datasetName: Yup.string().required("Dataset Name is required"),
+                          function: Yup.string().required("Function is required"), // Function validation added
                         })
                       )
-                      .required("At least one column must be selected")
+                      .min(1, "At least one column must be selected"),
+                    groupColumns: Yup.array().of(
+                      Yup.object().shape({
+                        column: Yup.string().required("Group Column is required"),
+                        datasetName: Yup.string().required("Dataset Name is required"),
+                      })
+                    ),
+                    whereConditions: Yup.array().of(
+                      Yup.object().shape({
+                        operator: Yup.string().required("Operator is required"),
+                        value: Yup.string().required("Value is required"),
+                        column: Yup.string().required("Column is required"),
+                        datasetName: Yup.string().required("Dataset is required"),
+                      })
+                    ),
                   })}
                   onSubmit={(values) => {
                     handleSubmit(values);
@@ -4622,20 +4691,17 @@ const Dashboard = ({
                             })
                           )}
                           onChange={(selectedOptions) => {
-                            // Parse and ensure no duplicate entries
                             const selectedColumns = selectedOptions.map((option) =>
                               JSON.parse(option.value)
                             );
-                            const uniqueColumns = selectedColumns.filter(
-                              (col, index, self) =>
-                                index ===
-                                self.findIndex(
-                                  (c) =>
-                                    c.column === col.column &&
-                                    c.datasetName === col.datasetName
-                                )
-                            );
-                            setFieldValue("columns", uniqueColumns);
+
+                            // Ensure each column has an associated function
+                            const updatedColumns = selectedColumns.map((col) => ({
+                              ...col,
+                              function: col.function || "", // Ensure function field exists
+                            }));
+
+                            setFieldValue("columns", updatedColumns);
                           }}
                           className="react-select-container"
                           classNamePrefix="react-select"
@@ -4646,6 +4712,75 @@ const Dashboard = ({
                         )}
                       </div>
 
+                      {/* Assign Aggregate Function to Each Column */}
+                      <div>
+                        {values.columns.map((col, index) => (
+                          <div key={index} style={{ display: "flex", alignItems: "center", marginBottom: "10px" }}>
+                            <span>{col.column} ({col.datasetName})</span>
+                            <Select
+                              options={Object.keys(aggregateFunctions).map((func) => ({
+                                label: func,
+                                value: func,
+                              }))}
+                              value={
+                                col.function
+                                  ? { label: col.function, value: col.function }
+                                  : null
+                              }
+                              onChange={(selectedFunc) => {
+                                const updatedColumns = [...values.columns];
+                                updatedColumns[index].function = selectedFunc.value;
+                                setFieldValue("columns", updatedColumns);
+                              }}
+                              className="react-select-container"
+                              classNamePrefix="react-select"
+                              placeholder="Select function"
+                              style={{ marginLeft: "10px", minWidth: "200px" }}
+                            />
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Multi-Select for Group Columns */}
+                      <div>
+                        <label htmlFor="groupColumns">Select Group Columns:</label>
+                        <Select
+                          options={categoriesOptions}
+                          isMulti
+                          value={values?.groupColumns?.map((col) =>
+                            categoriesOptions.find((option) => {
+                              const parsedValue = JSON.parse(option.value);
+                              return (
+                                parsedValue.column === col.column &&
+                                parsedValue.datasetName === col.datasetName
+                              );
+                            })
+                          )}
+                          onChange={(selectedOptions) => {
+                            const selectedGroupColumns = selectedOptions.map((option) =>
+                              JSON.parse(option.value)
+                            );
+                            setFieldValue("groupColumns", selectedGroupColumns);
+                          }}
+                          className="react-select-container"
+                          classNamePrefix="react-select"
+                          placeholder="Choose Group Columns"
+                        />
+                        {touched.groupColumns && errors.groupColumns && (
+                          <div style={{ color: "red" }}>{errors.groupColumns}</div>
+                        )}
+                      </div>
+
+                      {/* Where Conditions Component */}
+                      <WhereConditions
+                        values={values}
+                        errors={errors}
+                        touched={touched}
+                        setFieldValue={setFieldValue}
+                        categoriesOptions={categoriesOptions}
+                        dataset={chartOptions["datasets"]}
+                      />
+
                       {/* Submit Button */}
                       <button type="submit" style={{ marginTop: "20px" }}>
                         Load Data
@@ -4653,6 +4788,8 @@ const Dashboard = ({
                     </Form>
                   )}
                 </Formik>
+
+
               </>
 
             }
