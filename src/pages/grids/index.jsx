@@ -5,6 +5,7 @@ import Grid from "../../components/grid-charts";
 import { updateDashboard } from "../../actions/dashboardActions";
 import { connect } from "react-redux";
 import { getChartOptions } from "../../data/chartData";
+import { toast } from "react-toastify";
 
 const Grids = ({ dashboard, updateDashboard }) => {
   const [grid, setGrid] = useState({});
@@ -35,6 +36,7 @@ const Grids = ({ dashboard, updateDashboard }) => {
               {
                 datasetLabel: "Chart",
                 iconUrl: "",
+                gridHeight: "400",
                 grids: newGrid,
               },
             ],
@@ -45,9 +47,10 @@ const Grids = ({ dashboard, updateDashboard }) => {
               {
                 datasetLabel: "Chart",
                 iconUrl: "",
+                gridHeight: "400",
                 grids: newGrid,
               },
-            ],
+            ]
           };
         }
       });
@@ -131,24 +134,26 @@ const Grids = ({ dashboard, updateDashboard }) => {
   };
 
 
-  const handleDeleteChart = () => {
-    if (selectedGridIndex !== null) {
-      const updatedCharts = selectedCharts.filter(
-        (_, i) => i !== selectedGridIndex
-      );
-      const updatedGrids = grids.filter((_, i) => i !== selectedGridIndex);
-      setSelectedCharts(updatedCharts);
-      setGrids(updatedGrids);
-      setSelectedChart(null);
-      setSelectedGridIndex(null);
-      setGridToMoveIndex(null);
-      setChartOptions((prevOptions) => {
-        const newOptions = { ...prevOptions };
-        delete newOptions[selectedChart];
-        return newOptions;
-      });
+  const handleDeleteChart = async () => {
+    // if (selectedGridIndex !== null) {
+    //   setSelectedCharts(updatedCharts);
+    //   setSelectedChart(null);
+    //   setSelectedGridIndex(null);
+    //   setGridToMoveIndex(null);
+    // }
+
+    // Remove the dataset at selectedIndex
+    if (dashboard?.datasetsTree && selectedIndex !== null) {
+      dashboard?.datasetsTree.splice(selectedIndex, 1);
+      setSelectedIndex(null)
+
+      await updateDashboard(dashboard);
+      toast.success("Grid Removed Successfully")
+      return;
     }
+    toast.warn("Please Select Grid to Delete")
   };
+
 
   const handleShuffleCharts = () => {
     if (
@@ -189,7 +194,7 @@ const Grids = ({ dashboard, updateDashboard }) => {
       >
         <div className="container-grids p-3">
           <div className="content-grids p-0">
-            <div className="d-flex flex-wrap">
+            <div className="d-flex flex-wrap justify-content-center">
               {dashboard && dashboard.datasetsTree && dashboard.datasetsTree.map((dataset, index) => {
                 // Find the dataset with the matching index
                 // const dataset = dashboard.datasetsTree?.find(dataset => dataset.index === index);

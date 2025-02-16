@@ -9,10 +9,18 @@ const WhereConditions = ({ values, errors, touched, setFieldValue, categoriesOpt
     const [isManualInput, setIsManualInput] = useState(false);
 
     const fetchUniqueValues = async (column, datasetName) => {
-        // Return empty array if dataset or dataset data is unavailable
-        if (!dataset || !dataset.dataSourceData) return [];
-        const data = dataset.dataSourceData.map(row => row[column]);
-        return [...new Set(data)]; // Remove duplicates
+        if (!Array.isArray(dataset) || dataset.length === 0) return [];
+        const uniqueValues = new Set();    
+        dataset.forEach(ds => {
+            if (ds?.dataSourceData) {
+                ds.dataSourceData.forEach(row => {
+                    if (row[column] !== undefined) {
+                        uniqueValues.add(row[column]);
+                    }
+                });
+            }
+        });  
+        return [...uniqueValues];        
     };
 
     useEffect(() => {

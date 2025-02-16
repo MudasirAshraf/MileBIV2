@@ -69,6 +69,9 @@ import { toast } from "react-toastify";
 import { defaultChartOptions } from "../../data/chartData";
 import { Debounce } from "react-lodash";
 import WhereConditions from "../where-conditions";
+import DashboardHeader from "../dashboard-header";
+import TableRelations from "../table-relations";
+import LimitSortField from "../limit-sort-field";
 
 const Dashboard = ({
   children,
@@ -92,86 +95,135 @@ const Dashboard = ({
   const [activeTab, setActiveTab] = useState("Grids");
   const [selectedComponent, setSelectedComponent] = useState(null);
   const [showChartList, setShowChartList] = useState(false);
-  // const [chartOptions, setChartOptions] = useState({});
-  const [selectedDatasets, setSelectedDatasets] = useState([]);
   const [columns, setColumns] = useState([]);
   const navigate = useNavigate();
-  const [properties, setProperties] = useState([]);
-  const [xAxisColumn, setXAxisColumn] = useState({});
-  const [zAxisColumn, setZAxisColumn] = useState({});
-  const [series, setSeries] = useState([]);
-  const [yAxisColumn, setYAxisColumn] = useState({});
   const [dashboardName, setDashboardName] = useState(dashboard ? dashboard.dashboardTitle : "");
-  const [selectedSeries, setSelectedSeries] = useState({});
   const { id } = useParams();
+
   const aggregateFunctions = {
-    SUM: (data, column) => data.reduce((sum, item) => sum + (Number(item) || 0), 0),
-    AVERAGE: (data, column) => {
-      const values = data.map(item => item || 0);
-      return values.length ? (values.reduce((sum, val) => Number(sum) + Number(val), 0) / values.length).toFixed(2) : 0;
+    SUM: (data) =>
+      data.reduce((sum, item) => {
+        if (item === null || item === undefined) return sum;
+        if (typeof item === "string") {
+          const trimmed = item.trim();
+          if (trimmed === "") return sum;
+          const num = parseFloat(trimmed);
+          return sum + (!isNaN(num) ? num : trimmed.length);
+        }
+        return sum + (isNaN(item) ? 0 : parseFloat(item));
+      }, 0),
+
+    AVERAGE: (data) => {
+      const values = data
+        .map(item => {
+          if (item === null || item === undefined) return null;
+          if (typeof item === "string") {
+            const trimmed = item.trim();
+            if (trimmed === "") return null;
+            const num = parseFloat(trimmed);
+            return !isNaN(num) ? num : trimmed.length;
+          }
+          return isNaN(item) ? null : parseFloat(item);
+        })
+        .filter(item => item !== null);
+
+      return values.length
+        ? (values.reduce((sum, val) => sum + val, 0) / values.length).toFixed(2)
+        : "0.00";
     },
-    MIN: (data, column) => Math.min(...data.map(item => item || 0)),
-    MAX: (data, column) => Math.max(...data.map(item => item || 0)),
-    COUNT: (data) => data.length
+
+    MIN: (data) => {
+      const values = data
+        .map(item => {
+          if (item === null || item === undefined) return null;
+          if (typeof item === "string") {
+            const trimmed = item.trim();
+            if (trimmed === "") return null;
+            const num = parseFloat(trimmed);
+            return !isNaN(num) ? num : trimmed.length;
+          }
+          return isNaN(item) ? null : parseFloat(item);
+        })
+        .filter(item => item !== null);
+
+      return values.length ? Math.min(...values) : "0.00";
+    },
+
+    MAX: (data) => {
+      const values = data
+        .map(item => {
+          if (item === null || item === undefined) return null;
+          if (typeof item === "string") {
+            const trimmed = item.trim();
+            if (trimmed === "") return null;
+            const num = parseFloat(trimmed);
+            return !isNaN(num) ? num : trimmed.length;
+          }
+          return isNaN(item) ? null : parseFloat(item);
+        })
+        .filter(item => item !== null);
+
+      return values.length ? Math.max(...values) : "0.00";
+    },
+
+    COUNT: (data) =>
+      data.filter(item => item !== null && item !== undefined && item !== "").length
   };
 
-  const handleSubmit = (values) => {
-    let updatedOptions = { ...chartOptions };
-    // Utility: Group data by category and series
-    const groupData = (data, categoryColumn, seriesColumn) => {
-      return data.reduce((acc, row) => {
-        const category = row[categoryColumn];
-        const series = row[seriesColumn];
+  const groupData = (data, categoryColumn, seriesColumn) => {
+    return data.reduce((acc, row) => {
+      const category = row[categoryColumn];
+      const series = row[seriesColumn];
 
-        if (!category || series === undefined) return acc;
+      if (!category || series === undefined) return acc;
 
-        acc[category] = acc[category] || [];
-        acc[category].push(series);
-        return acc;
-      }, {});
-    };
+      acc[category] = acc[category] || [];
+      acc[category].push(series);
+      return acc;
+    }, {});
+  };
 
-    const filterDataset = (dataset, filters = []) => {
-      if (!dataset || !Array.isArray(dataset)) return [];
+  const filterDataset = (dataset, filters = []) => {
+    if (!dataset || !Array.isArray(dataset)) return [];
 
-      return dataset.filter((row) => {
-        return filters.every((filter) => {
-          const { column, operator, value } = filter;
-          if (!row.hasOwnProperty(column)) return false; // Validate column existence
+    return dataset.filter((row) => {
+      return filters.every((filter) => {
+        const { column, operator, value } = filter;
+        if (!row.hasOwnProperty(column)) return false; // Validate column existence
 
-          const rowValue = row[column];
-          const filterValue = value?.toString(); // Ensure string comparison
+        const rowValue = row[column];
+        const filterValue = value?.toString(); // Ensure string comparison
 
-          switch (operator) {
-            case "=":
-              return rowValue == filterValue;
-            case "!=":
-              return rowValue != filterValue;
-            case ">":
-              return rowValue > filterValue;
-            case "<":
-              return rowValue < filterValue;
-            case ">=":
-              return rowValue >= filterValue;
-            case "<=":
-              return rowValue <= filterValue;
-            case "IN":
-              return filterValue.split(",").includes(rowValue?.toString());
-            case "NOT IN":
-              return !filterValue.split(",").includes(rowValue?.toString());
-            case "LIKE":
-              return new RegExp(filterValue.replace(/%/g, ".*"), "i").test(rowValue?.toString());
-            default:
-              return true;
-          }
-        });
+        switch (operator) {
+          case "=":
+            return rowValue == filterValue;
+          case "!=":
+            return rowValue != filterValue;
+          case ">":
+            return rowValue > filterValue;
+          case "<":
+            return rowValue < filterValue;
+          case ">=":
+            return rowValue >= filterValue;
+          case "<=":
+            return rowValue <= filterValue;
+          case "IN":
+            return filterValue.split(",").includes(rowValue?.toString());
+          case "NOT IN":
+            return !filterValue.split(",").includes(rowValue?.toString());
+          case "LIKE":
+            return new RegExp(filterValue.replace(/%/g, ".*"), "i").test(rowValue?.toString());
+          default:
+            return true;
+        }
       });
-    };
+    });
+  };
 
-
-    // Utility: Process series data
-    const processSeries = (data, categories, seriesColumn, categoryColumn, groupBy, aggregateFunction, type = "") => {
-      if (groupBy === "yes") {
+  // Utility: Process series data
+  const processSeries = (data, categories, seriesColumn, categoryColumn, groupBy, aggregateFunction, seriesGroup, type = "") => {
+    if (groupBy === "yes") {
+      if (seriesGroup == "yes") {
         const groupedData = groupData(data, categoryColumn, seriesColumn);
         const seriesValues = Array.from(new Set(data.map((item) => item[seriesColumn])));
 
@@ -185,20 +237,56 @@ const Dashboard = ({
           }),
         }));
       } else {
-        return categories.reduce((result, category) => {
-          const rows = data.filter((item) => item[categoryColumn] === category);
-          const seriesValues = Array.from(new Set(rows.map((item) => item[seriesColumn])));
-          seriesValues.forEach((value) => {
-            result.push({
-              name: value,
-              type: type,
-              data: rows.filter((item) => item[seriesColumn] === value).map((item) => item[seriesColumn]),
-            });
-          });
-          return result;
-        }, []);
+        const groupedData = data.reduce((acc, item) => {
+          const category = item[categoryColumn];
+          if (!acc[category]) acc[category] = [];
+          acc[category].push(item[seriesColumn]);
+          return acc;
+        }, {});
+
+        const categories = Object.keys(groupedData);
+
+        const series =
+        {
+          name: seriesColumn,
+          type: type,
+          data: categories.map((category) => {
+            const values = groupedData[category] || [];
+            return aggregateFunctions[aggregateFunction](values);
+          }),
+        }
+          ;
+        return series;
       }
-    };
+    } else {
+      return categories.reduce((result, category) => {
+        const rows = data.filter((item) => item[categoryColumn] === category);
+        const seriesValues = Array.from(new Set(rows.map((item) => item[seriesColumn])));
+        seriesValues.forEach((value) => {
+          result.push({
+            name: value,
+            type: type,
+            data: rows.filter((item) => item[seriesColumn] === value).map((item) => item[seriesColumn]),
+          });
+        });
+        return result;
+      }, []);
+    }
+  };
+
+  // Process data in chunks
+  const processDataInChunks = (data, chunkSize, processFn) => {
+    const results = [];
+    for (let i = 0; i < data.length; i += chunkSize) {
+      const chunk = data.slice(i, i + chunkSize);
+      results.push(...processFn(chunk));
+    }
+    return results;
+  };
+
+  const handleSubmit = (values) => {
+    let updatedOptions = { ...chartOptions };
+    let mergedDataset = []
 
     switch (updatedOptions.chartType) {
       case "bubblechart":
@@ -245,24 +333,16 @@ const Dashboard = ({
       case "horizontalbarchart":
       case "100stackedverticalbarchart":
       case "area":
-        // Validate inputs
-        if (!chartOptions?.datasets?.dataSourceData || !values.whereConditions || !values.category || !values.series) {
+        // Validate inputs        
+        mergedDataset = mergeDatasets(chartOptions?.datasets, dashboard.tableRelationships);
+
+        if (!mergedDataset || mergedDataset.length < 1 || !values.whereConditions || !values.category || !values.series) {
           toast.error("Invalid input data or missing required fields.");
         }
 
-        // Process data in chunks
-        const processDataInChunks = (data, chunkSize, processFn) => {
-          const results = [];
-          for (let i = 0; i < data.length; i += chunkSize) {
-            const chunk = data.slice(i, i + chunkSize);
-            results.push(...processFn(chunk));
-          }
-          return results;
-        };
-
         // Filter dataset with chunking
         const newfilteredDataset = processDataInChunks(
-          chartOptions.datasets.dataSourceData,
+          mergedDataset,
           1000,
           (chunk) => filterDataset(chunk, values.whereConditions)
         );
@@ -295,21 +375,57 @@ const Dashboard = ({
             // Process series data in chunks
             processedSeries = series.map((item) => ({
               name: item.datasetName,
-              data: processDataInChunks(
-                newfilteredDataset,
-                1000,
-                (chunk) => processSeries(chunk, categories, item.column, category.column, groupBy, aggregateFunction)
-              ),
+              data: processSeries(newfilteredDataset, categories, item.column, category.column, groupBy, aggregateFunction, seriesGroup)
             }));
           }
         } else {
-          // Process without grouping
           categories = newfilteredDataset.map((row) => row[category.column]);
           processedSeries = series.map((item) => ({
             name: item.datasetName,
             data: { name: item.column, data: [newfilteredDataset.map((row) => row[item.column]).length] },
           }));
         }
+
+        let mappedData = [];
+
+        processedSeries.forEach((p) => {
+          let obj = {}
+          obj.name = p.data.name
+          obj.val = [];
+          p.data.data.forEach((s, i) => {
+            obj.val.push({
+              value: s,
+              category: series[0]?.groupBy == "yes" ? p.data.name : categories[i]
+            })
+          });
+          mappedData.push(obj);
+        });
+
+        if (values.setLimit && values.limit.limit > 0) {
+          const { type, limit } = values.limit;
+
+          mappedData.forEach((obj) => {
+            if (type === "ASC") {
+              obj.val.sort((a, b) => a.value - b.value);
+            } else if (type === "DESC") {
+              obj.val.sort((a, b) => b.value - a.value);
+            }
+
+            obj.val = obj.val.slice(0, limit);
+          });
+          mappedData = mappedData.slice(0, limit);
+        }
+
+        categories = [...new Set(mappedData.flatMap(obj => obj.val.map(v => v.category)))];
+
+        processedSeries = mappedData.map(obj => ({
+          name: obj.name,
+          data: categories.map(cat => {
+            const found = obj.val.find(v => v.category === cat);
+            return found ? found.value : 0;
+          })
+        }));
+
 
         if (processedSeries.length < 30) {
           updatedOptions = {
@@ -321,7 +437,7 @@ const Dashboard = ({
                 ...updatedOptions.options.xaxis,
                 categories: categories,
               },
-              series: processedSeries.flatMap((p) => p.data),
+              series: processedSeries
             },
           };
         } else {
@@ -329,7 +445,12 @@ const Dashboard = ({
         }
         break;
       case "treemap":
-        const treeMapDataset = filterDataset(chartOptions?.datasets?.dataSourceData, values.whereConditions)
+        mergedDataset = mergeDatasets(chartOptions?.datasets, dashboard.tableRelationships);
+        const treeMapDataset = processDataInChunks(
+          mergedDataset,
+          1000,
+          (chunk) => filterDataset(chunk, values.whereConditions)
+        );
         const xData = treeMapDataset.map((row) => row[values.x.column]);
         const treeMapData = xData.map((m, index) => {
           return {
@@ -354,7 +475,13 @@ const Dashboard = ({
       case "pie":
       case "donut":
       case "radialBar":
-        const pieDataset = filterDataset(chartOptions?.datasets?.dataSourceData, values.whereConditions)
+        mergedDataset = mergeDatasets(chartOptions?.datasets, dashboard.tableRelationships);
+        // Filter dataset with chunking
+        const pieDataset = processDataInChunks(
+          mergedDataset,
+          1000,
+          (chunk) => filterDataset(chunk, values.whereConditions)
+        );
         const piecategory = values.category;
         const pieseries = values.series;
         const piegroupBy = values.groupBy;
@@ -362,13 +489,18 @@ const Dashboard = ({
 
         let piecategories = [];
         let pieprocessedSeries = [];
+
         if (piegroupBy == "yes") {
           piecategories = Array.from(new Set(pieDataset.map((row) => row[piecategory.column])));
-          pieprocessedSeries = processSeries(pieDataset, piecategories, pieseries.column, piecategory.column, piegroupBy, pieaggregateFunction)
+          pieprocessedSeries = processSeries(pieDataset, piecategories, pieseries.column, piecategory.column, piegroupBy, pieaggregateFunction, "")
+          if (pieprocessedSeries) {
+            pieprocessedSeries = pieprocessedSeries.data
+          }
         } else {
           piecategories = pieDataset.map((row) => row[piecategory.column]);
           pieprocessedSeries = pieDataset.map((row) => row[pieseries.column])
         }
+
         updatedOptions = {
           ...updatedOptions,
           formValues: values,
@@ -380,7 +512,13 @@ const Dashboard = ({
         };
         break;
       case "mixed":
-        const mdataset = filterDataset(chartOptions?.datasets?.dataSourceData, values.whereConditions)
+        mergedDataset = mergeDatasets(chartOptions?.datasets, dashboard.tableRelationships);
+        // Filter dataset with chunking
+        const mdataset = processDataInChunks(
+          mergedDataset,
+          1000,
+          (chunk) => filterDataset(chunk, values.whereConditions)
+        );
         const mcategory = values.category;
         const mseries = values.series
         const mgroupBy = values.groupBy
@@ -393,7 +531,7 @@ const Dashboard = ({
           mprocessedSeries = mseries.map((item) => ({
             name: item.datasetName,
             type: item.type,
-            data: processSeries(mdataset, mcategories, item.column, mcategory.column, mgroupBy, maggregateFunction, item.type),
+            data: processSeries(mdataset, mcategories, item.column, mcategory.column, mgroupBy, maggregateFunction, "", item.type),
           }));
         } else {
           mcategories = mdataset.map((row) => row[mcategory.column]);
@@ -404,20 +542,30 @@ const Dashboard = ({
           }));
         }
 
-        updatedOptions = {
-          ...updatedOptions,
-          formValues: values,
-          options: {
-            ...updatedOptions.options,
-            labels: mcategories,
-            series: mprocessedSeries.flatMap(p => p.data),
-          },
-        };
+        if (mprocessedSeries.length < 30 && mprocessedSeries.flatMap((p) => p.data).length < 30) {
+          updatedOptions = {
+            ...updatedOptions,
+            formValues: values,
+            options: {
+              ...updatedOptions.options,
+              labels: mcategories,
+              series: mprocessedSeries.flatMap(p => p.data),
+            },
+          };
+        }
+        else {
+          toast.error("Too many series to display. Please reduce the number of series.");
+        }
+
 
         break;
       case "scatter":
-        const filteredDataset = filterDataset(chartOptions?.datasets?.dataSourceData, values.whereConditions);
-
+        mergedDataset = mergeDatasets(chartOptions?.datasets, dashboard.tableRelationships);
+        const filteredDataset = processDataInChunks(
+          mergedDataset,
+          1000,
+          (chunk) => filterDataset(chunk, values.whereConditions)
+        );
         if (values.series?.length > 0) {
           const seriesData = values.series.map((item) => {
             const { name, x, y } = item;
@@ -447,7 +595,12 @@ const Dashboard = ({
         }
 
       case "card":
-        const cardDataset = filterDataset(chartOptions?.datasets?.dataSourceData, values.whereConditions)
+        mergedDataset = mergeDatasets(chartOptions?.datasets, dashboard.tableRelationships);
+        const cardDataset = processDataInChunks(
+          mergedDataset,
+          1000,
+          (chunk) => filterDataset(chunk, values.whereConditions)
+        );
         const cardData = cardDataset.map((row) => row[values.column.column]);
         const value = aggregateFunctions[values.function](cardData);
         updatedOptions = {
@@ -460,20 +613,25 @@ const Dashboard = ({
         };
         break;
       case "table":
-        const tableDataset = filterDataset(
-          chartOptions?.datasets?.dataSourceData || [], // Ensure dataset is not null
-          values.whereConditions || [] // Ensure conditions are not null
+        mergedDataset = mergeDatasets(chartOptions?.datasets, dashboard.tableRelationships);
+        mergedDataset = mergeDatasets(chartOptions?.datasets, dashboard.tableRelationships);
+        // Filter dataset with chunking
+        const tableDataset = processDataInChunks(
+          mergedDataset,
+          1000,
+          (chunk) => filterDataset(chunk, values.whereConditions)
         );
-
-        const selectedColumns = values?.columns || []; // Ensure it's an array
-        const groupColumns = values?.groupColumns || []; // Multiple group columns
+        
+        let finalData = [];
+        const selectedColumns = values?.columns || [];
+        const groupColumns = values?.groupColumns || [];
 
         if (groupColumns.length > 0) {
           const groupedData = tableDataset.reduce((acc, row) => {
             if (!row) return acc;
 
             const groupKey = groupColumns
-              .map((groupCol) => row?.[groupCol.column] ?? "Unknown") // Handle undefined values
+              .map((groupCol) => row?.[groupCol.column] ?? "Unknown")
               .join("_");
 
             if (!acc[groupKey]) {
@@ -481,7 +639,7 @@ const Dashboard = ({
             }
 
             const rowData = selectedColumns.reduce((obj, col) => {
-              obj[col.column] = row?.[col.column] ?? 0; // Handle null/undefined values
+              obj[col.column] = row?.[col.column] ?? 0;
               return obj;
             }, {});
 
@@ -489,7 +647,7 @@ const Dashboard = ({
             return acc;
           }, {});
 
-          const aggregatedData = Object.keys(groupedData).map((groupKey) => {
+          finalData = Object.keys(groupedData).map((groupKey) => {
             const groupRows = groupedData[groupKey];
 
             let aggregatedRow = {};
@@ -501,44 +659,50 @@ const Dashboard = ({
 
             selectedColumns.forEach((col) => {
               if (!col.function || !aggregateFunctions[col.function]) {
-                console.warn(`⚠️ Aggregate function "${col.function}" not found for column "${col.column}". Skipping.`);
+                console.warn(`Aggregate function "${col.function}" not found for column "${col.column}". Skipping.`);
                 aggregatedRow[col.column] = 0;
               } else {
                 const columnValues = groupRows.map((row) => row[col.column] ?? 0);
                 aggregatedRow[col.column] = aggregateFunctions[col.function](columnValues, col.column);
               }
             });
-
             return aggregatedRow;
           });
-
-          updatedOptions = {
-            ...updatedOptions,
-            formValues: values,
-            options: {
-              ...updatedOptions.options,
-              data: aggregatedData,
-            },
-          };
         } else {
-          const data = tableDataset?.map((row) =>
+          finalData = tableDataset?.map((row) =>
             selectedColumns.reduce((acc, col) => {
               acc[col.column] = row?.[col.column] ?? 0;
               return acc;
             }, {})
           );
-
-          updatedOptions = {
-            ...updatedOptions,
-            formValues: values,
-            options: {
-              ...updatedOptions.options,
-              data: data,
-            },
-          };
         }
 
+        if (values.setLimit && values.limit.column && values.limit.limit > 0) {
+          const type = values.limit.type;
+          finalData = finalData
+            .sort((a, b) => {
+              const valA = a[values.limit.column] ?? "";
+              const valB = b[values.limit.column] ?? "";
 
+              if (!isNaN(valA) && !isNaN(valB)) {
+                return type === "ASC" ? Number(valA) - Number(valB) : Number(valB) - Number(valA);
+              }
+
+              return type === "ASC"
+                ? String(valA).localeCompare(String(valB), undefined, { sensitivity: "base" })
+                : String(valB).localeCompare(String(valA), undefined, { sensitivity: "base" });
+            })
+            .slice(0, values.limit.limit);
+        }
+
+        updatedOptions = {
+          ...updatedOptions,
+          formValues: values,
+          options: {
+            ...updatedOptions.options,
+            data: finalData,
+          },
+        };
         break;
       default:
         console.warn("Unsupported chart type:", updatedOptions.chartType);
@@ -546,6 +710,44 @@ const Dashboard = ({
     }
     // Update chart options state
     onUpdateChartOptions(updatedOptions);
+  };
+  const mergeDatasets = (datasets, relationships) => {
+    // Convert datasets array to an object for quick lookup
+    const datasetMap = datasets.reduce((acc, dataset) => {
+      acc[dataset.datasetTitle] = dataset.dataSourceData;
+      return acc;
+    }, {});
+
+    // If no relationships exist, return the first dataset
+    if (!relationships || relationships.length === 0) {
+      return datasets.length > 0 ? datasets[0].dataSourceData : [];
+    }
+
+    // Start with the first table as the base dataset
+    let mergedData = datasetMap[relationships[0].mainTable]?.map(row => ({ ...row })) || [];
+
+    relationships.forEach(({ mainTable, foreignKey, relatedTable, primaryKey }) => {
+      const mainData = mergedData;
+      const relatedData = datasetMap[relatedTable];
+
+      if (!mainData || !relatedData) {
+        console.warn(`Missing data for table: ${mainTable} or ${relatedTable}`);
+        return;
+      }
+
+      mergedData = mainData.flatMap(mainRow => {
+        const relatedRows = relatedData.filter(relRow => relRow[primaryKey] === mainRow[foreignKey]);
+        if (relatedRows.length === 0) {
+          return { ...mainRow };
+        }
+        return relatedRows.map(relatedRow => ({
+          ...mainRow,
+          ...relatedRow
+        }));
+      });
+    });
+
+    return mergedData;
   };
 
   const handleDashboardName = async (value) => {
@@ -597,22 +799,26 @@ const Dashboard = ({
       setDashboardName(dashboard.dashboardTitle)
     }
     if (chartOptions && chartOptions["datasets"]) {
-      const selectedDataset = chartOptions["datasets"];
+      const selectedDatasets = chartOptions["datasets"];
 
-      if (selectedDataset && selectedDataset.dataSourceData && selectedDataset.dataSourceData.length > 0) {
-        const firstItem = selectedDataset.dataSourceData[0];
-        const newColumns = [{
-          datasetName: selectedDataset.datasetTitle,
-          datasetId: selectedDataset.datasetId,
-          columns: Object.keys(firstItem),
-        }];
+      if (selectedDatasets.length > 0) {
+        chartOptions["datasets"] = selectedDatasets;
+        const newColumns = selectedDatasets.map((dataset) => ({
+          datasetName: dataset.datasetTitle,
+          datasetId: dataset.datasetId,
+          columns: dataset.dataSourceData.length > 0
+            ? Object.keys(dataset.dataSourceData[0])
+            : [],
+        }));
         setColumns(newColumns);
-      } else {
-        setColumns([]);
       }
     } else {
+      chartOptions["datasets"] = null;
       setColumns([]);
+      // setSelectedDatasets([]);
     }
+
+
   }, [chartOptions]);
 
 
@@ -622,30 +828,31 @@ const Dashboard = ({
 
 
   const handleChange = (event) => {
-    if (event) {
-      const selectedDataset = datasets.find(
-        (dataset) => dataset.datasetId === event.datasetId
+    if (event && event.length > 0) {
+      const selectedDatasets = datasets.filter((dataset) =>
+        event.some((e) => e.datasetId === dataset.datasetId)
       );
 
-      if (selectedDataset) {
-        chartOptions["datasets"] = selectedDataset;
+      if (selectedDatasets.length > 0) {
+        chartOptions["datasets"] = selectedDatasets;
 
-        const newColumns = selectedDataset.dataSourceData && selectedDataset.dataSourceData.length > 0
-          ? [{
-            datasetName: selectedDataset.datasetTitle,
-            datasetId: selectedDataset.datasetId,
-            columns: Object.keys(selectedDataset.dataSourceData[0]),
-          }]
-          : [];
+        const newColumns = selectedDatasets.map((dataset) => ({
+          datasetName: dataset.datasetTitle,
+          datasetId: dataset.datasetId,
+          columns: dataset.dataSourceData.length > 0
+            ? Object.keys(dataset.dataSourceData[0])
+            : [],
+        }));
 
         setColumns(newColumns);
       }
     } else {
-      setSelectedDatasets([]);
-      setColumns([]);
       chartOptions["datasets"] = null;
+      setColumns([]);
+      // setSelectedDatasets([]);
     }
   };
+
 
   const handleCreateDataset = () => {
     navigate("/create-dataset-I");
@@ -655,7 +862,6 @@ const Dashboard = ({
     try {
       // Prevent default form submission if applicable
       event?.preventDefault();
-
       // Validate the dashboard title
       if (!dashboard || !dashboard.dashboardTitle || dashboard.dashboardTitle.trim() === "") {
         toast.warn("Dashboard name is required!!");
@@ -3442,35 +3648,37 @@ const Dashboard = ({
             {/* Dataset */}
             {chartOptions?.chartType && <div>
               <Select
-                options={datasets ? datasets.map(item => ({
-                  label: item.datasetTitle,
-                  value: item.datasetId,
-                })) : []}
+                options={datasets
+                  ? datasets.map(item => ({
+                    label: item.datasetTitle,
+                    value: item.datasetId,
+                  }))
+                  : []
+                }
+                isMulti={true}
                 value={chartOptions && chartOptions["datasets"]
-                  ? {
-                    label: chartOptions["datasets"].datasetTitle,
-                    value: chartOptions["datasets"].datasetId,
-                  }
-                  : null}
-                onChange={(selectedOption) => {
+                  ? chartOptions["datasets"].map(dataset => ({
+                    label: dataset.datasetTitle,
+                    value: dataset.datasetId,
+                  }))
+                  : []
+                }
+                onChange={(selectedOptions) => {
                   handleChange(
-                    selectedOption
-                      ? {
-                        datasetTitle: selectedOption.label,
-                        datasetId: selectedOption.value,
-                      }
-                      : null
+                    selectedOptions
+                      ? selectedOptions.map(option => ({
+                        datasetTitle: option.label,
+                        datasetId: option.value,
+                      }))
+                      : []
                   );
                 }}
-                // isMulti={true}
                 placeholder="Select dataset"
                 closeMenuOnSelect={false}
               />
 
             </div>}
-            <div>
-              <a onClick={() => navigate('/dataset-joiner')}>Make new dataset</a>
-            </div>
+            <TableRelations datasets={datasets} />
             {/* Series */}
             {
               [
@@ -3495,7 +3703,9 @@ const Dashboard = ({
                         series: [{ type: "", name: "", column: "", datasetName: "", groupBy: "" }],
                         whereConditions: [{ operator: "", value: "", column: "", datasetName: "" }],
                         groupBy: "no",
-                        aggregateFunction: ""
+                        aggregateFunction: "",
+                        setLimit: false,
+                        limit: { column: "", datasetName: "", limit: 0, type: "ASC" },
                       }
                     }
                     enableReinitialize={true}
@@ -3520,7 +3730,20 @@ const Dashboard = ({
                           name: Yup.string(),
                           type: Yup.string()
                         })
-                      )
+                      ),
+                      setLimit: Yup.boolean(),
+                      limit: Yup.object().when("setLimit", {
+                        is: (setLimit) => setLimit === true || setLimit === "true",
+                        then: Yup.object().shape({
+                          limit: Yup.number()
+                            .min(1, "Limit should be greater than zero")
+                            .required("Limit is required"),
+                          column: Yup.string().required("Column is required"),
+                          datasetName: Yup.string().required("Dataset is required"),
+                          type: Yup.string().required("Sorting type is required"),
+                        }),
+                        otherwise: Yup.object().notRequired(),
+                      }),
                     })}
                     onSubmit={(values) => {
                       handleSubmit(values);
@@ -3692,14 +3915,14 @@ const Dashboard = ({
                                     </div>
                                   }
 
-                                  <button
+                                  {/* <button
                                     type="button"
                                     onClick={() => remove(index)}
                                     style={{ marginTop: "10px", cursor: "pointer", color: "red", background: "none", border: "none" }}
                                     className="text-end mt-2"
                                   >
                                     <FontAwesomeIcon className="ms-2 text-danger" icon={faTrash} size="2x" />
-                                  </button>
+                                  </button> */}
                                 </div>
                               ))}
 
@@ -3727,6 +3950,14 @@ const Dashboard = ({
                           dataset={chartOptions["datasets"]}
                         />
 
+                        <LimitSortField
+                          values={values}
+                          errors={errors}
+                          touched={touched}
+                          setFieldValue={setFieldValue}
+                          categoriesOptions={categoriesOptions}
+                        />
+
                         {/* Submit Button */}
                         <button type="submit" style={{ marginTop: "20px" }}>
                           Load Chart
@@ -3751,7 +3982,9 @@ const Dashboard = ({
                     chartOptions.formValues || {
                       category: { column: "", datasetName: "", function: "" },
                       whereConditions: [{ operator: "", value: "", column: "", datasetName: "" }],
-                      series: { column: "", datasetName: "", whereConditions: [] },
+                      series: { column: "", datasetName: "" },
+                      aggregateFunction: "",
+                      groupBy: ""
                     }
                   }
                   enableReinitialize={true}
@@ -3768,6 +4001,8 @@ const Dashboard = ({
                         datasetName: Yup.string().required('Dataset is required')
                       })
                     ),
+                    aggregateFunction: Yup.string(),
+                    groupBy: Yup.string(),
                     series: Yup.object().shape({
                       column: Yup.string().required("Series column is required"),
                       datasetName: Yup.string().required("Series dataset name is required")
@@ -3809,6 +4044,60 @@ const Dashboard = ({
                         )}
                       </div>
 
+                      {/* Group By Radio Buttons */}
+                      <div className="mt-3">
+                        <label>Group By:</label>
+                        <div>
+                          <label>
+                            <Field
+                              type="radio"
+                              name="groupBy"
+                              value="yes"
+                              checked={values.groupBy === "yes"}
+                              onChange={() => setFieldValue("groupBy", "yes")}
+                            />
+                            Yes
+                          </label>
+                          <label style={{ marginLeft: "20px" }}>
+                            <Field
+                              type="radio"
+                              name="groupBy"
+                              value="no"
+                              checked={values.groupBy === "no"}
+                              onChange={() => setFieldValue("groupBy", "no")}
+                            />
+                            No
+                          </label>
+                        </div>
+                      </div>
+
+                      {/* Aggregate Function Dropdown (Visible if Group By is "Yes") */}
+                      {values.groupBy === "yes" && (
+                        <div className="mt-2">
+                          <label htmlFor="aggregateFunction">Select Aggregate Function:</label>
+                          <Select
+                            options={Object.keys(aggregateFunctions).map((func) => ({
+                              label: func,
+                              value: func,
+                            }))}
+                            value={
+                              values.aggregateFunction
+                                ? { label: values.aggregateFunction, value: values.aggregateFunction }
+                                : null
+                            }
+                            onChange={(selectedFunc) => {
+                              setFieldValue("aggregateFunction", selectedFunc.value);
+                            }}
+                            className="react-select-container"
+                            classNamePrefix="react-select"
+                            placeholder="Select function"
+                          />
+                          {errors.aggregateFunction && touched.aggregateFunction && (
+                            <div style={{ color: "red" }}>{errors.aggregateFunction}</div>
+                          )}
+                        </div>
+                      )}
+
                       {/* Series Dropdown */}
                       <div>
                         <label htmlFor="series">Series:</label>
@@ -3841,99 +4130,16 @@ const Dashboard = ({
                           </div>
                         )}
                       </div>
+
                       {/* Where Conditions Field */}
-                      <FieldArray name='whereConditions'>
-                        {({ push, remove }) => (
-                          <>
-                            <p className="mb-0 mt-2 mb-1">Conditions</p>
-                            {values?.whereConditions?.map((condition, condIndex) => (
-                              <div className="border border-primary p-2 mb-2" key={condIndex}>
-                                <div>
-                                  <label htmlFor={`whereConditions[${condIndex}].operator`}>Column:</label>
-                                  <Select
-                                    options={categoriesOptions}
-                                    value={categoriesOptions.find((option) => {
-                                      const parsedValue = JSON.parse(option.value);
-                                      return (
-                                        parsedValue.column === condition.column &&
-                                        parsedValue.datasetName === condition.datasetName
-                                      );
-                                    })}
-                                    onChange={(selectedOption) => {
-                                      const parsedValue = JSON.parse(selectedOption.value);
-                                      setFieldValue(`whereConditions[${condIndex}]`, {
-                                        ...condition,
-                                        column: parsedValue.column,
-                                        datasetName: parsedValue.datasetName,
-                                      });
-                                    }}
-                                    className="react-select-container"
-                                    classNamePrefix="react-select"
-                                    placeholder="Choose Series"
-                                  />
-                                  {errors.whereConditions &&
-                                    errors.whereConditions[condIndex]?.column &&
-                                    touched.whereConditions &&
-                                    touched.whereConditions[condIndex]?.column && (
-                                      <div style={{ color: "red" }}>
-                                        {errors.whereConditions[condIndex].column || errors.whereConditions[condIndex].datasetName}
-                                      </div>
-                                    )}
-                                </div>
-                                {/* Condition Fields */}
-                                <div>
-                                  <label htmlFor={`whereConditions[${condIndex}].operator`}>
-                                    Operator:
-                                  </label>
-                                  <Field as="select" className="form-control" name={`whereConditions[${condIndex}].operator`}>
-                                    <option value={null}>Select</option>
-                                    <option value="=">Equals</option>
-                                    <option value="!=">Not Equals</option>
-                                    <option value=">">Greater Than</option>
-                                    <option value="<">Less Than</option>
-                                    <option value=">=">Greater or Equal</option>
-                                    <option value="<=">Less or Equal</option>
-                                  </Field>
-                                </div>
-                                {errors.whereConditions &&
-                                  errors.whereConditions[condIndex]?.operator &&
-                                  touched.whereConditions &&
-                                  touched.whereConditions[condIndex]?.operator && (
-                                    <div style={{ color: "red" }}>
-                                      {errors.whereConditions[condIndex].operator}
-                                    </div>
-                                  )}
-                                <div>
-                                  <label htmlFor={`whereConditions[${condIndex}].value`}>
-                                    Value:
-                                  </label>
-                                  <Field className="form-control"
-                                    name={`whereConditions[${condIndex}].value`}
-                                    placeholder="Enter Value"
-                                  />
-                                  {errors.whereConditions &&
-                                    errors.whereConditions[condIndex]?.value &&
-                                    touched.whereConditions &&
-                                    touched.whereConditions[condIndex]?.value && (
-                                      <div style={{ color: "red" }}>
-                                        {errors.whereConditions[condIndex].value}
-                                      </div>
-                                    )}
-                                </div>
-                                {/* Remove Condition */}
-                                <a className="text-center mt-2" type="button" onClick={() => remove(condIndex)}>
-                                  <FontAwesomeIcon className="text-danger" icon={faTrash} size="2x" />
-                                </a>
-                              </div>
-                            ))}
-                            <button type="button"
-                              style={{ cursor: "pointer", color: "green", background: "none", border: "none" }}
-                              onClick={() => push({ operator: '', value: '' })}>
-                              <FontAwesomeIcon icon={faPlusCircle} size="1x" /> Add Condition
-                            </button>
-                          </>
-                        )}
-                      </FieldArray>
+                      <WhereConditions
+                        values={values}
+                        errors={errors}
+                        touched={touched}
+                        setFieldValue={setFieldValue}
+                        categoriesOptions={categoriesOptions}
+                        dataset={chartOptions["datasets"]}
+                      />
                       {/* Submit Button */}
                       <button type="submit" style={{ marginTop: "20px" }}>
                         Load Chart
@@ -4216,98 +4422,14 @@ const Dashboard = ({
                       </FieldArray>
 
                       {/* Where Conditions Field */}
-                      <FieldArray name='whereConditions'>
-                        {({ push, remove }) => (
-                          <>
-                            <p className="mb-0 mt-2 mb-1">Conditions</p>
-                            {values?.whereConditions?.map((condition, condIndex) => (
-                              <div className="border border-primary p-2 mb-2" key={condIndex}>
-                                <div>
-                                  <label htmlFor={`whereConditions[${condIndex}].operator`}>Column:</label>
-                                  <Select
-                                    options={categoriesOptions}
-                                    value={categoriesOptions.find((option) => {
-                                      const parsedValue = JSON.parse(option.value);
-                                      return (
-                                        parsedValue.column === condition.column &&
-                                        parsedValue.datasetName === condition.datasetName
-                                      );
-                                    })}
-                                    onChange={(selectedOption) => {
-                                      const parsedValue = JSON.parse(selectedOption.value);
-                                      setFieldValue(`whereConditions[${condIndex}]`, {
-                                        ...condition,
-                                        column: parsedValue.column,
-                                        datasetName: parsedValue.datasetName,
-                                      });
-                                    }}
-                                    className="react-select-container"
-                                    classNamePrefix="react-select"
-                                    placeholder="Choose Series"
-                                  />
-                                  {errors.whereConditions &&
-                                    errors.whereConditions[condIndex]?.column &&
-                                    touched.whereConditions &&
-                                    touched.whereConditions[condIndex]?.column && (
-                                      <div style={{ color: "red" }}>
-                                        {errors.whereConditions[condIndex].column || errors.whereConditions[condIndex].datasetName}
-                                      </div>
-                                    )}
-                                </div>
-                                {/* Condition Fields */}
-                                <div>
-                                  <label htmlFor={`whereConditions[${condIndex}].operator`}>
-                                    Operator:
-                                  </label>
-                                  <Field as="select" className="form-control" name={`whereConditions[${condIndex}].operator`}>
-                                    <option value={null}>Select</option>
-                                    <option value="=">Equals</option>
-                                    <option value="!=">Not Equals</option>
-                                    <option value=">">Greater Than</option>
-                                    <option value="<">Less Than</option>
-                                    <option value=">=">Greater or Equal</option>
-                                    <option value="<=">Less or Equal</option>
-                                  </Field>
-                                </div>
-                                {errors.whereConditions &&
-                                  errors.whereConditions[condIndex]?.operator &&
-                                  touched.whereConditions &&
-                                  touched.whereConditions[condIndex]?.operator && (
-                                    <div style={{ color: "red" }}>
-                                      {errors.whereConditions[condIndex].operator}
-                                    </div>
-                                  )}
-                                <div>
-                                  <label htmlFor={`whereConditions[${condIndex}].value`}>
-                                    Value:
-                                  </label>
-                                  <Field className="form-control"
-                                    name={`whereConditions[${condIndex}].value`}
-                                    placeholder="Enter Value"
-                                  />
-                                  {errors.whereConditions &&
-                                    errors.whereConditions[condIndex]?.value &&
-                                    touched.whereConditions &&
-                                    touched.whereConditions[condIndex]?.value && (
-                                      <div style={{ color: "red" }}>
-                                        {errors.whereConditions[condIndex].value}
-                                      </div>
-                                    )}
-                                </div>
-                                {/* Remove Condition */}
-                                <a className="text-center mt-2" type="button" onClick={() => remove(condIndex)}>
-                                  <FontAwesomeIcon className="text-danger" icon={faTrash} size="2x" />
-                                </a>
-                              </div>
-                            ))}
-                            <button type="button"
-                              style={{ cursor: "pointer", color: "green", background: "none", border: "none" }}
-                              onClick={() => push({ operator: '', value: '' })}>
-                              <FontAwesomeIcon icon={faPlusCircle} size="1x" /> Add Condition
-                            </button>
-                          </>
-                        )}
-                      </FieldArray>
+                      <WhereConditions
+                        values={values}
+                        errors={errors}
+                        touched={touched}
+                        setFieldValue={setFieldValue}
+                        categoriesOptions={categoriesOptions}
+                        dataset={chartOptions["datasets"]}
+                      />
 
                       {/* Submit Button */}
                       <button type="submit" style={{ marginTop: "20px" }}>
@@ -4640,9 +4762,11 @@ const Dashboard = ({
                 <Formik
                   enableReinitialize={true}
                   initialValues={chartOptions?.formValues || {
-                    columns: [{ column: "", datasetName: "", function: "" }], // Function added
-                    groupColumns: [], // Changed from single object to an array
+                    columns: [{ column: "", datasetName: "", function: "" }],
+                    groupColumns: [],
                     whereConditions: [],
+                    setLimit: false,
+                    limit: { column: "", datasetName: "", limit: 0, type: "ASC" },
                   }}
                   validationSchema={Yup.object().shape({
                     columns: Yup.array()
@@ -4650,7 +4774,7 @@ const Dashboard = ({
                         Yup.object().shape({
                           column: Yup.string().required("Column is required"),
                           datasetName: Yup.string().required("Dataset Name is required"),
-                          function: Yup.string().required("Function is required"), // Function validation added
+                          function: Yup.string().required("Function is required"),
                         })
                       )
                       .min(1, "At least one column must be selected"),
@@ -4668,6 +4792,13 @@ const Dashboard = ({
                         datasetName: Yup.string().required("Dataset is required"),
                       })
                     ),
+                    limit: Yup.object().shape({  // Ensure limit is treated as an object
+                      limit: Yup.number().min(1, "Limit should be greater than zero").required("Limit is required"),
+                      column: Yup.string().required("Column is required"),
+                      datasetName: Yup.string().required("Dataset is required"),
+                      type: Yup.string().required("Sorting type is required"),
+                    }),
+                    setLimit: Yup.boolean(),
                   })}
                   onSubmit={(values) => {
                     handleSubmit(values);
@@ -4781,17 +4912,20 @@ const Dashboard = ({
                         dataset={chartOptions["datasets"]}
                       />
 
+                      <LimitSortField
+                        values={values}
+                        errors={errors}
+                        touched={touched}
+                        setFieldValue={setFieldValue}
+                        categoriesOptions={categoriesOptions}
+                      />
+
                       {/* Submit Button */}
-                      <button type="submit" style={{ marginTop: "20px" }}>
-                        Load Data
-                      </button>
+                      <button type="submit" style={{ marginTop: "20px" }}>Load Data</button>
                     </Form>
                   )}
                 </Formik>
-
-
               </>
-
             }
             {renderProperties()}
           </div >
@@ -4954,6 +5088,9 @@ const Dashboard = ({
                 </div>
               </div>
             </div>
+          </div>
+          <div style={{ padding: "0px 18px", margin: "10px 0px" }}>
+            <DashboardHeader />
           </div>
           <div className="parent-container-CDB">{children}</div>
         </div>

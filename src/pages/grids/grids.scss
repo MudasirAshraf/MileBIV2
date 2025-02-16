@@ -6,7 +6,7 @@
 }
 
 .content-grids {
-  background-color: white;
+  // background-color: white;
   width: 100%;
   height: auto;
   border-radius: 10px;
@@ -22,7 +22,7 @@
   border: 1px dotted #ccc;
   border-radius: 8px;
   padding: 15px;
-  height: 300px;
+  height: max-content;
   width: 500px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }

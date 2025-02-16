@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import ReactApexChart from "react-apexcharts";
 
-const Chart = ({ option }) => {
+const Chart = ({ option, gridHeight, overflow }) => {
   const chartRef = useRef(null);
 
   useEffect(() => {
@@ -36,7 +36,7 @@ const Chart = ({ option }) => {
           options={option.options}
           series={option.options.series}
           type={option.options.chart.type}
-          height={290}
+          height={gridHeight}
         />
       ) : (
         <p style={{ color: "#777", textAlign: "center" }}>
