@@ -3,7 +3,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import Select from "react-select";
 import { TextField, MenuItem, Box, Chip } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faAdd, faPlus, faPlusCircle, faTrash } from "@fortawesome/free-solid-svg-icons";
+import {
+  faAdd,
+  faPlus,
+  faPlusCircle,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
 import "./dashboard.scss";
 import Logo from "../../assets/svg/Header.svg";
 import Workspace from "../../assets/svg/workspace.svg";
@@ -29,7 +34,7 @@ import C3 from "../../assets/svg/C3.svg";
 import C4 from "../../assets/svg/C4.svg";
 import C5 from "../../assets/svg/C5.svg";
 import C6 from "../../assets/svg/C6.svg";
-import CustomGrid from "../custom-grid";
+import CustomGrid from "../../components/custom-grid";
 import W1 from "../../assets/svg/W1.svg";
 import W2 from "../../assets/svg/W2.svg";
 import W3 from "../../assets/svg/W3.svg";
@@ -57,21 +62,24 @@ import M6 from "../../assets/svg/m6.svg";
 import { getDatasets } from "../../actions/datasetActions";
 import { connect } from "react-redux";
 import debounce from "lodash/debounce";
-import { Formik, Form, Field, FieldArray } from 'formik';
-import * as Yup from 'yup';
+import { Formik, Form, Field, FieldArray } from "formik";
+import * as Yup from "yup";
 import {
   addDashboard,
   updateDashboard,
   saveDashboardChanges,
   getSpecificDashboard,
+  removeCurrentDashboard,
 } from "../../actions/dashboardActions";
 import { toast } from "react-toastify";
 import { defaultChartOptions } from "../../data/chartData";
 import { Debounce } from "react-lodash";
-import WhereConditions from "../where-conditions";
+import WhereConditions from "../../components/where-conditions";
 import DashboardHeader from "../dashboard-header";
-import TableRelations from "../table-relations";
-import LimitSortField from "../limit-sort-field";
+import TableRelations from "../../components/table-relations";
+import LimitSortField from "../../components/limit-sort-field";
+import { useDashboardAccess } from "../../hooks/useDashboardAccess";
+import { clearLogin } from "../../actions/loginActions";
 
 const Dashboard = ({
   children,
@@ -91,14 +99,39 @@ const Dashboard = ({
   addDashboard,
   saveDashboardChanges,
   chartOptions,
+  user,
+  removeCurrentDashboard,
+  clearLogin,
 }) => {
   const [activeTab, setActiveTab] = useState("Grids");
   const [selectedComponent, setSelectedComponent] = useState(null);
   const [showChartList, setShowChartList] = useState(false);
   const [columns, setColumns] = useState([]);
   const navigate = useNavigate();
-  const [dashboardName, setDashboardName] = useState(dashboard ? dashboard.dashboardTitle : "");
+  const [dashboardName, setDashboardName] = useState(
+    dashboard ? dashboard.dashboardTitle : ""
+  );
   const { id } = useParams();
+  const canAccess = useDashboardAccess(user, dashboard);
+  const typographyOptions = [
+    { label: "Heading 1", value: "h1" },
+    { label: "Heading 2", value: "h2" },
+    { label: "Heading 3", value: "h3" },
+    { label: "Paragraph", value: "p" },
+  ];
+
+  const fontSizeOptions = [
+    { label: "Small", value: "12px" },
+    { label: "Medium", value: "16px" },
+    { label: "Large", value: "20px" },
+    { label: "Extra Large", value: "24px" },
+  ];
+
+  const fontWeightOptions = [
+    { label: "Light", value: "300" },
+    { label: "Regular", value: "400" },
+    { label: "Bold", value: "700" },
+  ];
 
   const aggregateFunctions = {
     SUM: (data) =>
@@ -115,7 +148,7 @@ const Dashboard = ({
 
     AVERAGE: (data) => {
       const values = data
-        .map(item => {
+        .map((item) => {
           if (item === null || item === undefined) return null;
           if (typeof item === "string") {
             const trimmed = item.trim();
@@ -125,7 +158,7 @@ const Dashboard = ({
           }
           return isNaN(item) ? null : parseFloat(item);
         })
-        .filter(item => item !== null);
+        .filter((item) => item !== null);
 
       return values.length
         ? (values.reduce((sum, val) => sum + val, 0) / values.length).toFixed(2)
@@ -134,7 +167,7 @@ const Dashboard = ({
 
     MIN: (data) => {
       const values = data
-        .map(item => {
+        .map((item) => {
           if (item === null || item === undefined) return null;
           if (typeof item === "string") {
             const trimmed = item.trim();
@@ -144,14 +177,14 @@ const Dashboard = ({
           }
           return isNaN(item) ? null : parseFloat(item);
         })
-        .filter(item => item !== null);
+        .filter((item) => item !== null);
 
       return values.length ? Math.min(...values) : "0.00";
     },
 
     MAX: (data) => {
       const values = data
-        .map(item => {
+        .map((item) => {
           if (item === null || item === undefined) return null;
           if (typeof item === "string") {
             const trimmed = item.trim();
@@ -161,13 +194,14 @@ const Dashboard = ({
           }
           return isNaN(item) ? null : parseFloat(item);
         })
-        .filter(item => item !== null);
+        .filter((item) => item !== null);
 
       return values.length ? Math.max(...values) : "0.00";
     },
 
     COUNT: (data) =>
-      data.filter(item => item !== null && item !== undefined && item !== "").length
+      data.filter((item) => item !== null && item !== undefined && item !== "")
+        .length,
   };
 
   const groupData = (data, categoryColumn, seriesColumn) => {
@@ -212,7 +246,9 @@ const Dashboard = ({
           case "NOT IN":
             return !filterValue.split(",").includes(rowValue?.toString());
           case "LIKE":
-            return new RegExp(filterValue.replace(/%/g, ".*"), "i").test(rowValue?.toString());
+            return new RegExp(filterValue.replace(/%/g, ".*"), "i").test(
+              rowValue?.toString()
+            );
           default:
             return true;
         }
@@ -221,11 +257,22 @@ const Dashboard = ({
   };
 
   // Utility: Process series data
-  const processSeries = (data, categories, seriesColumn, categoryColumn, groupBy, aggregateFunction, seriesGroup, type = "") => {
+  const processSeries = (
+    data,
+    categories,
+    seriesColumn,
+    categoryColumn,
+    groupBy,
+    aggregateFunction,
+    seriesGroup,
+    type = ""
+  ) => {
     if (groupBy === "yes") {
       if (seriesGroup == "yes") {
         const groupedData = groupData(data, categoryColumn, seriesColumn);
-        const seriesValues = Array.from(new Set(data.map((item) => item[seriesColumn])));
+        const seriesValues = Array.from(
+          new Set(data.map((item) => item[seriesColumn]))
+        );
 
         return seriesValues.map((value) => ({
           name: value,
@@ -246,27 +293,29 @@ const Dashboard = ({
 
         const categories = Object.keys(groupedData);
 
-        const series =
-        {
+        const series = {
           name: seriesColumn,
           type: type,
           data: categories.map((category) => {
             const values = groupedData[category] || [];
             return aggregateFunctions[aggregateFunction](values);
           }),
-        }
-          ;
+        };
         return series;
       }
     } else {
       return categories.reduce((result, category) => {
         const rows = data.filter((item) => item[categoryColumn] === category);
-        const seriesValues = Array.from(new Set(rows.map((item) => item[seriesColumn])));
+        const seriesValues = Array.from(
+          new Set(rows.map((item) => item[seriesColumn]))
+        );
         seriesValues.forEach((value) => {
           result.push({
             name: value,
             type: type,
-            data: rows.filter((item) => item[seriesColumn] === value).map((item) => item[seriesColumn]),
+            data: rows
+              .filter((item) => item[seriesColumn] === value)
+              .map((item) => item[seriesColumn]),
           });
         });
         return result;
@@ -286,7 +335,7 @@ const Dashboard = ({
 
   const handleSubmit = (values) => {
     let updatedOptions = { ...chartOptions };
-    let mergedDataset = []
+    let mergedDataset = [];
 
     switch (updatedOptions.chartType) {
       case "bubblechart":
@@ -318,9 +367,7 @@ const Dashboard = ({
           formValues: values,
           options: {
             ...updatedOptions.options,
-            series: [
-              ...bubblechartData
-            ],
+            series: [...bubblechartData],
           },
         };
         break;
@@ -333,10 +380,19 @@ const Dashboard = ({
       case "horizontalbarchart":
       case "100stackedverticalbarchart":
       case "area":
-        // Validate inputs        
-        mergedDataset = mergeDatasets(chartOptions?.datasets, dashboard.tableRelationships);
+        // Validate inputs
+        mergedDataset = mergeDatasets(
+          chartOptions?.datasets,
+          dashboard.tableRelationships
+        );
 
-        if (!mergedDataset || mergedDataset.length < 1 || !values.whereConditions || !values.category || !values.series) {
+        if (
+          !mergedDataset ||
+          mergedDataset.length < 1 ||
+          !values.whereConditions ||
+          !values.category ||
+          !values.series
+        ) {
           toast.error("Invalid input data or missing required fields.");
         }
 
@@ -354,12 +410,16 @@ const Dashboard = ({
 
         if (groupBy === "yes") {
           // Get unique categories
-          const seriesGroup = series[0]?.groupBy
-          categories = Array.from(new Set(newfilteredDataset.map((row) => row[category.column])));
+          const seriesGroup = series[0]?.groupBy;
+          categories = Array.from(
+            new Set(newfilteredDataset.map((row) => row[category.column]))
+          );
           if (seriesGroup == "yes") {
             categories.map((category1) => {
               const seriesData = series.map((item) => {
-                const values = newfilteredDataset.filter((row) => row[category.column] === category1).map((row) => row[item.column]);
+                const values = newfilteredDataset
+                  .filter((row) => row[category.column] === category1)
+                  .map((row) => row[item.column]);
                 return aggregateFunctions[aggregateFunction](values);
               });
 
@@ -367,36 +427,48 @@ const Dashboard = ({
                 name: category,
                 data: {
                   name: category1 == "" ? "Blank" : category1,
-                  data: seriesData
-                }
+                  data: seriesData,
+                },
               });
-            })
+            });
           } else {
             // Process series data in chunks
             processedSeries = series.map((item) => ({
               name: item.datasetName,
-              data: processSeries(newfilteredDataset, categories, item.column, category.column, groupBy, aggregateFunction, seriesGroup)
+              data: processSeries(
+                newfilteredDataset,
+                categories,
+                item.column,
+                category.column,
+                groupBy,
+                aggregateFunction,
+                seriesGroup
+              ),
             }));
           }
         } else {
           categories = newfilteredDataset.map((row) => row[category.column]);
           processedSeries = series.map((item) => ({
             name: item.datasetName,
-            data: { name: item.column, data: [newfilteredDataset.map((row) => row[item.column]).length] },
+            data: {
+              name: item.column,
+              data: [newfilteredDataset.map((row) => row[item.column]).length],
+            },
           }));
         }
 
         let mappedData = [];
 
         processedSeries.forEach((p) => {
-          let obj = {}
-          obj.name = p.data.name
+          let obj = {};
+          obj.name = p.data.name;
           obj.val = [];
           p.data.data.forEach((s, i) => {
             obj.val.push({
               value: s,
-              category: series[0]?.groupBy == "yes" ? p.data.name : categories[i]
-            })
+              category:
+                series[0]?.groupBy == "yes" ? p.data.name : categories[i],
+            });
           });
           mappedData.push(obj);
         });
@@ -416,16 +488,19 @@ const Dashboard = ({
           mappedData = mappedData.slice(0, limit);
         }
 
-        categories = [...new Set(mappedData.flatMap(obj => obj.val.map(v => v.category)))];
+        categories = [
+          ...new Set(
+            mappedData.flatMap((obj) => obj.val.map((v) => v.category))
+          ),
+        ];
 
-        processedSeries = mappedData.map(obj => ({
+        processedSeries = mappedData.map((obj) => ({
           name: obj.name,
-          data: categories.map(cat => {
-            const found = obj.val.find(v => v.category === cat);
+          data: categories.map((cat) => {
+            const found = obj.val.find((v) => v.category === cat);
             return found ? found.value : 0;
-          })
+          }),
         }));
-
 
         if (processedSeries.length < 30) {
           updatedOptions = {
@@ -437,15 +512,20 @@ const Dashboard = ({
                 ...updatedOptions.options.xaxis,
                 categories: categories,
               },
-              series: processedSeries
+              series: processedSeries,
             },
           };
         } else {
-          toast.error("Too many series to display. Please reduce the number of series.");
+          toast.error(
+            "Too many series to display. Please reduce the number of series."
+          );
         }
         break;
       case "treemap":
-        mergedDataset = mergeDatasets(chartOptions?.datasets, dashboard.tableRelationships);
+        mergedDataset = mergeDatasets(
+          chartOptions?.datasets,
+          dashboard.tableRelationships
+        );
         const treeMapDataset = processDataInChunks(
           mergedDataset,
           1000,
@@ -455,9 +535,9 @@ const Dashboard = ({
         const treeMapData = xData.map((m, index) => {
           return {
             x: m,
-            y: treeMapDataset.map((row) => row[values.y.column])[index]
-          }
-        })
+            y: treeMapDataset.map((row) => row[values.y.column])[index],
+          };
+        });
 
         updatedOptions = {
           ...updatedOptions,
@@ -475,12 +555,13 @@ const Dashboard = ({
       case "pie":
       case "donut":
       case "radialBar":
-        mergedDataset = mergeDatasets(chartOptions?.datasets, dashboard.tableRelationships);
+        mergedDataset = mergeDatasets(
+          chartOptions?.datasets,
+          dashboard.tableRelationships
+        );
         // Filter dataset with chunking
-        const pieDataset = processDataInChunks(
-          mergedDataset,
-          1000,
-          (chunk) => filterDataset(chunk, values.whereConditions)
+        const pieDataset = processDataInChunks(mergedDataset, 1000, (chunk) =>
+          filterDataset(chunk, values.whereConditions)
         );
         const piecategory = values.category;
         const pieseries = values.series;
@@ -491,14 +572,24 @@ const Dashboard = ({
         let pieprocessedSeries = [];
 
         if (piegroupBy == "yes") {
-          piecategories = Array.from(new Set(pieDataset.map((row) => row[piecategory.column])));
-          pieprocessedSeries = processSeries(pieDataset, piecategories, pieseries.column, piecategory.column, piegroupBy, pieaggregateFunction, "")
+          piecategories = Array.from(
+            new Set(pieDataset.map((row) => row[piecategory.column]))
+          );
+          pieprocessedSeries = processSeries(
+            pieDataset,
+            piecategories,
+            pieseries.column,
+            piecategory.column,
+            piegroupBy,
+            pieaggregateFunction,
+            ""
+          );
           if (pieprocessedSeries) {
-            pieprocessedSeries = pieprocessedSeries.data
+            pieprocessedSeries = pieprocessedSeries.data;
           }
         } else {
           piecategories = pieDataset.map((row) => row[piecategory.column]);
-          pieprocessedSeries = pieDataset.map((row) => row[pieseries.column])
+          pieprocessedSeries = pieDataset.map((row) => row[pieseries.column]);
         }
 
         updatedOptions = {
@@ -512,55 +603,77 @@ const Dashboard = ({
         };
         break;
       case "mixed":
-        mergedDataset = mergeDatasets(chartOptions?.datasets, dashboard.tableRelationships);
+        mergedDataset = mergeDatasets(
+          chartOptions?.datasets,
+          dashboard.tableRelationships
+        );
         // Filter dataset with chunking
-        const mdataset = processDataInChunks(
-          mergedDataset,
-          1000,
-          (chunk) => filterDataset(chunk, values.whereConditions)
+        const mdataset = processDataInChunks(mergedDataset, 1000, (chunk) =>
+          filterDataset(chunk, values.whereConditions)
         );
         const mcategory = values.category;
-        const mseries = values.series
-        const mgroupBy = values.groupBy
-        const maggregateFunction = values.aggregateFunction
+        const mseries = values.series;
+        const mgroupBy = values.groupBy;
+        const maggregateFunction = values.aggregateFunction;
         let mcategories = [];
         let mprocessedSeries = [];
         if (mgroupBy == "yes") {
-          mcategories = Array.from(new Set(mdataset.map((row) => row[mcategory.column])));
+          mcategories = Array.from(
+            new Set(mdataset.map((row) => row[mcategory.column]))
+          );
           // Process each series dynamically
           mprocessedSeries = mseries.map((item) => ({
             name: item.datasetName,
             type: item.type,
-            data: processSeries(mdataset, mcategories, item.column, mcategory.column, mgroupBy, maggregateFunction, "", item.type),
+            data: processSeries(
+              mdataset,
+              mcategories,
+              item.column,
+              mcategory.column,
+              mgroupBy,
+              maggregateFunction,
+              "",
+              item.type
+            ),
           }));
         } else {
           mcategories = mdataset.map((row) => row[mcategory.column]);
           // Process each series dynamically
           mprocessedSeries = mseries.map((item) => ({
             name: item.datasetName,
-            data: { name: item.column, type: item.type, data: mdataset.map((row) => row[item.column]) },
+            data: {
+              name: item.column,
+              type: item.type,
+              data: mdataset.map((row) => row[item.column]),
+            },
           }));
         }
 
-        if (mprocessedSeries.length < 30 && mprocessedSeries.flatMap((p) => p.data).length < 30) {
+        if (
+          mprocessedSeries.length < 30 &&
+          mprocessedSeries.flatMap((p) => p.data).length < 30
+        ) {
           updatedOptions = {
             ...updatedOptions,
             formValues: values,
             options: {
               ...updatedOptions.options,
               labels: mcategories,
-              series: mprocessedSeries.flatMap(p => p.data),
+              series: mprocessedSeries.flatMap((p) => p.data),
             },
           };
+        } else {
+          toast.error(
+            "Too many series to display. Please reduce the number of series."
+          );
         }
-        else {
-          toast.error("Too many series to display. Please reduce the number of series.");
-        }
-
 
         break;
       case "scatter":
-        mergedDataset = mergeDatasets(chartOptions?.datasets, dashboard.tableRelationships);
+        mergedDataset = mergeDatasets(
+          chartOptions?.datasets,
+          dashboard.tableRelationships
+        );
         const filteredDataset = processDataInChunks(
           mergedDataset,
           1000,
@@ -595,11 +708,12 @@ const Dashboard = ({
         }
 
       case "card":
-        mergedDataset = mergeDatasets(chartOptions?.datasets, dashboard.tableRelationships);
-        const cardDataset = processDataInChunks(
-          mergedDataset,
-          1000,
-          (chunk) => filterDataset(chunk, values.whereConditions)
+        mergedDataset = mergeDatasets(
+          chartOptions?.datasets,
+          dashboard.tableRelationships
+        );
+        const cardDataset = processDataInChunks(mergedDataset, 1000, (chunk) =>
+          filterDataset(chunk, values.whereConditions)
         );
         const cardData = cardDataset.map((row) => row[values.column.column]);
         const value = aggregateFunctions[values.function](cardData);
@@ -608,20 +722,32 @@ const Dashboard = ({
           formValues: values,
           options: {
             ...updatedOptions.options,
-            value: value
+            value: value,
           },
         };
         break;
+      case "typography":
+        updatedOptions = {
+          ...updatedOptions,
+          formValues: values,
+          options: { ...updatedOptions.options, data: values.elements },
+        };
+        break;
+
       case "table":
-        mergedDataset = mergeDatasets(chartOptions?.datasets, dashboard.tableRelationships);
-        mergedDataset = mergeDatasets(chartOptions?.datasets, dashboard.tableRelationships);
-        // Filter dataset with chunking
-        const tableDataset = processDataInChunks(
-          mergedDataset,
-          1000,
-          (chunk) => filterDataset(chunk, values.whereConditions)
+        mergedDataset = mergeDatasets(
+          chartOptions?.datasets,
+          dashboard.tableRelationships
         );
-        
+        mergedDataset = mergeDatasets(
+          chartOptions?.datasets,
+          dashboard.tableRelationships
+        );
+        // Filter dataset with chunking
+        const tableDataset = processDataInChunks(mergedDataset, 1000, (chunk) =>
+          filterDataset(chunk, values.whereConditions)
+        );
+
         let finalData = [];
         const selectedColumns = values?.columns || [];
         const groupColumns = values?.groupColumns || [];
@@ -659,11 +785,18 @@ const Dashboard = ({
 
             selectedColumns.forEach((col) => {
               if (!col.function || !aggregateFunctions[col.function]) {
-                console.warn(`Aggregate function "${col.function}" not found for column "${col.column}". Skipping.`);
+                console.warn(
+                  `Aggregate function "${col.function}" not found for column "${col.column}". Skipping.`
+                );
                 aggregatedRow[col.column] = 0;
               } else {
-                const columnValues = groupRows.map((row) => row[col.column] ?? 0);
-                aggregatedRow[col.column] = aggregateFunctions[col.function](columnValues, col.column);
+                const columnValues = groupRows.map(
+                  (row) => row[col.column] ?? 0
+                );
+                aggregatedRow[col.column] = aggregateFunctions[col.function](
+                  columnValues,
+                  col.column
+                );
               }
             });
             return aggregatedRow;
@@ -685,12 +818,18 @@ const Dashboard = ({
               const valB = b[values.limit.column] ?? "";
 
               if (!isNaN(valA) && !isNaN(valB)) {
-                return type === "ASC" ? Number(valA) - Number(valB) : Number(valB) - Number(valA);
+                return type === "ASC"
+                  ? Number(valA) - Number(valB)
+                  : Number(valB) - Number(valA);
               }
 
               return type === "ASC"
-                ? String(valA).localeCompare(String(valB), undefined, { sensitivity: "base" })
-                : String(valB).localeCompare(String(valA), undefined, { sensitivity: "base" });
+                ? String(valA).localeCompare(String(valB), undefined, {
+                    sensitivity: "base",
+                  })
+                : String(valB).localeCompare(String(valA), undefined, {
+                    sensitivity: "base",
+                  });
             })
             .slice(0, values.limit.limit);
         }
@@ -724,34 +863,40 @@ const Dashboard = ({
     }
 
     // Start with the first table as the base dataset
-    let mergedData = datasetMap[relationships[0].mainTable]?.map(row => ({ ...row })) || [];
+    let mergedData =
+      datasetMap[relationships[0].mainTable]?.map((row) => ({ ...row })) || [];
 
-    relationships.forEach(({ mainTable, foreignKey, relatedTable, primaryKey }) => {
-      const mainData = mergedData;
-      const relatedData = datasetMap[relatedTable];
+    relationships.forEach(
+      ({ mainTable, foreignKey, relatedTable, primaryKey }) => {
+        const mainData = mergedData;
+        const relatedData = datasetMap[relatedTable];
 
-      if (!mainData || !relatedData) {
-        console.warn(`Missing data for table: ${mainTable} or ${relatedTable}`);
-        return;
-      }
-
-      mergedData = mainData.flatMap(mainRow => {
-        const relatedRows = relatedData.filter(relRow => relRow[primaryKey] === mainRow[foreignKey]);
-        if (relatedRows.length === 0) {
-          return { ...mainRow };
+        if (!mainData || !relatedData) {
+          console.warn(
+            `Missing data for table: ${mainTable} or ${relatedTable}`
+          );
+          return;
         }
-        return relatedRows.map(relatedRow => ({
-          ...mainRow,
-          ...relatedRow
-        }));
-      });
-    });
+
+        mergedData = mainData.flatMap((mainRow) => {
+          const relatedRows = relatedData.filter(
+            (relRow) => relRow[primaryKey] === mainRow[foreignKey]
+          );
+          if (relatedRows.length === 0) {
+            return { ...mainRow };
+          }
+          return relatedRows.map((relatedRow) => ({
+            ...mainRow,
+            ...relatedRow,
+          }));
+        });
+      }
+    );
 
     return mergedData;
   };
 
   const handleDashboardName = async (value) => {
-
     const updatedDashboard = {
       ...dashboard,
       dashboardTitle: value,
@@ -765,19 +910,22 @@ const Dashboard = ({
       console.log("Adding new dashboard...");
       await addDashboard(updatedDashboard);
     }
-  }
+  };
 
   const chartTypes = [
     {
-      label: "Line", value: "line"
+      label: "Line",
+      value: "line",
     },
     {
-      label: "area", value: "area"
+      label: "area",
+      value: "area",
     },
     {
-      label: "column", value: "column"
-    }
-  ]
+      label: "column",
+      value: "column",
+    },
+  ];
 
   const categoriesOptions = columns.flatMap((col) =>
     col.columns.map((columnName) => ({
@@ -791,13 +939,13 @@ const Dashboard = ({
 
   const handleColumns = (rows, cols, colData) => {
     onCreateGrid(rows, cols, colData);
-  }
-
+  };
 
   useEffect(() => {
     if (dashboard) {
-      setDashboardName(dashboard.dashboardTitle)
+      setDashboardName(dashboard.dashboardTitle);
     }
+
     if (chartOptions && chartOptions["datasets"]) {
       const selectedDatasets = chartOptions["datasets"];
 
@@ -806,9 +954,10 @@ const Dashboard = ({
         const newColumns = selectedDatasets.map((dataset) => ({
           datasetName: dataset.datasetTitle,
           datasetId: dataset.datasetId,
-          columns: dataset.dataSourceData.length > 0
-            ? Object.keys(dataset.dataSourceData[0])
-            : [],
+          columns:
+            dataset.dataSourceData.length > 0
+              ? Object.keys(dataset.dataSourceData[0])
+              : [],
         }));
         setColumns(newColumns);
       }
@@ -817,15 +966,11 @@ const Dashboard = ({
       setColumns([]);
       // setSelectedDatasets([]);
     }
-
-
   }, [chartOptions]);
-
 
   const handleCreateDashboard = () => {
     navigate("/create-dashboard-modals");
   };
-
 
   const handleChange = (event) => {
     if (event && event.length > 0) {
@@ -839,9 +984,10 @@ const Dashboard = ({
         const newColumns = selectedDatasets.map((dataset) => ({
           datasetName: dataset.datasetTitle,
           datasetId: dataset.datasetId,
-          columns: dataset.dataSourceData.length > 0
-            ? Object.keys(dataset.dataSourceData[0])
-            : [],
+          columns:
+            dataset.dataSourceData.length > 0
+              ? Object.keys(dataset.dataSourceData[0])
+              : [],
         }));
 
         setColumns(newColumns);
@@ -853,7 +999,6 @@ const Dashboard = ({
     }
   };
 
-
   const handleCreateDataset = () => {
     navigate("/create-dataset-I");
   };
@@ -863,7 +1008,11 @@ const Dashboard = ({
       // Prevent default form submission if applicable
       event?.preventDefault();
       // Validate the dashboard title
-      if (!dashboard || !dashboard.dashboardTitle || dashboard.dashboardTitle.trim() === "") {
+      if (
+        !dashboard ||
+        !dashboard.dashboardTitle ||
+        dashboard.dashboardTitle.trim() === ""
+      ) {
         toast.warn("Dashboard name is required!!");
         return;
       }
@@ -887,6 +1036,9 @@ const Dashboard = ({
     if (id) {
       getSpecificDashboard(id);
     }
+    return () => {
+      removeCurrentDashboard();
+    };
   }, []);
 
   // Handle Selection of Charts
@@ -948,6 +1100,19 @@ const Dashboard = ({
     onUpdateChartOptions(updatedOptions);
   };
 
+  const handleSelectChange = (event) => {
+    const value = event.target.value;
+    if (value === "settings") {
+      handleSettings();
+    } else if (value === "logout") {
+      clearLogin();
+    }
+  };
+
+  const handleSettings = () => {
+    navigate("/account-settings");
+  };
+
   // Render Charts
   const renderProperties = () => {
     const properties = chartOptions.properties || {};
@@ -1006,7 +1171,7 @@ const Dashboard = ({
                 name="options.plotOptions.bar.borderRadiusApplication"
                 value={
                   properties[
-                  "options.plotOptions.bar.borderRadiusApplication"
+                    "options.plotOptions.bar.borderRadiusApplication"
                   ] || "end"
                 }
                 onChange={handlePropertyChange}
@@ -1028,7 +1193,10 @@ const Dashboard = ({
                     checked={properties["options.legend.show"] === true}
                     onChange={(e) =>
                       handlePropertyChange({
-                        target: { name: e.target.name, value: e.target.dataset.value === "true" },
+                        target: {
+                          name: e.target.name,
+                          value: e.target.dataset.value === "true",
+                        },
                       })
                     }
                   />
@@ -1042,7 +1210,10 @@ const Dashboard = ({
                     checked={properties["options.legend.show"] === false}
                     onChange={(e) =>
                       handlePropertyChange({
-                        target: { name: e.target.name, value: e.target.dataset.value === "true" },
+                        target: {
+                          name: e.target.name,
+                          value: e.target.dataset.value === "true",
+                        },
                       })
                     }
                   />
@@ -1140,7 +1311,7 @@ const Dashboard = ({
                 name="options.plotOptions.bar.borderRadiusApplication"
                 value={
                   properties[
-                  "options.plotOptions.bar.borderRadiusApplication"
+                    "options.plotOptions.bar.borderRadiusApplication"
                   ] || "end"
                 }
                 onChange={handlePropertyChange}
@@ -1162,7 +1333,10 @@ const Dashboard = ({
                     checked={properties["options.legend.show"] === true}
                     onChange={(e) =>
                       handlePropertyChange({
-                        target: { name: e.target.name, value: e.target.dataset.value === "true" },
+                        target: {
+                          name: e.target.name,
+                          value: e.target.dataset.value === "true",
+                        },
                       })
                     }
                   />
@@ -1176,7 +1350,10 @@ const Dashboard = ({
                     checked={properties["options.legend.show"] === false}
                     onChange={(e) =>
                       handlePropertyChange({
-                        target: { name: e.target.name, value: e.target.dataset.value === "true" },
+                        target: {
+                          name: e.target.name,
+                          value: e.target.dataset.value === "true",
+                        },
                       })
                     }
                   />
@@ -1257,7 +1434,10 @@ const Dashboard = ({
                     checked={properties["options.legend.show"] === true}
                     onChange={(e) =>
                       handlePropertyChange({
-                        target: { name: e.target.name, value: e.target.dataset.value === "true" },
+                        target: {
+                          name: e.target.name,
+                          value: e.target.dataset.value === "true",
+                        },
                       })
                     }
                   />
@@ -1271,7 +1451,10 @@ const Dashboard = ({
                     checked={properties["options.legend.show"] === false}
                     onChange={(e) =>
                       handlePropertyChange({
-                        target: { name: e.target.name, value: e.target.dataset.value === "true" },
+                        target: {
+                          name: e.target.name,
+                          value: e.target.dataset.value === "true",
+                        },
                       })
                     }
                   />
@@ -1350,7 +1533,10 @@ const Dashboard = ({
                     checked={properties["options.legend.show"] === true}
                     onChange={(e) =>
                       handlePropertyChange({
-                        target: { name: e.target.name, value: e.target.dataset.value === "true" },
+                        target: {
+                          name: e.target.name,
+                          value: e.target.dataset.value === "true",
+                        },
                       })
                     }
                   />
@@ -1364,7 +1550,10 @@ const Dashboard = ({
                     checked={properties["options.legend.show"] === false}
                     onChange={(e) =>
                       handlePropertyChange({
-                        target: { name: e.target.name, value: e.target.dataset.value === "true" },
+                        target: {
+                          name: e.target.name,
+                          value: e.target.dataset.value === "true",
+                        },
                       })
                     }
                   />
@@ -1443,7 +1632,10 @@ const Dashboard = ({
                     checked={properties["options.legend.show"] === true}
                     onChange={(e) =>
                       handlePropertyChange({
-                        target: { name: e.target.name, value: e.target.dataset.value === "true" },
+                        target: {
+                          name: e.target.name,
+                          value: e.target.dataset.value === "true",
+                        },
                       })
                     }
                   />
@@ -1457,7 +1649,10 @@ const Dashboard = ({
                     checked={properties["options.legend.show"] === false}
                     onChange={(e) =>
                       handlePropertyChange({
-                        target: { name: e.target.name, value: e.target.dataset.value === "true" },
+                        target: {
+                          name: e.target.name,
+                          value: e.target.dataset.value === "true",
+                        },
                       })
                     }
                   />
@@ -1536,7 +1731,10 @@ const Dashboard = ({
                     checked={properties["options.legend.show"] === true}
                     onChange={(e) =>
                       handlePropertyChange({
-                        target: { name: e.target.name, value: e.target.dataset.value === "true" },
+                        target: {
+                          name: e.target.name,
+                          value: e.target.dataset.value === "true",
+                        },
                       })
                     }
                   />
@@ -1550,7 +1748,10 @@ const Dashboard = ({
                     checked={properties["options.legend.show"] === false}
                     onChange={(e) =>
                       handlePropertyChange({
-                        target: { name: e.target.name, value: e.target.dataset.value === "true" },
+                        target: {
+                          name: e.target.name,
+                          value: e.target.dataset.value === "true",
+                        },
                       })
                     }
                   />
@@ -1741,7 +1942,10 @@ const Dashboard = ({
                     checked={properties["options.legend.show"] === true}
                     onChange={(e) =>
                       handlePropertyChange({
-                        target: { name: e.target.name, value: e.target.dataset.value === "true" },
+                        target: {
+                          name: e.target.name,
+                          value: e.target.dataset.value === "true",
+                        },
                       })
                     }
                   />
@@ -1755,7 +1959,10 @@ const Dashboard = ({
                     checked={properties["options.legend.show"] === false}
                     onChange={(e) =>
                       handlePropertyChange({
-                        target: { name: e.target.name, value: e.target.dataset.value === "true" },
+                        target: {
+                          name: e.target.name,
+                          value: e.target.dataset.value === "true",
+                        },
                       })
                     }
                   />
@@ -1879,7 +2086,10 @@ const Dashboard = ({
                     checked={properties["options.legend.show"] === true}
                     onChange={(e) =>
                       handlePropertyChange({
-                        target: { name: e.target.name, value: e.target.dataset.value === "true" },
+                        target: {
+                          name: e.target.name,
+                          value: e.target.dataset.value === "true",
+                        },
                       })
                     }
                   />
@@ -1893,7 +2103,10 @@ const Dashboard = ({
                     checked={properties["options.legend.show"] === false}
                     onChange={(e) =>
                       handlePropertyChange({
-                        target: { name: e.target.name, value: e.target.dataset.value === "true" },
+                        target: {
+                          name: e.target.name,
+                          value: e.target.dataset.value === "true",
+                        },
                       })
                     }
                   />
@@ -2055,7 +2268,10 @@ const Dashboard = ({
                     checked={properties["options.legend.show"] === true}
                     onChange={(e) =>
                       handlePropertyChange({
-                        target: { name: e.target.name, value: e.target.dataset.value === "true" },
+                        target: {
+                          name: e.target.name,
+                          value: e.target.dataset.value === "true",
+                        },
                       })
                     }
                   />
@@ -2069,7 +2285,10 @@ const Dashboard = ({
                     checked={properties["options.legend.show"] === false}
                     onChange={(e) =>
                       handlePropertyChange({
-                        target: { name: e.target.name, value: e.target.dataset.value === "true" },
+                        target: {
+                          name: e.target.name,
+                          value: e.target.dataset.value === "true",
+                        },
                       })
                     }
                   />
@@ -2281,7 +2500,10 @@ const Dashboard = ({
                     checked={properties["options.legend.show"] === true}
                     onChange={(e) =>
                       handlePropertyChange({
-                        target: { name: e.target.name, value: e.target.dataset.value === "true" },
+                        target: {
+                          name: e.target.name,
+                          value: e.target.dataset.value === "true",
+                        },
                       })
                     }
                   />
@@ -2295,7 +2517,10 @@ const Dashboard = ({
                     checked={properties["options.legend.show"] === false}
                     onChange={(e) =>
                       handlePropertyChange({
-                        target: { name: e.target.name, value: e.target.dataset.value === "true" },
+                        target: {
+                          name: e.target.name,
+                          value: e.target.dataset.value === "true",
+                        },
                       })
                     }
                   />
@@ -2507,7 +2732,10 @@ const Dashboard = ({
                     checked={properties["options.legend.show"] === true}
                     onChange={(e) =>
                       handlePropertyChange({
-                        target: { name: e.target.name, value: e.target.dataset.value === "true" },
+                        target: {
+                          name: e.target.name,
+                          value: e.target.dataset.value === "true",
+                        },
                       })
                     }
                   />
@@ -2521,7 +2749,10 @@ const Dashboard = ({
                     checked={properties["options.legend.show"] === false}
                     onChange={(e) =>
                       handlePropertyChange({
-                        target: { name: e.target.name, value: e.target.dataset.value === "true" },
+                        target: {
+                          name: e.target.name,
+                          value: e.target.dataset.value === "true",
+                        },
                       })
                     }
                   />
@@ -2739,7 +2970,10 @@ const Dashboard = ({
                     checked={properties["options.legend.show"] === true}
                     onChange={(e) =>
                       handlePropertyChange({
-                        target: { name: e.target.name, value: e.target.dataset.value === "true" },
+                        target: {
+                          name: e.target.name,
+                          value: e.target.dataset.value === "true",
+                        },
                       })
                     }
                   />
@@ -2753,7 +2987,10 @@ const Dashboard = ({
                     checked={properties["options.legend.show"] === false}
                     onChange={(e) =>
                       handlePropertyChange({
-                        target: { name: e.target.name, value: e.target.dataset.value === "true" },
+                        target: {
+                          name: e.target.name,
+                          value: e.target.dataset.value === "true",
+                        },
                       })
                     }
                   />
@@ -2985,7 +3222,10 @@ const Dashboard = ({
                     checked={properties["options.legend.show"] === true}
                     onChange={(e) =>
                       handlePropertyChange({
-                        target: { name: e.target.name, value: e.target.dataset.value === "true" },
+                        target: {
+                          name: e.target.name,
+                          value: e.target.dataset.value === "true",
+                        },
                       })
                     }
                   />
@@ -2999,7 +3239,10 @@ const Dashboard = ({
                     checked={properties["options.legend.show"] === false}
                     onChange={(e) =>
                       handlePropertyChange({
-                        target: { name: e.target.name, value: e.target.dataset.value === "true" },
+                        target: {
+                          name: e.target.name,
+                          value: e.target.dataset.value === "true",
+                        },
                       })
                     }
                   />
@@ -3092,7 +3335,10 @@ const Dashboard = ({
                     checked={properties["options.legend.show"] === true}
                     onChange={(e) =>
                       handlePropertyChange({
-                        target: { name: e.target.name, value: e.target.dataset.value === "true" },
+                        target: {
+                          name: e.target.name,
+                          value: e.target.dataset.value === "true",
+                        },
                       })
                     }
                   />
@@ -3106,7 +3352,10 @@ const Dashboard = ({
                     checked={properties["options.legend.show"] === false}
                     onChange={(e) =>
                       handlePropertyChange({
-                        target: { name: e.target.name, value: e.target.dataset.value === "true" },
+                        target: {
+                          name: e.target.name,
+                          value: e.target.dataset.value === "true",
+                        },
                       })
                     }
                   />
@@ -3195,7 +3444,7 @@ const Dashboard = ({
                 name="options.plotOptions.radialBar.dataLabels.value"
                 value={
                   properties[
-                  "options.plotOptions.radialBar.dataLabels.value"
+                    "options.plotOptions.radialBar.dataLabels.value"
                   ] || "#008FFB"
                 }
                 onChange={handlePropertyChange}
@@ -3214,7 +3463,10 @@ const Dashboard = ({
                     checked={properties["options.legend.show"] === true}
                     onChange={(e) =>
                       handlePropertyChange({
-                        target: { name: e.target.name, value: e.target.dataset.value === "true" },
+                        target: {
+                          name: e.target.name,
+                          value: e.target.dataset.value === "true",
+                        },
                       })
                     }
                   />
@@ -3228,7 +3480,10 @@ const Dashboard = ({
                     checked={properties["options.legend.show"] === false}
                     onChange={(e) =>
                       handlePropertyChange({
-                        target: { name: e.target.name, value: e.target.dataset.value === "true" },
+                        target: {
+                          name: e.target.name,
+                          value: e.target.dataset.value === "true",
+                        },
                       })
                     }
                   />
@@ -3293,7 +3548,7 @@ const Dashboard = ({
           </>
         )}
         {/* Typography */}
-        {chartOptions.chartType === "Typography" && (
+        {chartOptions.chartType === "typography" && (
           <>
             {/* Title */}
             <label className="chart-properties-labels">
@@ -3387,22 +3642,74 @@ const Dashboard = ({
             </div>
             <div className="another-container-grid-data">
               <div className="c1">
-                <img src={C1} alt="logo" onClick={() => handleColumns(1, 1, [{ colWidth: "100%" }])} />
+                <img
+                  src={C1}
+                  alt="logo"
+                  onClick={() => handleColumns(1, 1, [{ colWidth: "100%" }])}
+                />
               </div>
               <div className="c1">
-                <img src={C2} alt="logo" onClick={() => handleColumns(1, 2, [{ colWidth: "50%" }, { colWidth: "50%" }])} />
+                <img
+                  src={C2}
+                  alt="logo"
+                  onClick={() =>
+                    handleColumns(1, 2, [
+                      { colWidth: "50%" },
+                      { colWidth: "50%" },
+                    ])
+                  }
+                />
               </div>
               <div className="c1">
-                <img src={C3} alt="logo" onClick={() => handleColumns(1, 3, [{ colWidth: "33.33%" }, { colWidth: "33.33%" }, { colWidth: "33.33%" }])} />
+                <img
+                  src={C3}
+                  alt="logo"
+                  onClick={() =>
+                    handleColumns(1, 3, [
+                      { colWidth: "33.33%" },
+                      { colWidth: "33.33%" },
+                      { colWidth: "33.33%" },
+                    ])
+                  }
+                />
               </div>
               <div className="c1">
-                <img src={C4} alt="logo" onClick={() => handleColumns(1, 4, [{ colWidth: "25%" }, { colWidth: "25%" }, { colWidth: "25%" }, { colWidth: "25%" }])} />
+                <img
+                  src={C4}
+                  alt="logo"
+                  onClick={() =>
+                    handleColumns(1, 4, [
+                      { colWidth: "25%" },
+                      { colWidth: "25%" },
+                      { colWidth: "25%" },
+                      { colWidth: "25%" },
+                    ])
+                  }
+                />
               </div>
               <div className="c1">
-                <img src={C5} alt="logo" onClick={() => handleColumns(1, 2, [{ colWidth: "20%" }, { colWidth: "80%" }])} />
+                <img
+                  src={C5}
+                  alt="logo"
+                  onClick={() =>
+                    handleColumns(1, 2, [
+                      { colWidth: "20%" },
+                      { colWidth: "80%" },
+                    ])
+                  }
+                />
               </div>
               <div className="c1">
-                <img src={C6} alt="logo" onClick={() => handleColumns(1, 2, [{ colWidth: "80%" }, { colWidth: "20%" }])} />
+                <img
+                  src={C6}
+                  alt="logo"
+                  onClick={() =>
+                    handleColumns(1, 2, [
+                      { colWidth: "80%" },
+                      { colWidth: "20%" },
+                    ])
+                  }
+                />
               </div>
               <div className="c1">
                 <CustomGrid onCreate={onCreateGrid} />
@@ -3615,7 +3922,7 @@ const Dashboard = ({
               className="cd-I"
               onClick={() =>
                 setSelectedComponent(
-                  selectedComponent === "Typography" ? null : "Typography"
+                  selectedComponent === "typography" ? null : "typography"
                 )
               }
             >
@@ -3624,12 +3931,12 @@ const Dashboard = ({
               <div className="grid-data-circle">10</div>
             </div>
 
-            {selectedComponent === "Typography" && (
+            {selectedComponent === "typography" && (
               <div className="chart-list">
                 {/* Typography */}
                 <div
                   className="b-chart"
-                  onClick={() => handleChartSelection("Typography")}
+                  onClick={() => handleChartSelection("typography")}
                 >
                   <img src={Typo} alt="logo" />
                   <p>Typography</p>
@@ -3642,108 +3949,148 @@ const Dashboard = ({
         return (
           <div className="editor-data">
             <div className="editor-data-c-1">
-              <p className="text-primary text-center">{chartOptions.chartType}</p>
+              <p className="text-primary text-center">
+                {chartOptions.chartType}
+              </p>
               <hr />
             </div>
             {/* Dataset */}
-            {chartOptions?.chartType && <div>
-              <Select
-                options={datasets
-                  ? datasets.map(item => ({
-                    label: item.datasetTitle,
-                    value: item.datasetId,
-                  }))
-                  : []
-                }
-                isMulti={true}
-                value={chartOptions && chartOptions["datasets"]
-                  ? chartOptions["datasets"].map(dataset => ({
-                    label: dataset.datasetTitle,
-                    value: dataset.datasetId,
-                  }))
-                  : []
-                }
-                onChange={(selectedOptions) => {
-                  handleChange(
-                    selectedOptions
-                      ? selectedOptions.map(option => ({
-                        datasetTitle: option.label,
-                        datasetId: option.value,
-                      }))
+            {chartOptions?.chartType && (
+              <div>
+                <Select
+                  options={
+                    datasets
+                      ? datasets.map((item) => ({
+                          label: item.datasetTitle,
+                          value: item.datasetId,
+                        }))
                       : []
-                  );
-                }}
-                placeholder="Select dataset"
-                closeMenuOnSelect={false}
-              />
-
-            </div>}
+                  }
+                  isMulti={true}
+                  value={
+                    chartOptions && chartOptions["datasets"]
+                      ? chartOptions["datasets"].map((dataset) => ({
+                          label: dataset.datasetTitle,
+                          value: dataset.datasetId,
+                        }))
+                      : []
+                  }
+                  onChange={(selectedOptions) => {
+                    handleChange(
+                      selectedOptions
+                        ? selectedOptions.map((option) => ({
+                            datasetTitle: option.label,
+                            datasetId: option.value,
+                          }))
+                        : []
+                    );
+                  }}
+                  placeholder="Select dataset"
+                  closeMenuOnSelect={false}
+                />
+              </div>
+            )}
             <TableRelations datasets={datasets} />
             {/* Series */}
-            {
-              [
-                "line",
-                "verticalbarchart",
-                "horizontalbarchart",
-                "horizontalbarchart",
-                "100stackedverticalbarchart",
-                "100stackedhorizontalbarchart",
-                "stackedverticalbar",
-                "stackedhorizontalbar",
-                "area",
-                "mixed"
-              ].includes(chartOptions.chartType)
-              &&
+            {[
+              "line",
+              "verticalbarchart",
+              "horizontalbarchart",
+              "horizontalbarchart",
+              "100stackedverticalbarchart",
+              "100stackedhorizontalbarchart",
+              "stackedverticalbar",
+              "stackedhorizontalbar",
+              "area",
+              "mixed",
+            ].includes(chartOptions.chartType) && (
               <>
                 <div>
                   <Formik
                     initialValues={
                       chartOptions.formValues || {
                         category: { column: "", datasetName: "", function: "" },
-                        series: [{ type: "", name: "", column: "", datasetName: "", groupBy: "" }],
-                        whereConditions: [{ operator: "", value: "", column: "", datasetName: "" }],
+                        series: [
+                          {
+                            type: "",
+                            name: "",
+                            column: "",
+                            datasetName: "",
+                            groupBy: "",
+                          },
+                        ],
+                        whereConditions: [
+                          {
+                            operator: "",
+                            value: "",
+                            column: "",
+                            datasetName: "",
+                          },
+                        ],
                         groupBy: "no",
                         aggregateFunction: "",
                         setLimit: false,
-                        limit: { column: "", datasetName: "", limit: 0, type: "ASC" },
+                        limit: {
+                          column: "",
+                          datasetName: "",
+                          limit: 0,
+                          type: "ASC",
+                        },
                       }
                     }
                     enableReinitialize={true}
                     validationSchema={Yup.object().shape({
                       category: Yup.object().shape({
-                        column: Yup.string().required("Category column is required"),
-                        datasetName: Yup.string().required("Category dataset name is required"),
+                        column: Yup.string().required(
+                          "Category column is required"
+                        ),
+                        datasetName: Yup.string().required(
+                          "Category dataset name is required"
+                        ),
                         function: Yup.string(),
                       }),
                       whereConditions: Yup.array().of(
                         Yup.object().shape({
-                          operator: Yup.string().required('Operator is required'),
-                          value: Yup.string().required('Value is required'),
-                          column: Yup.string().required('Column is required'),
-                          datasetName: Yup.string().required('Dataset is required')
+                          operator: Yup.string().required(
+                            "Operator is required"
+                          ),
+                          value: Yup.string().required("Value is required"),
+                          column: Yup.string().required("Column is required"),
+                          datasetName: Yup.string().required(
+                            "Dataset is required"
+                          ),
                         })
                       ),
                       series: Yup.array().of(
                         Yup.object().shape({
-                          column: Yup.string().required("Series column is required"),
-                          datasetName: Yup.string().required("Series dataset name is required"),
+                          column: Yup.string().required(
+                            "Series column is required"
+                          ),
+                          datasetName: Yup.string().required(
+                            "Series dataset name is required"
+                          ),
                           name: Yup.string(),
-                          type: Yup.string()
+                          type: Yup.string(),
                         })
                       ),
                       setLimit: Yup.boolean(),
-                      limit: Yup.object().when("setLimit", {
-                        is: (setLimit) => setLimit === true || setLimit === "true",
-                        then: Yup.object().shape({
-                          limit: Yup.number()
-                            .min(1, "Limit should be greater than zero")
-                            .required("Limit is required"),
-                          column: Yup.string().required("Column is required"),
-                          datasetName: Yup.string().required("Dataset is required"),
-                          type: Yup.string().required("Sorting type is required"),
-                        }),
-                        otherwise: Yup.object().notRequired(),
-                      }),
+                      // limit: Yup.object().when("setLimit", {
+                      //   is: (setLimit) => setLimit === true || setLimit === "true",
+                      //   then: Yup.object().shape({
+                      //     limit: Yup.number()
+                      //       .min(1, "Limit should be greater than zero")
+                      //       .required("Limit is required"),
+                      //     column: Yup.string().required("Column is required"),
+                      //     datasetName: Yup.string().required("Dataset is required"),
+                      //     type: Yup.string().required("Sorting type is required"),
+                      //   }),
+                      //   otherwise: Yup.object().shape({
+                      //     limit: Yup.mixed().notRequired(),
+                      //     column: Yup.mixed().notRequired(),
+                      //     datasetName: Yup.mixed().notRequired(),
+                      //     type: Yup.mixed().notRequired(),
+                      //   }),
+                      // }),
                     })}
                     onSubmit={(values) => {
                       handleSubmit(values);
@@ -3760,11 +4107,14 @@ const Dashboard = ({
                               const parsedValue = JSON.parse(option.value);
                               return (
                                 parsedValue.column === values.category.column &&
-                                parsedValue.datasetName === values.category.datasetName
+                                parsedValue.datasetName ===
+                                  values.category.datasetName
                               );
                             })}
                             onChange={(selectedOption) => {
-                              const parsedValue = JSON.parse(selectedOption.value);
+                              const parsedValue = JSON.parse(
+                                selectedOption.value
+                              );
                               setFieldValue("category", {
                                 column: parsedValue.column,
                                 datasetName: parsedValue.datasetName,
@@ -3776,7 +4126,8 @@ const Dashboard = ({
                           />
                           {errors.category && touched.category && (
                             <div style={{ color: "red" }}>
-                              {errors.category.column || errors.category.datasetName}
+                              {errors.category.column ||
+                                errors.category.datasetName}
                             </div>
                           )}
                         </div>
@@ -3811,27 +4162,40 @@ const Dashboard = ({
                         {/* Aggregate Function Dropdown (Visible if Group By is "Yes") */}
                         {values.groupBy === "yes" && (
                           <div className="mt-2">
-                            <label htmlFor="aggregateFunction">Select Aggregate Function:</label>
+                            <label htmlFor="aggregateFunction">
+                              Select Aggregate Function:
+                            </label>
                             <Select
-                              options={Object.keys(aggregateFunctions).map((func) => ({
-                                label: func,
-                                value: func,
-                              }))}
+                              options={Object.keys(aggregateFunctions).map(
+                                (func) => ({
+                                  label: func,
+                                  value: func,
+                                })
+                              )}
                               value={
                                 values.aggregateFunction
-                                  ? { label: values.aggregateFunction, value: values.aggregateFunction }
+                                  ? {
+                                      label: values.aggregateFunction,
+                                      value: values.aggregateFunction,
+                                    }
                                   : null
                               }
                               onChange={(selectedFunc) => {
-                                setFieldValue("aggregateFunction", selectedFunc.value);
+                                setFieldValue(
+                                  "aggregateFunction",
+                                  selectedFunc.value
+                                );
                               }}
                               className="react-select-container"
                               classNamePrefix="react-select"
                               placeholder="Select function"
                             />
-                            {errors.aggregateFunction && touched.aggregateFunction && (
-                              <div style={{ color: "red" }}>{errors.aggregateFunction}</div>
-                            )}
+                            {errors.aggregateFunction &&
+                              touched.aggregateFunction && (
+                                <div style={{ color: "red" }}>
+                                  {errors.aggregateFunction}
+                                </div>
+                              )}
                           </div>
                         )}
 
@@ -3843,51 +4207,80 @@ const Dashboard = ({
                                 <div key={index}>
                                   {chartOptions.chartType === "mixed" && (
                                     <div>
-                                      <label htmlFor={`series[${index}].type`}>Chart Type:</label>
+                                      <label htmlFor={`series[${index}].type`}>
+                                        Chart Type:
+                                      </label>
                                       <Select
                                         options={chartTypes}
-                                        value={chartTypes.find((type) => type.value === seriesItem.type)}
+                                        value={chartTypes.find(
+                                          (type) =>
+                                            type.value === seriesItem.type
+                                        )}
                                         onChange={(selectedType) => {
-                                          setFieldValue(`series[${index}].type`, selectedType.value);
+                                          setFieldValue(
+                                            `series[${index}].type`,
+                                            selectedType.value
+                                          );
                                         }}
                                         className="react-select-container"
                                         classNamePrefix="react-select"
                                         placeholder="Choose Series"
                                       />
-                                      {errors.series?.[index]?.type && touched.series?.[index]?.type && (
-                                        <div style={{ color: "red" }}>{errors.series[index].type}</div>
-                                      )}
+                                      {errors.series?.[index]?.type &&
+                                        touched.series?.[index]?.type && (
+                                          <div style={{ color: "red" }}>
+                                            {errors.series[index].type}
+                                          </div>
+                                        )}
                                     </div>
                                   )}
 
                                   <div>
-                                    <label htmlFor={`series[${index}].column`}>Series {index + 1}:</label>
+                                    <label htmlFor={`series[${index}].column`}>
+                                      Series {index + 1}:
+                                    </label>
                                     <Select
                                       options={categoriesOptions}
-                                      value={categoriesOptions.find((option) => {
-                                        const parsedValue = JSON.parse(option.value);
-                                        return (
-                                          parsedValue.column === seriesItem.column &&
-                                          parsedValue.datasetName === seriesItem.datasetName
-                                        );
-                                      })}
+                                      value={categoriesOptions.find(
+                                        (option) => {
+                                          const parsedValue = JSON.parse(
+                                            option.value
+                                          );
+                                          return (
+                                            parsedValue.column ===
+                                              seriesItem.column &&
+                                            parsedValue.datasetName ===
+                                              seriesItem.datasetName
+                                          );
+                                        }
+                                      )}
                                       onChange={(selectedOption) => {
-                                        const parsedValue = JSON.parse(selectedOption.value);
-                                        setFieldValue(`series[${index}].column`, parsedValue.column);
-                                        setFieldValue(`series[${index}].datasetName`, parsedValue.datasetName);
+                                        const parsedValue = JSON.parse(
+                                          selectedOption.value
+                                        );
+                                        setFieldValue(
+                                          `series[${index}].column`,
+                                          parsedValue.column
+                                        );
+                                        setFieldValue(
+                                          `series[${index}].datasetName`,
+                                          parsedValue.datasetName
+                                        );
                                       }}
                                       className="react-select-container"
                                       classNamePrefix="react-select"
                                       placeholder="Choose Series"
                                     />
-                                    {errors.series?.[index]?.column && touched.series?.[index]?.column && (
-                                      <div style={{ color: "red" }}>
-                                        {errors.series[index].column || errors.series[index].datasetName}
-                                      </div>
-                                    )}
+                                    {errors.series?.[index]?.column &&
+                                      touched.series?.[index]?.column && (
+                                        <div style={{ color: "red" }}>
+                                          {errors.series[index].column ||
+                                            errors.series[index].datasetName}
+                                        </div>
+                                      )}
                                   </div>
 
-                                  {chartOptions.chartType != "mixed" &&
+                                  {chartOptions.chartType != "mixed" && (
                                     <div className="mt-3">
                                       <label>Group By:</label>
                                       <div>
@@ -3896,8 +4289,15 @@ const Dashboard = ({
                                             type="radio"
                                             name={`series[${index}].groupBy`}
                                             value="yes"
-                                            checked={seriesItem.groupBy === "yes"}
-                                            onChange={() => setFieldValue(`series[${index}].groupBy`, "yes")}
+                                            checked={
+                                              seriesItem.groupBy === "yes"
+                                            }
+                                            onChange={() =>
+                                              setFieldValue(
+                                                `series[${index}].groupBy`,
+                                                "yes"
+                                              )
+                                            }
                                           />
                                           Yes
                                         </label>
@@ -3906,14 +4306,21 @@ const Dashboard = ({
                                             type="radio"
                                             name={`series[${index}].groupBy`}
                                             value="no"
-                                            checked={seriesItem.groupBy === "no"}
-                                            onChange={() => setFieldValue(`series[${index}].groupBy`, "no")}
+                                            checked={
+                                              seriesItem.groupBy === "no"
+                                            }
+                                            onChange={() =>
+                                              setFieldValue(
+                                                `series[${index}].groupBy`,
+                                                "no"
+                                              )
+                                            }
                                           />
                                           No
                                         </label>
                                       </div>
                                     </div>
-                                  }
+                                  )}
 
                                   {/* <button
                                     type="button"
@@ -3926,17 +4333,33 @@ const Dashboard = ({
                                 </div>
                               ))}
 
-                              {chartOptions.chartType == "mixed" && <button
-                                type="button"
-                                onClick={() =>
-                                  push({ column: "", name: "", type: "", datasetName: "", groupBy: "no" })
-                                }
-                                style={{ cursor: "pointer", color: "green", background: "none", border: "none" }}
-                                className="text-center"
-                              >
-                                <FontAwesomeIcon icon={faPlusCircle} size="1x" /> Add
-                              </button>
-                              }
+                              {chartOptions.chartType == "mixed" && (
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    push({
+                                      column: "",
+                                      name: "",
+                                      type: "",
+                                      datasetName: "",
+                                      groupBy: "no",
+                                    })
+                                  }
+                                  style={{
+                                    cursor: "pointer",
+                                    color: "green",
+                                    background: "none",
+                                    border: "none",
+                                  }}
+                                  className="text-center"
+                                >
+                                  <FontAwesomeIcon
+                                    icon={faPlusCircle}
+                                    size="1x"
+                                  />{" "}
+                                  Add
+                                </button>
+                              )}
                             </>
                           )}
                         </FieldArray>
@@ -3965,47 +4388,57 @@ const Dashboard = ({
                       </Form>
                     )}
                   </Formik>
-
                 </div>
               </>
-            }
-            {
-              [
-                "pie",
-                "donut",
-                "radialBar"
-              ].includes(chartOptions.chartType)
-              &&
+            )}
+            {["pie", "donut", "radialBar"].includes(chartOptions.chartType) && (
               <>
                 <Formik
                   initialValues={
                     chartOptions.formValues || {
                       category: { column: "", datasetName: "", function: "" },
-                      whereConditions: [{ operator: "", value: "", column: "", datasetName: "" }],
+                      whereConditions: [
+                        {
+                          operator: "",
+                          value: "",
+                          column: "",
+                          datasetName: "",
+                        },
+                      ],
                       series: { column: "", datasetName: "" },
                       aggregateFunction: "",
-                      groupBy: ""
+                      groupBy: "",
                     }
                   }
                   enableReinitialize={true}
                   validationSchema={Yup.object().shape({
                     category: Yup.object().shape({
-                      column: Yup.string().required("Category column is required"),
-                      datasetName: Yup.string().required("Category dataset name is required"),
+                      column: Yup.string().required(
+                        "Category column is required"
+                      ),
+                      datasetName: Yup.string().required(
+                        "Category dataset name is required"
+                      ),
                     }),
                     whereConditions: Yup.array().of(
                       Yup.object().shape({
-                        operator: Yup.string().required('Operator is required'),
-                        value: Yup.string().required('Value is required'),
-                        column: Yup.string().required('Column is required'),
-                        datasetName: Yup.string().required('Dataset is required')
+                        operator: Yup.string().required("Operator is required"),
+                        value: Yup.string().required("Value is required"),
+                        column: Yup.string().required("Column is required"),
+                        datasetName: Yup.string().required(
+                          "Dataset is required"
+                        ),
                       })
                     ),
                     aggregateFunction: Yup.string(),
                     groupBy: Yup.string(),
                     series: Yup.object().shape({
-                      column: Yup.string().required("Series column is required"),
-                      datasetName: Yup.string().required("Series dataset name is required")
+                      column: Yup.string().required(
+                        "Series column is required"
+                      ),
+                      datasetName: Yup.string().required(
+                        "Series dataset name is required"
+                      ),
                     }),
                   })}
                   onSubmit={(values) => {
@@ -4023,11 +4456,14 @@ const Dashboard = ({
                             const parsedValue = JSON.parse(option.value);
                             return (
                               parsedValue.column === values.category.column &&
-                              parsedValue.datasetName === values.category.datasetName
+                              parsedValue.datasetName ===
+                                values.category.datasetName
                             );
                           })}
                           onChange={(selectedOption) => {
-                            const parsedValue = JSON.parse(selectedOption.value);
+                            const parsedValue = JSON.parse(
+                              selectedOption.value
+                            );
                             setFieldValue("category", {
                               column: parsedValue.column,
                               datasetName: parsedValue.datasetName,
@@ -4039,7 +4475,8 @@ const Dashboard = ({
                         />
                         {touched.category && errors.category && (
                           <div style={{ color: "red" }}>
-                            {errors.category.column || errors.category.datasetName}
+                            {errors.category.column ||
+                              errors.category.datasetName}
                           </div>
                         )}
                       </div>
@@ -4074,27 +4511,40 @@ const Dashboard = ({
                       {/* Aggregate Function Dropdown (Visible if Group By is "Yes") */}
                       {values.groupBy === "yes" && (
                         <div className="mt-2">
-                          <label htmlFor="aggregateFunction">Select Aggregate Function:</label>
+                          <label htmlFor="aggregateFunction">
+                            Select Aggregate Function:
+                          </label>
                           <Select
-                            options={Object.keys(aggregateFunctions).map((func) => ({
-                              label: func,
-                              value: func,
-                            }))}
+                            options={Object.keys(aggregateFunctions).map(
+                              (func) => ({
+                                label: func,
+                                value: func,
+                              })
+                            )}
                             value={
                               values.aggregateFunction
-                                ? { label: values.aggregateFunction, value: values.aggregateFunction }
+                                ? {
+                                    label: values.aggregateFunction,
+                                    value: values.aggregateFunction,
+                                  }
                                 : null
                             }
                             onChange={(selectedFunc) => {
-                              setFieldValue("aggregateFunction", selectedFunc.value);
+                              setFieldValue(
+                                "aggregateFunction",
+                                selectedFunc.value
+                              );
                             }}
                             className="react-select-container"
                             classNamePrefix="react-select"
                             placeholder="Select function"
                           />
-                          {errors.aggregateFunction && touched.aggregateFunction && (
-                            <div style={{ color: "red" }}>{errors.aggregateFunction}</div>
-                          )}
+                          {errors.aggregateFunction &&
+                            touched.aggregateFunction && (
+                              <div style={{ color: "red" }}>
+                                {errors.aggregateFunction}
+                              </div>
+                            )}
                         </div>
                       )}
 
@@ -4107,18 +4557,19 @@ const Dashboard = ({
                             const parsedValue = JSON.parse(option.value);
                             return (
                               parsedValue.column === values.series.column &&
-                              parsedValue.datasetName === values.series.datasetName
+                              parsedValue.datasetName ===
+                                values.series.datasetName
                             );
                           })}
-
                           onChange={(selectedOption) => {
-                            const parsedValue = JSON.parse(selectedOption.value);
+                            const parsedValue = JSON.parse(
+                              selectedOption.value
+                            );
                             setFieldValue("series", {
                               column: parsedValue.column,
-                              datasetName: parsedValue.datasetName
+                              datasetName: parsedValue.datasetName,
                             });
                           }}
-
                           className="react-select-container"
                           classNamePrefix="react-select"
                           placeholder="Choose Series"
@@ -4148,29 +4599,34 @@ const Dashboard = ({
                   )}
                 </Formik>
               </>
-            }
-            {
-              [
-                "treemap"
-              ].includes(chartOptions.chartType)
-              &&
+            )}
+            {["treemap"].includes(chartOptions.chartType) && (
               <>
                 <Formik
                   enableReinitialize={true}
                   initialValues={{
-                    x: chartOptions?.formValues?.x || { column: "", datasetName: "" },
-                    y: chartOptions?.formValues?.y || { column: "", datasetName: "" }
+                    x: chartOptions?.formValues?.x || {
+                      column: "",
+                      datasetName: "",
+                    },
+                    y: chartOptions?.formValues?.y || {
+                      column: "",
+                      datasetName: "",
+                    },
                   }}
-
                   validationSchema={Yup.object().shape({
                     x: Yup.object({
                       column: Yup.string().required("X column is required"),
-                      datasetName: Yup.string().required("X datasetName is required")
+                      datasetName: Yup.string().required(
+                        "X datasetName is required"
+                      ),
                     }).required(),
                     y: Yup.object({
                       column: Yup.string().required("Y column is required"),
-                      datasetName: Yup.string().required("Y datasetName is required")
-                    }).required()
+                      datasetName: Yup.string().required(
+                        "Y datasetName is required"
+                      ),
+                    }).required(),
                   })}
                   onSubmit={(values) => {
                     handleSubmit(values);
@@ -4191,10 +4647,12 @@ const Dashboard = ({
                             );
                           })}
                           onChange={(selectedOption) => {
-                            const parsedValue = JSON.parse(selectedOption.value);
+                            const parsedValue = JSON.parse(
+                              selectedOption.value
+                            );
                             setFieldValue("x", {
                               column: parsedValue.column,
-                              datasetName: parsedValue.datasetName
+                              datasetName: parsedValue.datasetName,
                             });
                           }}
                           className="react-select-container"
@@ -4221,10 +4679,12 @@ const Dashboard = ({
                             );
                           })}
                           onChange={(selectedOption) => {
-                            const parsedValue = JSON.parse(selectedOption.value);
+                            const parsedValue = JSON.parse(
+                              selectedOption.value
+                            );
                             setFieldValue("y", {
                               column: parsedValue.column,
-                              datasetName: parsedValue.datasetName
+                              datasetName: parsedValue.datasetName,
                             });
                           }}
                           className="react-select-container"
@@ -4246,12 +4706,8 @@ const Dashboard = ({
                   )}
                 </Formik>
               </>
-            }
-            {
-              [
-                "scatter"
-              ].includes(chartOptions.chartType)
-              &&
+            )}
+            {["scatter"].includes(chartOptions.chartType) && (
               <>
                 <Formik
                   enableReinitialize={true}
@@ -4259,36 +4715,54 @@ const Dashboard = ({
                     chartOptions?.formValues || {
                       series: [
                         {
-                          name: '',
+                          name: "",
                           x: { column: "", datasetName: "" },
-                          y: { column: "", datasetName: "" }
-                        }
+                          y: { column: "", datasetName: "" },
+                        },
                       ],
-                      whereConditions: []
+                      whereConditions: [],
                     }
                   }
                   validationSchema={Yup.object().shape({
-                    series: Yup.array().of(
-                      Yup.object().shape({
-                        name: Yup.string().required("Series name is required"),
+                    series: Yup.array()
+                      .of(
+                        Yup.object().shape({
+                          name: Yup.string().required(
+                            "Series name is required"
+                          ),
 
-                        x: Yup.object().shape({
-                          column: Yup.string().required("X column is required"),
-                          datasetName: Yup.string().required("X dataset name is required")
-                        }).required("X object is required"),
+                          x: Yup.object()
+                            .shape({
+                              column: Yup.string().required(
+                                "X column is required"
+                              ),
+                              datasetName: Yup.string().required(
+                                "X dataset name is required"
+                              ),
+                            })
+                            .required("X object is required"),
 
-                        y: Yup.object().shape({
-                          column: Yup.string().required("Y column is required"),
-                          datasetName: Yup.string().required("Y dataset name is required")
-                        }).required("Y object is required")
-                      })
-                    ).required("Series is required"),
+                          y: Yup.object()
+                            .shape({
+                              column: Yup.string().required(
+                                "Y column is required"
+                              ),
+                              datasetName: Yup.string().required(
+                                "Y dataset name is required"
+                              ),
+                            })
+                            .required("Y object is required"),
+                        })
+                      )
+                      .required("Series is required"),
                     whereConditions: Yup.array().of(
                       Yup.object().shape({
-                        operator: Yup.string().required('Operator is required'),
-                        value: Yup.string().required('Value is required'),
-                        column: Yup.string().required('Column is required'),
-                        datasetName: Yup.string().required('Dataset is required')
+                        operator: Yup.string().required("Operator is required"),
+                        value: Yup.string().required("Value is required"),
+                        column: Yup.string().required("Column is required"),
+                        datasetName: Yup.string().required(
+                          "Dataset is required"
+                        ),
                       })
                     ),
                   })}
@@ -4303,10 +4777,20 @@ const Dashboard = ({
                         {({ push, remove }) => (
                           <>
                             {values?.series?.map((seriesItem, index) => (
-                              <div key={index} style={{ marginBottom: "20px", border: "1px solid #ccc", padding: "10px", borderRadius: "5px" }}>
+                              <div
+                                key={index}
+                                style={{
+                                  marginBottom: "20px",
+                                  border: "1px solid #ccc",
+                                  padding: "10px",
+                                  borderRadius: "5px",
+                                }}
+                              >
                                 {/* Name Input */}
                                 <div>
-                                  <label htmlFor={`series[${index}].name`}>Value:</label>
+                                  <label htmlFor={`series[${index}].name`}>
+                                    Value:
+                                  </label>
                                   <Field
                                     className="form-control"
                                     name={`series[${index}].name`}
@@ -4324,18 +4808,26 @@ const Dashboard = ({
 
                                 {/* Dropdown for X */}
                                 <div>
-                                  <label htmlFor={`series[${index}].x`}>X:</label>
+                                  <label htmlFor={`series[${index}].x`}>
+                                    X:
+                                  </label>
                                   <Select
                                     options={categoriesOptions}
                                     value={categoriesOptions.find((option) => {
-                                      const parsedValue = JSON.parse(option.value);
+                                      const parsedValue = JSON.parse(
+                                        option.value
+                                      );
                                       return (
-                                        parsedValue.column === seriesItem?.x?.column &&
-                                        parsedValue.datasetName === seriesItem?.x?.datasetName
+                                        parsedValue.column ===
+                                          seriesItem?.x?.column &&
+                                        parsedValue.datasetName ===
+                                          seriesItem?.x?.datasetName
                                       );
                                     })}
                                     onChange={(selectedOption) => {
-                                      const parsedValue = JSON.parse(selectedOption.value);
+                                      const parsedValue = JSON.parse(
+                                        selectedOption.value
+                                      );
                                       setFieldValue(`series[${index}].x`, {
                                         column: parsedValue.column,
                                         datasetName: parsedValue.datasetName,
@@ -4350,25 +4842,34 @@ const Dashboard = ({
                                     touched.series &&
                                     touched.series[index]?.x && (
                                       <div style={{ color: "red" }}>
-                                        {errors.series[index]?.x?.column || errors.series[index]?.x?.datasetName}
+                                        {errors.series[index]?.x?.column ||
+                                          errors.series[index]?.x?.datasetName}
                                       </div>
                                     )}
                                 </div>
 
                                 {/* Dropdown for Y */}
                                 <div>
-                                  <label htmlFor={`series[${index}].y`}>Y:</label>
+                                  <label htmlFor={`series[${index}].y`}>
+                                    Y:
+                                  </label>
                                   <Select
                                     options={categoriesOptions}
                                     value={categoriesOptions.find((option) => {
-                                      const parsedValue = JSON.parse(option.value);
+                                      const parsedValue = JSON.parse(
+                                        option.value
+                                      );
                                       return (
-                                        parsedValue.column === seriesItem?.y?.column &&
-                                        parsedValue.datasetName === seriesItem?.y?.datasetName
+                                        parsedValue.column ===
+                                          seriesItem?.y?.column &&
+                                        parsedValue.datasetName ===
+                                          seriesItem?.y?.datasetName
                                       );
                                     })}
                                     onChange={(selectedOption) => {
-                                      const parsedValue = JSON.parse(selectedOption.value);
+                                      const parsedValue = JSON.parse(
+                                        selectedOption.value
+                                      );
                                       setFieldValue(`series[${index}].y`, {
                                         column: parsedValue.column,
                                         datasetName: parsedValue.datasetName,
@@ -4383,7 +4884,8 @@ const Dashboard = ({
                                     touched.series &&
                                     touched.series[index]?.y && (
                                       <div style={{ color: "red" }}>
-                                        {errors.series[index]?.y?.column || errors.series[index]?.y?.datasetName}
+                                        {errors.series[index]?.y?.column ||
+                                          errors.series[index]?.y?.datasetName}
                                       </div>
                                     )}
                                 </div>
@@ -4406,15 +4908,26 @@ const Dashboard = ({
                             <div style={{ marginTop: "10px" }}>
                               <button
                                 type="button"
-                                onClick={() => push({
-                                  name: "",
-                                  x: { column: "", datasetName: "" },
-                                  y: { column: "", datasetName: "" },
-                                })}
-                                style={{ cursor: "pointer", color: "green", background: "none", border: "none" }}
+                                onClick={() =>
+                                  push({
+                                    name: "",
+                                    x: { column: "", datasetName: "" },
+                                    y: { column: "", datasetName: "" },
+                                  })
+                                }
+                                style={{
+                                  cursor: "pointer",
+                                  color: "green",
+                                  background: "none",
+                                  border: "none",
+                                }}
                                 title="Add a new condition"
                               >
-                                <FontAwesomeIcon icon={faPlusCircle} size="1x" /> Add
+                                <FontAwesomeIcon
+                                  icon={faPlusCircle}
+                                  size="1x"
+                                />{" "}
+                                Add
                               </button>
                             </div>
                           </>
@@ -4438,55 +4951,68 @@ const Dashboard = ({
                     </Form>
                   )}
                 </Formik>
-
               </>
-            }
-            {
-              ["bubblechart", "bubblechart3d"].includes(chartOptions.chartType)
-              &&
+            )}
+            {["bubblechart", "bubblechart3d"].includes(
+              chartOptions.chartType
+            ) && (
               <>
                 <Formik
                   enableReinitialize={true}
                   initialValues={
-                    chartOptions.formValues && chartOptions.formValues.datasets
-                      && Array.isArray(chartOptions.formValues.datasets) && chartOptions.formValues.datasets.length > 0
+                    chartOptions.formValues &&
+                    chartOptions.formValues.datasets &&
+                    Array.isArray(chartOptions.formValues.datasets) &&
+                    chartOptions.formValues.datasets.length > 0
                       ? { datasets: chartOptions.formValues.datasets }
                       : {
-                        datasets: [
-                          {
-                            name: '',
-                            data: {
-                              x: { column: '', datasetName: '' },
-                              y: { column: '', datasetName: '' },
-                              z: { column: '', datasetName: '' },
+                          datasets: [
+                            {
+                              name: "",
+                              data: {
+                                x: { column: "", datasetName: "" },
+                                y: { column: "", datasetName: "" },
+                                z: { column: "", datasetName: "" },
+                              },
                             },
-                          },
-                        ]
-                      }
+                          ],
+                        }
                   }
                   validationSchema={Yup.object().shape({
                     datasets: Yup.array().of(
                       Yup.object().shape({
-                        name: Yup.string().required('Name is required'),
+                        name: Yup.string().required("Name is required"),
                         data: Yup.object().shape({
                           x: Yup.object().shape({
-                            column: Yup.string().required('Column for X is required'),
-                            datasetName: Yup.string().required('Dataset for X is required'),
+                            column: Yup.string().required(
+                              "Column for X is required"
+                            ),
+                            datasetName: Yup.string().required(
+                              "Dataset for X is required"
+                            ),
                           }),
                           y: Yup.object().shape({
-                            column: Yup.string().required('Column for Y is required'),
-                            datasetName: Yup.string().required('Dataset for Y is required'),
+                            column: Yup.string().required(
+                              "Column for Y is required"
+                            ),
+                            datasetName: Yup.string().required(
+                              "Dataset for Y is required"
+                            ),
                           }),
                           z: Yup.object().shape({
-                            column: Yup.string().required('Column for Z is required'),
-                            datasetName: Yup.string().required('Dataset for Z is required'),
+                            column: Yup.string().required(
+                              "Column for Z is required"
+                            ),
+                            datasetName: Yup.string().required(
+                              "Dataset for Z is required"
+                            ),
                           }),
                         }),
                       })
                     ),
                   })}
                   onSubmit={(values) => {
-                    console.log('Submitted Values:', values);
+                    console.log("Submitted Values:", values);
                     handleSubmit(values);
                   }}
                 >
@@ -4496,109 +5022,164 @@ const Dashboard = ({
                         {({ push, remove }) => (
                           <>
                             {values.datasets.map((item, index) => (
-                              <div key={index} style={{ border: "1px solid #ccc", padding: "5px" }}>
+                              <div
+                                key={index}
+                                style={{
+                                  border: "1px solid #ccc",
+                                  padding: "5px",
+                                }}
+                              >
                                 {/* Name Field */}
                                 <div>
-                                  <label htmlFor={`datasets[${index}].name`}>Name:</label>
+                                  <label htmlFor={`datasets[${index}].name`}>
+                                    Name:
+                                  </label>
                                   <Field
                                     className="form-control"
                                     id={`datasets[${index}].name`}
                                     name={`datasets[${index}].name`}
                                     placeholder="Enter a name"
                                   />
-                                  {errors.datasets && errors.datasets[index]?.name && touched.datasets && touched.datasets[index]?.name && (
-                                    <div style={{ color: 'red' }}>{errors.datasets[index].name}</div>
-                                  )}
+                                  {errors.datasets &&
+                                    errors.datasets[index]?.name &&
+                                    touched.datasets &&
+                                    touched.datasets[index]?.name && (
+                                      <div style={{ color: "red" }}>
+                                        {errors.datasets[index].name}
+                                      </div>
+                                    )}
                                 </div>
 
                                 {/* Dropdown for X */}
                                 <div>
-                                  <label htmlFor={`datasets[${index}].data.x`}>X:</label>
+                                  <label htmlFor={`datasets[${index}].data.x`}>
+                                    X:
+                                  </label>
                                   <Select
                                     options={categoriesOptions}
-                                    value={categoriesOptions.find(
-                                      (option) => {
-                                        const parsedValue = JSON.parse(option.value);
-                                        return (
-                                          parsedValue.column === item.data.x.column &&
-                                          parsedValue.datasetName === item.data.x.datasetName
-                                        );
-                                      }
-                                    )}
+                                    value={categoriesOptions.find((option) => {
+                                      const parsedValue = JSON.parse(
+                                        option.value
+                                      );
+                                      return (
+                                        parsedValue.column ===
+                                          item.data.x.column &&
+                                        parsedValue.datasetName ===
+                                          item.data.x.datasetName
+                                      );
+                                    })}
                                     onChange={(selectedOption) => {
-                                      const parsedValue = JSON.parse(selectedOption.value);
-                                      setFieldValue(`datasets[${index}].data.x`, {
-                                        column: parsedValue.column,
-                                        datasetName: parsedValue.datasetName,
-                                      });
+                                      const parsedValue = JSON.parse(
+                                        selectedOption.value
+                                      );
+                                      setFieldValue(
+                                        `datasets[${index}].data.x`,
+                                        {
+                                          column: parsedValue.column,
+                                          datasetName: parsedValue.datasetName,
+                                        }
+                                      );
                                     }}
                                     className="react-select-container"
                                     classNamePrefix="react-select"
                                     placeholder="Choose X"
                                   />
-                                  {errors.datasets && errors.datasets[index]?.data?.x && touched.datasets && touched.datasets[index]?.data?.x && (
-                                    <div style={{ color: 'red' }}>{errors.datasets[index].data.x}</div>
-                                  )}
+                                  {errors.datasets &&
+                                    errors.datasets[index]?.data?.x &&
+                                    touched.datasets &&
+                                    touched.datasets[index]?.data?.x && (
+                                      <div style={{ color: "red" }}>
+                                        {errors.datasets[index].data.x}
+                                      </div>
+                                    )}
                                 </div>
 
                                 {/* Dropdown for Y */}
                                 <div>
-                                  <label htmlFor={`datasets[${index}].data.y`}>Y:</label>
+                                  <label htmlFor={`datasets[${index}].data.y`}>
+                                    Y:
+                                  </label>
                                   <Select
                                     options={categoriesOptions}
-                                    value={categoriesOptions.find(
-                                      (option) => {
-                                        const parsedValue = JSON.parse(option.value);
-                                        return (
-                                          parsedValue.column === item.data.y.column &&
-                                          parsedValue.datasetName === item.data.y.datasetName
-                                        );
-                                      }
-                                    )}
+                                    value={categoriesOptions.find((option) => {
+                                      const parsedValue = JSON.parse(
+                                        option.value
+                                      );
+                                      return (
+                                        parsedValue.column ===
+                                          item.data.y.column &&
+                                        parsedValue.datasetName ===
+                                          item.data.y.datasetName
+                                      );
+                                    })}
                                     onChange={(selectedOption) => {
-                                      const parsedValue = JSON.parse(selectedOption.value);
-                                      setFieldValue(`datasets[${index}].data.y`, {
-                                        column: parsedValue.column,
-                                        datasetName: parsedValue.datasetName,
-                                      });
+                                      const parsedValue = JSON.parse(
+                                        selectedOption.value
+                                      );
+                                      setFieldValue(
+                                        `datasets[${index}].data.y`,
+                                        {
+                                          column: parsedValue.column,
+                                          datasetName: parsedValue.datasetName,
+                                        }
+                                      );
                                     }}
                                     className="react-select-container"
                                     classNamePrefix="react-select"
                                     placeholder="Choose Y"
                                   />
-                                  {errors.datasets && errors.datasets[index]?.data?.y && touched.datasets && touched.datasets[index]?.data?.y && (
-                                    <div style={{ color: 'red' }}>{errors.datasets[index].data.y}</div>
-                                  )}
+                                  {errors.datasets &&
+                                    errors.datasets[index]?.data?.y &&
+                                    touched.datasets &&
+                                    touched.datasets[index]?.data?.y && (
+                                      <div style={{ color: "red" }}>
+                                        {errors.datasets[index].data.y}
+                                      </div>
+                                    )}
                                 </div>
 
                                 {/* Dropdown for Z */}
                                 <div>
-                                  <label htmlFor={`datasets[${index}].data.z`}>Z:</label>
+                                  <label htmlFor={`datasets[${index}].data.z`}>
+                                    Z:
+                                  </label>
                                   <Select
                                     options={categoriesOptions}
-                                    value={categoriesOptions.find(
-                                      (option) => {
-                                        const parsedValue = JSON.parse(option.value);
-                                        return (
-                                          parsedValue.column === item.data.z.column &&
-                                          parsedValue.datasetName === item.data.z.datasetName
-                                        );
-                                      }
-                                    )}
+                                    value={categoriesOptions.find((option) => {
+                                      const parsedValue = JSON.parse(
+                                        option.value
+                                      );
+                                      return (
+                                        parsedValue.column ===
+                                          item.data.z.column &&
+                                        parsedValue.datasetName ===
+                                          item.data.z.datasetName
+                                      );
+                                    })}
                                     onChange={(selectedOption) => {
-                                      const parsedValue = JSON.parse(selectedOption.value);
-                                      setFieldValue(`datasets[${index}].data.z`, {
-                                        column: parsedValue.column,
-                                        datasetName: parsedValue.datasetName,
-                                      });
+                                      const parsedValue = JSON.parse(
+                                        selectedOption.value
+                                      );
+                                      setFieldValue(
+                                        `datasets[${index}].data.z`,
+                                        {
+                                          column: parsedValue.column,
+                                          datasetName: parsedValue.datasetName,
+                                        }
+                                      );
                                     }}
                                     className="react-select-container"
                                     classNamePrefix="react-select"
                                     placeholder="Choose Z"
                                   />
-                                  {errors.datasets && errors.datasets[index]?.data?.z && touched.datasets && touched.datasets[index]?.data?.z && (
-                                    <div style={{ color: 'red' }}>{errors.datasets[index].data.z}</div>
-                                  )}
+                                  {errors.datasets &&
+                                    errors.datasets[index]?.data?.z &&
+                                    touched.datasets &&
+                                    touched.datasets[index]?.data?.z && (
+                                      <div style={{ color: "red" }}>
+                                        {errors.datasets[index].data.z}
+                                      </div>
+                                    )}
                                 </div>
 
                                 {/* Remove Dataset Button */}
@@ -4606,9 +5187,12 @@ const Dashboard = ({
                                   className="text-end"
                                   type="button"
                                   onClick={() => remove(index)}
-                                  style={{ marginTop: '10px' }}
+                                  style={{ marginTop: "10px" }}
                                 >
-                                  <FontAwesomeIcon icon={faTrash} size="2x"></FontAwesomeIcon>
+                                  <FontAwesomeIcon
+                                    icon={faTrash}
+                                    size="2x"
+                                  ></FontAwesomeIcon>
                                 </a>
                               </div>
                             ))}
@@ -4618,58 +5202,65 @@ const Dashboard = ({
                               type="button"
                               onClick={() =>
                                 push({
-                                  name: '',
+                                  name: "",
                                   data: {
-                                    x: { column: '', datasetName: '' },
-                                    y: { column: '', datasetName: '' },
-                                    z: { column: '', datasetName: '' },
+                                    x: { column: "", datasetName: "" },
+                                    y: { column: "", datasetName: "" },
+                                    z: { column: "", datasetName: "" },
                                   },
                                 })
                               }
-                              style={{ cursor: "pointer", color: "green", background: "none", border: "none" }}
+                              style={{
+                                cursor: "pointer",
+                                color: "green",
+                                background: "none",
+                                border: "none",
+                              }}
                               className="text-center"
                             >
-                              <FontAwesomeIcon icon={faPlusCircle} size="1x" /> Add
+                              <FontAwesomeIcon icon={faPlusCircle} size="1x" />{" "}
+                              Add
                             </button>
                           </>
                         )}
                       </FieldArray>
 
                       {/* Submit Button */}
-                      <button type="submit" style={{ marginTop: '20px' }}>
+                      <button type="submit" style={{ marginTop: "20px" }}>
                         Load Data
                       </button>
                     </Form>
                   )}
                 </Formik>
               </>
-            }
-            {
-              [
-                "card"
-              ].includes(chartOptions.chartType)
-              &&
+            )}
+            {["card"].includes(chartOptions.chartType) && (
               <>
                 <Formik
                   enableReinitialize={true}
-                  initialValues={chartOptions?.formValues || {
-                    column: { column: "", datasetName: "" },
-                    function: "",
-                    whereConditions: []
-                  }}
-
+                  initialValues={
+                    chartOptions?.formValues || {
+                      column: { column: "", datasetName: "" },
+                      function: "",
+                      whereConditions: [],
+                    }
+                  }
                   validationSchema={Yup.object().shape({
                     column: Yup.object({
                       column: Yup.string().required("X column is required"),
-                      datasetName: Yup.string().required("X datasetName is required")
+                      datasetName: Yup.string().required(
+                        "X datasetName is required"
+                      ),
                     }).required(),
                     function: Yup.string().required("Function is required"),
                     whereConditions: Yup.array().of(
                       Yup.object().shape({
-                        operator: Yup.string().required('Operator is required'),
-                        value: Yup.string().required('Value is required'),
-                        column: Yup.string().required('Column is required'),
-                        datasetName: Yup.string().required('Dataset is required')
+                        operator: Yup.string().required("Operator is required"),
+                        value: Yup.string().required("Value is required"),
+                        column: Yup.string().required("Column is required"),
+                        datasetName: Yup.string().required(
+                          "Dataset is required"
+                        ),
                       })
                     ),
                   })}
@@ -4688,14 +5279,17 @@ const Dashboard = ({
                             const parsedValue = JSON.parse(option.value);
                             return (
                               parsedValue.column === values.column.column &&
-                              parsedValue.datasetName === values.column.datasetName
+                              parsedValue.datasetName ===
+                                values.column.datasetName
                             );
                           })}
                           onChange={(selectedOption) => {
-                            const parsedValue = JSON.parse(selectedOption.value);
+                            const parsedValue = JSON.parse(
+                              selectedOption.value
+                            );
                             setFieldValue("column", {
                               column: parsedValue.column,
-                              datasetName: parsedValue.datasetName
+                              datasetName: parsedValue.datasetName,
                             });
                           }}
                           className="react-select-container"
@@ -4711,15 +5305,22 @@ const Dashboard = ({
 
                       {/* Dropdown for Function */}
                       <div className="mt-2">
-                        <label htmlFor="function">Select Aggregate Function:</label>
+                        <label htmlFor="function">
+                          Select Aggregate Function:
+                        </label>
                         <Select
-                          options={Object.keys(aggregateFunctions).map((func) => ({
-                            label: func,
-                            value: func,
-                          }))}
+                          options={Object.keys(aggregateFunctions).map(
+                            (func) => ({
+                              label: func,
+                              value: func,
+                            })
+                          )}
                           value={
                             values.function
-                              ? { label: values.function, value: values.function }
+                              ? {
+                                  label: values.function,
+                                  value: values.function,
+                                }
                               : null
                           }
                           onChange={(selectedFunc) => {
@@ -4752,36 +5353,47 @@ const Dashboard = ({
                   )}
                 </Formik>
               </>
-            }
-            {
-              [
-                "table"
-              ].includes(chartOptions.chartType)
-              &&
+            )}
+            {["table"].includes(chartOptions.chartType) && (
               <>
                 <Formik
                   enableReinitialize={true}
-                  initialValues={chartOptions?.formValues || {
-                    columns: [{ column: "", datasetName: "", function: "" }],
-                    groupColumns: [],
-                    whereConditions: [],
-                    setLimit: false,
-                    limit: { column: "", datasetName: "", limit: 0, type: "ASC" },
-                  }}
+                  initialValues={
+                    chartOptions?.formValues || {
+                      columns: [{ column: "", datasetName: "", function: "" }],
+                      groupColumns: [],
+                      whereConditions: [],
+                      setLimit: false,
+                      limit: {
+                        column: "",
+                        datasetName: "",
+                        limit: 0,
+                        type: "ASC",
+                      },
+                    }
+                  }
                   validationSchema={Yup.object().shape({
                     columns: Yup.array()
                       .of(
                         Yup.object().shape({
                           column: Yup.string().required("Column is required"),
-                          datasetName: Yup.string().required("Dataset Name is required"),
-                          function: Yup.string().required("Function is required"),
+                          datasetName: Yup.string().required(
+                            "Dataset Name is required"
+                          ),
+                          function: Yup.string().required(
+                            "Function is required"
+                          ),
                         })
                       )
                       .min(1, "At least one column must be selected"),
                     groupColumns: Yup.array().of(
                       Yup.object().shape({
-                        column: Yup.string().required("Group Column is required"),
-                        datasetName: Yup.string().required("Dataset Name is required"),
+                        column: Yup.string().required(
+                          "Group Column is required"
+                        ),
+                        datasetName: Yup.string().required(
+                          "Dataset Name is required"
+                        ),
                       })
                     ),
                     whereConditions: Yup.array().of(
@@ -4789,11 +5401,16 @@ const Dashboard = ({
                         operator: Yup.string().required("Operator is required"),
                         value: Yup.string().required("Value is required"),
                         column: Yup.string().required("Column is required"),
-                        datasetName: Yup.string().required("Dataset is required"),
+                        datasetName: Yup.string().required(
+                          "Dataset is required"
+                        ),
                       })
                     ),
-                    limit: Yup.object().shape({  // Ensure limit is treated as an object
-                      limit: Yup.number().min(1, "Limit should be greater than zero").required("Limit is required"),
+                    limit: Yup.object().shape({
+                      // Ensure limit is treated as an object
+                      limit: Yup.number()
+                        .min(1, "Limit should be greater than zero")
+                        .required("Limit is required"),
                       column: Yup.string().required("Column is required"),
                       datasetName: Yup.string().required("Dataset is required"),
                       type: Yup.string().required("Sorting type is required"),
@@ -4822,15 +5439,17 @@ const Dashboard = ({
                             })
                           )}
                           onChange={(selectedOptions) => {
-                            const selectedColumns = selectedOptions.map((option) =>
-                              JSON.parse(option.value)
+                            const selectedColumns = selectedOptions.map(
+                              (option) => JSON.parse(option.value)
                             );
 
                             // Ensure each column has an associated function
-                            const updatedColumns = selectedColumns.map((col) => ({
-                              ...col,
-                              function: col.function || "", // Ensure function field exists
-                            }));
+                            const updatedColumns = selectedColumns.map(
+                              (col) => ({
+                                ...col,
+                                function: col.function || "", // Ensure function field exists
+                              })
+                            );
 
                             setFieldValue("columns", updatedColumns);
                           }}
@@ -4846,13 +5465,24 @@ const Dashboard = ({
                       {/* Assign Aggregate Function to Each Column */}
                       <div>
                         {values.columns.map((col, index) => (
-                          <div key={index} style={{ display: "flex", alignItems: "center", marginBottom: "10px" }}>
-                            <span>{col.column} ({col.datasetName})</span>
+                          <div
+                            key={index}
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              marginBottom: "10px",
+                            }}
+                          >
+                            <span>
+                              {col.column} ({col.datasetName})
+                            </span>
                             <Select
-                              options={Object.keys(aggregateFunctions).map((func) => ({
-                                label: func,
-                                value: func,
-                              }))}
+                              options={Object.keys(aggregateFunctions).map(
+                                (func) => ({
+                                  label: func,
+                                  value: func,
+                                })
+                              )}
                               value={
                                 col.function
                                   ? { label: col.function, value: col.function }
@@ -4860,7 +5490,8 @@ const Dashboard = ({
                               }
                               onChange={(selectedFunc) => {
                                 const updatedColumns = [...values.columns];
-                                updatedColumns[index].function = selectedFunc.value;
+                                updatedColumns[index].function =
+                                  selectedFunc.value;
                                 setFieldValue("columns", updatedColumns);
                               }}
                               className="react-select-container"
@@ -4874,7 +5505,9 @@ const Dashboard = ({
 
                       {/* Multi-Select for Group Columns */}
                       <div>
-                        <label htmlFor="groupColumns">Select Group Columns:</label>
+                        <label htmlFor="groupColumns">
+                          Select Group Columns:
+                        </label>
                         <Select
                           options={categoriesOptions}
                           isMulti
@@ -4888,8 +5521,8 @@ const Dashboard = ({
                             })
                           )}
                           onChange={(selectedOptions) => {
-                            const selectedGroupColumns = selectedOptions.map((option) =>
-                              JSON.parse(option.value)
+                            const selectedGroupColumns = selectedOptions.map(
+                              (option) => JSON.parse(option.value)
                             );
                             setFieldValue("groupColumns", selectedGroupColumns);
                           }}
@@ -4898,7 +5531,9 @@ const Dashboard = ({
                           placeholder="Choose Group Columns"
                         />
                         {touched.groupColumns && errors.groupColumns && (
-                          <div style={{ color: "red" }}>{errors.groupColumns}</div>
+                          <div style={{ color: "red" }}>
+                            {errors.groupColumns}
+                          </div>
                         )}
                       </div>
 
@@ -4921,14 +5556,16 @@ const Dashboard = ({
                       />
 
                       {/* Submit Button */}
-                      <button type="submit" style={{ marginTop: "20px" }}>Load Data</button>
+                      <button type="submit" style={{ marginTop: "20px" }}>
+                        Load Data
+                      </button>
                     </Form>
                   )}
                 </Formik>
               </>
-            }
+            )}
             {renderProperties()}
-          </div >
+          </div>
         );
       default:
         return null;
@@ -4958,14 +5595,6 @@ const Dashboard = ({
         <div className="second-row-navbar">
           <div className="user-permission">
             <div className="DS">
-              <img src={USER} alt="logo" />
-            </div>
-            <div>
-              <p>User Permissions</p>
-            </div>
-          </div>
-          <div className="user-permission">
-            <div className="DS">
               <img src={DS} alt="logo" />
             </div>
             <div onClick={handleCreateDataset}>
@@ -4980,11 +5609,15 @@ const Dashboard = ({
               <p>Create a Dashboard</p>
             </div>
           </div>
-          <div className="first-div-second-row-btn-IV-nav">
-            <img src={Dataset} alt="logo" />
-            <select className="first-div-second-row-btn-IV-select-nav">
-              <option>Account Settings</option>
-              <option>Logout</option>
+          <div className="first-div-second-row-btn-IV">
+            <img src={user?.profileImage} alt="logo" />
+            <select
+              className="first-div-second-row-btn-IV-select"
+              onChange={handleSelectChange}
+            >
+              <option value="">Select an option</option>
+              <option value="settings">Account Settings</option>
+              <option value="logout">Logout</option>
             </select>
           </div>
           <div className="bell">
@@ -5009,6 +5642,21 @@ const Dashboard = ({
               {/* <img src={Pen} alt="logo" /> */}
             </div>
             <div className="sr-CDB">
+              <div className="user-permission">
+                <div className="DS">
+                  <img src={USER} alt="logo" />
+                </div>
+                {canAccess && (
+                  <div
+                    onClick={() =>
+                      navigate(`/set-user-permissions/${dashboard.dashboardId}`)
+                    }
+                  >
+                    <p>User Permissions</p>
+                  </div>
+                )}
+              </div>
+
               <div className="sr-CDB-I">
                 <img src={S1} alt="logo" />
               </div>
@@ -5076,9 +5724,11 @@ const Dashboard = ({
                   Shuffle Charts
                 </button>
                 <div>
-                  <button className="sr-btn" onClick={handleSaveChart}>
-                    Save Changes
-                  </button>
+                  {canAccess && (
+                    <button className="sr-btn" onClick={handleSaveChart}>
+                      Save Changes
+                    </button>
+                  )}
                 </div>
                 <div className="sr-btn-I">
                   <img src={S7} alt="logo" />
@@ -5094,30 +5744,33 @@ const Dashboard = ({
           </div>
           <div className="parent-container-CDB">{children}</div>
         </div>
-        <div className="content-CDB-I">
-          <div className="main-container-CDB-I">
-            <div
-              className={`CDB-I-i ${activeTab === "Grids" ? "active" : ""}`}
-              onClick={() => setActiveTab("Grids")}
-            >
-              Grids
-            </div>
-            <div
-              className={`CDB-I-i ${activeTab === "Components" ? "active" : ""
+        {canAccess && (
+          <div className="content-CDB-I">
+            <div className="main-container-CDB-I">
+              <div
+                className={`CDB-I-i ${activeTab === "Grids" ? "active" : ""}`}
+                onClick={() => setActiveTab("Grids")}
+              >
+                Grids
+              </div>
+              <div
+                className={`CDB-I-i ${
+                  activeTab === "Components" ? "active" : ""
                 }`}
-              onClick={() => setActiveTab("Components")}
-            >
-              Components
+                onClick={() => setActiveTab("Components")}
+              >
+                Components
+              </div>
+              <div
+                className={`CDB-I-i ${activeTab === "Editor" ? "active" : ""}`}
+                onClick={() => setActiveTab("Editor")}
+              >
+                Editor
+              </div>
             </div>
-            <div
-              className={`CDB-I-i ${activeTab === "Editor" ? "active" : ""}`}
-              onClick={() => setActiveTab("Editor")}
-            >
-              Editor
-            </div>
+            {canAccess && renderContent()}
           </div>
-          {renderContent()}
-        </div>
+        )}
         <div className="main-container-CDB-II">
           {/* Horizontal Slider */}
           <div>
@@ -5136,11 +5789,14 @@ const Dashboard = ({
 const mapStateToProps = (state) => ({
   datasets: state.dataset.datasets,
   dashboard: state.dashboard.current,
+  user: state.login.user,
 });
 export default connect(mapStateToProps, {
   getDatasets,
   updateDashboard,
   addDashboard,
   saveDashboardChanges,
-  getSpecificDashboard
+  getSpecificDashboard,
+  removeCurrentDashboard,
+  clearLogin,
 })(Dashboard);

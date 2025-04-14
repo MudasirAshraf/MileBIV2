@@ -40,6 +40,7 @@ export const getAuth = (user) => async (dispatch) => {
         type: SET_LOGIN,
         payload: response.data.data,
       });
+      localStorage.setItem("jwtToken", response.data.data.token);
       return response.data;
     }
   } catch (error) {
@@ -55,6 +56,7 @@ export const getAuth = (user) => async (dispatch) => {
     throw error;
   }
 };
+
 //forgotPassword
 export const forgotPassword = (email) => async (dispatch) => {
   axiosInstance.defaults.baseURL = urlswithoutgateway("admin");
@@ -121,6 +123,16 @@ export const postResetDetails = (user) => async (dispatch) => {
       });
     });
 };
+
+export const updateCurrentUser = (user) => async (dispatch) => {
+  try {
+    dispatch({
+      type: SET_LOGIN,
+      payload: user,
+    });
+  } catch (error) {}
+};
+
 //verifyCode
 export const verifyCode = (user) => async (dispatch) => {
   try {

@@ -15,6 +15,7 @@ import {
   GET_SINGLE_TABLE_DATA,
   RAW_JSON_DATA,
 } from "./types";
+
 import axiosInstance from "../components/axios";
 import { store } from "../store";
 import urlswithoutgateway from "./urlswithoutgateway";

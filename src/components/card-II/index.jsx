@@ -7,7 +7,7 @@ import Ring from "../../assets/svg/ring.svg";
 import Temp from "../../assets/png/template.png";
 import Draft from "../../assets/svg/draft.svg";
 
-const CardII = ({ title, title1, title2,dashboardId }) => {
+const CardII = ({ title, title1, title2,dashboardId,onDelete }) => {
   const [showDropdown, setShowDropdown] = useState(false);
 
   const handleSettingClick = () => {
@@ -39,7 +39,7 @@ const CardII = ({ title, title1, title2,dashboardId }) => {
             onClick={handleSettingClick}
           >
             <img src={Setting} alt="logo" />
-            {showDropdown && <DropdownMenu dashboardId={dashboardId} />}
+            {showDropdown && <DropdownMenu dashboardId={dashboardId} onDelete={onDelete}/>}
           </div>
         </div>
         <div>

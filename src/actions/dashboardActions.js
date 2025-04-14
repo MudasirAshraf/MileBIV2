@@ -114,6 +114,13 @@ export const saveDashboardChanges = (dashboard) => async (dispatch) => {
   });
 };
 
+export const removeCurrentDashboard = () => async (dispatch) => {
+  dispatch({
+    type: SET_CURRENT_DASHBOARD,
+    payload: null,
+  });
+};
+
 export const updateDashboard = (dashboard) => async (dispatch) => {
   console.log(dashboard, "dashboard");
   dispatch({
@@ -150,10 +157,11 @@ export const updateDashboard = (dashboard) => async (dispatch) => {
 
 export const getDashboards = () => async (dispatch) => {
   axiosInstance.defaults.baseURL = urlswithoutgateway("dashboard");
-  
+
   dispatch({
     type: DASHBOARD_LOADING,
   });
+
   axiosInstance
     .get("Dashboard", {
       headers: {
@@ -180,13 +188,50 @@ export const getDashboards = () => async (dispatch) => {
     });
 };
 
+export const getDashboardsByUserId =
+  (userId, roleId, organizationId) => async (dispatch) => {
+    axiosInstance.defaults.baseURL = urlswithoutgateway("dashboard");
+
+    dispatch({
+      type: DASHBOARD_LOADING,
+    });
+
+    axiosInstance
+      .get(
+        `Dashboard/getbyuserid/${userId}/role/${roleId}/organization/${organizationId}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      )
+      .then((response) => {
+        dispatch({
+          type: RESPONSE,
+          regresponse: response.data,
+        });
+        if (response.data.messageType !== 2) {
+          dispatch({
+            type: GET_ALL_DASHBOARDS,
+            payload: response.data.data,
+          });
+        }
+      })
+      .catch((error) => {
+        dispatch({
+          type: DASHBOARD_ERROR,
+          payload: error.response,
+        });
+      });
+  };
+
 export const deleteDashboard = (id) => async (dispatch) => {
   axiosInstance.defaults.baseURL = urlswithoutgateway("dashboard");
   dispatch({
     type: DASHBOARD_LOADING,
   });
   axiosInstance
-    .delete(`PaymentCredential/delete/${id}`, {
+    .delete(`Dashboard/${id}`, {
       headers: {
         "Content-Type": "application/json",
       },

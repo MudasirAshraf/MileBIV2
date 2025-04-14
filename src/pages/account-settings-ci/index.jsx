@@ -1,147 +1,204 @@
-import React, {useState} from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
 import "./account-settings-ci.scss";
 import DashboardWrapper from '../../components/dashboard-wrapper';
 import Check from "../../assets/svg/check.svg";
 import EArrow from "../../assets/svg/expandarrow.svg";
 import Message from "../../assets/svg/Message_light.svg";
 import Adress from "../../assets/svg/adress.svg";
-import Line from "../../assets/svg/line.svg"; 
+import Line from "../../assets/svg/line.svg";
+import { connect } from 'react-redux';
+import axiosInstance from '../../components/axios';
+import urlswithoutgateway from '../../actions/urlswithoutgateway';
+import { toast } from 'react-toastify';
 
-
-const AccountSettingsCI = () => {
-
+const AccountSettingsCI = ({ user }) => {
   const navigate = useNavigate();
+  const { id } = useParams();
+  const [initialValues, setInitialValues] = useState({
+    id: "",
+    name: "",
+    email: "",
+    country: "",
+    city: "",
+    address: ""
+  });
+  const [loading, setLoading] = useState(false);
 
-  const handleAccountSettings = ()=>{
+  useEffect(() => {
+    axiosInstance.defaults.baseURL = urlswithoutgateway("admin");
+    if (user) {
+      axiosInstance.get(`/organization/get/${user.organizationId}`)
+        .then(response => {
+          const data = response?.data?.data || {};
+          setInitialValues({
+            id: data.id || "",
+            name: data.name || "",
+            email: data.email || "",
+            country: data.country || "",
+            city: data.city || "",
+            address: data.address || ""
+          });
+        })
+        .catch(error => {
+          console.error("Error fetching company info", error);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
+  }, []);
+
+
+  const handleAccountSettings = () => {
     navigate("/account-settings");
   };
 
-  const [formData, setFormData] = useState({
-    companyName:"",
-    email:"",
-    country:"",
-    city:"",
-    address:"",
-  })
+  const validationSchema = Yup.object({
+    name: Yup.string().required("Required"),
+    email: Yup.string().email("Email is not valid").required("Required"),
+    country: Yup.string().required("Required"),
+    city: Yup.string().required("Required"),
+    address: Yup.string().required("Required")
+  });
 
-  let handleNameChange = (event) => {
-    let fieldValue=event.target.name;
-    let newValue = event.target.value;
-    setFormData((currData)=>{
-       return{...currData, [fieldValue] : newValue}
-    })
-  }
-
-  let handleSubmit = (event) => {
-    event.preventDefault();
-  //  Adding Email Updation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      alert("Email is not valid");
-      return;
+  const onSubmit = async (values, { setSubmitting }) => {
+    try {
+      const response = await axiosInstance.put("/organization/update", values);
+      if (response.data.messageType === 1) {
+        toast.success(response.data.message);
+        navigate("/account-settings");
+      } else {
+        toast.warning(response.data.message);
+      }
+    } catch (error) {
+      setLoading(false);
+      toast.error("Error updating company info. Please try again.");
+    } finally {
+      setSubmitting(false);
     }
-  // Alert Update Information
-    alert("your information has been updated")
-    console.log(formData);
-    navigate("/account-settings-security");
   };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className='main-container-account-settings-ci'>
       <div className='container-account-settings-ci'>
         <DashboardWrapper>
-        <div className='account-settings-ci'>
-            <img src={Check} alt="logo"/>
-            <p className='account-settings-ci-paragraph' onClick={handleAccountSettings}>Account Settings</p> 
-            <img src={EArrow} alt='logo'/>
+          <div className='account-settings-ci'>
+            <img src={Check} alt="logo" />
+            <p className='account-settings-ci-paragraph' onClick={handleAccountSettings}>Account Settings</p>
+            <img src={EArrow} alt='logo' />
             <p>Company Info</p>
-            </div>
-             {/* adding another header */}
-        <div  className='account-settings-ci-header'>
-                <p>Change Company Info</p>
-                <img src={Line} alt='line'/>
-            </div>
-            {/* Adding form */}
-            <div>
-              <form className='account-settings-ci-form-container' onSubmit={handleSubmit}>
-                {/* ist row */}
-                <div className='account-settings-ci-ist-row'>
-                <div className='input-group-sign-in-row-I-account-settings-pi'>  
-                <input className='input-details-sign-in-row-I-account-settings-pi'
-                 type="text"
-                  id="companyName" 
-                  placeholder='Company Name'
-                   name="companyName"  
-                   value={formData.companyName}
-                   onChange={handleNameChange}
-                   required />
-              </div>
-                <div className='input-group-sign-in-account-settings-ci'>
-                <img src={Message} alt="passlogo"/>
-                <input className="input-details-sign-in-account-settings-ci"
-                 type="email" 
-                 id="email"
-                  placeholder="Email Address" 
-                  name="email"
-                  value={formData.email}
-                  onChange={handleNameChange}
-                  required />
-                </div>
-               <div>
-               <select   className="styled-select"
-               id="country" 
-               name="country"  
-              value={formData.country}
-              onChange={handleNameChange}
-                required>
-        <option value="" disabled selected>Country</option>
-        <option value="usa">United States</option>
-        <option value="canada">Canada</option>
-        <option value="uk">United Kingdom</option>
-        <option value="australia">Australia</option>
-        <option value="india">India</option>
-    </select>
-               </div>
-                </div>
-                {/* second row */}
-                <div className='account-settings-ci-2nd-row'>
-                <div>
-               <select className="styled-select"
-                id="city"
-                 name="city" 
-                 value={formData.city}
-                 onChange={handleNameChange}
-                  required>
-        <option value="" disabled selected>City</option>
-        <option value="madinah">Madinah</option>
-        <option value="riyadh">Riyadh</option>
-        <option value="haram">Haram</option>
-        <option value="muntaha">Muntaha</option>
-    </select>
-               </div>
-                <div className='input-group-ci'>
-                <img src={Adress} alt="passlogo"/>
-                <input className='input-details-adress-ci'
-                 type="text" 
-                 id="address" 
-                 placeholder='Address'
-                  name="address" 
-                  value={formData.address}
-                  onChange={handleNameChange}
-                  required />
-                </div>
-                </div>
-                {/* third row */}
-                <div className='account-settings-ci-third-row'>
-                <button type='submit'>Update</button>
-                </div>
-              </form>
-            </div>
+          </div>
+          <div className='account-settings-ci-header'>
+            <p>{id ? "Edit Company Info" : "Change Company Info"}</p>
+            <img src={Line} alt='line' />
+          </div>
+          <div>
+            <Formik
+              enableReinitialize
+              initialValues={initialValues}
+              validationSchema={validationSchema}
+              onSubmit={onSubmit}
+            >
+              {({ isSubmitting }) => (
+                <Form className='account-settings-ci-form-container'>
+                  {/* First Row */}
+                  <div className='account-settings-ci-ist-row'>
+                    <div className='input-group-sign-in-row-I-account-settings-pi'>
+                      <Field
+                        className='input-details-sign-in-row-I-account-settings-pi'
+                        type="text"
+                        id="name"
+                        name="name"
+                        placeholder='Company Name'
+                      />
+                      <ErrorMessage name="name" component="div" className="error" />
+                    </div>
+                    <div className='input-group-sign-in-account-settings-ci'>
+                      <img src={Message} alt="passlogo" />
+                      <Field
+                        className="input-details-sign-in-account-settings-ci"
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="Email Address"
+                      />
+                      <ErrorMessage name="email" component="div" className="error" />
+                    </div>
+                    <div>
+                      <Field
+                        as="select"
+                        className="styled-select"
+                        id="country"
+                        name="country"
+                      >
+                        <option value="" disabled>
+                          Country
+                        </option>
+                        <option value="usa">United States</option>
+                        <option value="canada">Canada</option>
+                        <option value="uk">United Kingdom</option>
+                        <option value="australia">Australia</option>
+                        <option value="india">India</option>
+                      </Field>
+                      <ErrorMessage name="country" component="div" className="error" />
+                    </div>
+                  </div>
+
+                  {/* Second Row */}
+                  <div className='account-settings-ci-2nd-row'>
+                    <div>
+                      <Field
+                        as="select"
+                        className="styled-select"
+                        id="city"
+                        name="city"
+                      >
+                        <option value="" disabled>
+                          City
+                        </option>
+                        <option value="madinah">Madinah</option>
+                        <option value="riyadh">Riyadh</option>
+                        <option value="haram">Haram</option>
+                        <option value="muntaha">Muntaha</option>
+                      </Field>
+                      <ErrorMessage name="city" component="div" className="error" />
+                    </div>
+                    <div className='input-group-ci'>
+                      <img src={Adress} alt="passlogo" />
+                      <Field
+                        className='input-details-adress-ci'
+                        type="text"
+                        id="address"
+                        name="address"
+                        placeholder='Address'
+                      />
+                      <ErrorMessage name="address" component="div" className="error" />
+                    </div>
+                  </div>
+
+                  {/* Third Row */}
+                  <div className='account-settings-ci-third-row'>
+                    <button type='submit' disabled={isSubmitting}>Update</button>
+                  </div>
+                </Form>
+              )}
+            </Formik>
+          </div>
         </DashboardWrapper>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default AccountSettingsCI;
+const mapStateToProps = (state) => ({
+  user: state.login.user
+});
+export default connect(mapStateToProps)(AccountSettingsCI);
+

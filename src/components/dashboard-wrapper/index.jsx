@@ -1,7 +1,7 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
-import './dashboard-wrapper.scss';
+import React from "react";
+import { Link, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import "./dashboard-wrapper.scss";
 import Logo from "../../assets/svg/logo.svg";
 import Home from "../../assets/svg/Home.svg";
 import Published from "../../assets/svg/published.svg";
@@ -11,8 +11,17 @@ import Group from "../../assets/svg/Group.svg";
 import Dataset from "../../assets/svg/dataset.svg";
 import Square from "../../assets/svg/squarelight.svg";
 import Bell from "../../assets/svg/bell.svg";
+import { clearLogin } from "../../actions/loginActions";
+import { connect } from "react-redux";
 
-const DashboardWrapper = ({ children, publishedCount, draftsCount, workspacesCount }) => {
+const DashboardWrapper = ({
+  children,
+  publishedCount,
+  draftsCount,
+  workspacesCount,
+  clearLogin,
+  user,
+}) => {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -30,115 +39,156 @@ const DashboardWrapper = ({ children, publishedCount, draftsCount, workspacesCou
 
   const handleSelectChange = (event) => {
     const value = event.target.value;
-    if (value === 'settings') {
+    if (value === "settings") {
       handleSettings();
-    } else if (value === 'logout') {
-      handleCreateDash();
+    } else if (value === "logout") {
+      clearLogin();
     }
   };
 
   const handleSettings = () => {
-    navigate("/account-settings"); 
+    navigate("/account-settings");
   };
 
   const handleCreateDash = () => {
     navigate("/create-dashboard");
-  }
+  };
 
   return (
-    <div className='main-container-dashboard-wrapper'>
+    <div className="main-container-dashboard-wrapper">
       {/* Main Container */}
-      <div className='container-dashboard-wrapper'>
+      <div className="container-dashboard-wrapper">
         {/* Adding side-bar */}
-        <div className='container-side-bar'>
-          <div className='main-container-side-bar'>
-            <div className='side-bar-logo'>
-              <img src={Logo} alt='side-bar-logo' />
+        <div className="container-side-bar">
+          <div className="main-container-side-bar">
+            <div className="side-bar-logo">
+              <img src={Logo} alt="side-bar-logo" />
             </div>
-            <div className='container-list-items'>
-              <li className={`list-item-side-bar ${location.pathname === '/create-dashboard' ? 'active' : ''}`}>
-                <img src={Home} alt='' />
+            <div className="container-list-items">
+              <li
+                className={`list-item-side-bar ${
+                  location.pathname === "/create-dashboard" ? "active" : ""
+                }`}
+              >
+                <img src={Home} alt="" />
                 <Link to="/create-dashboard">Home</Link>
               </li>
-              <li className={`list-item-side-bar ${location.pathname === '/published' ? 'active' : ''}`}>
-                <img src={Published} alt='' />
+              <li
+                className={`list-item-side-bar ${
+                  location.pathname === "/published" ? "active" : ""
+                }`}
+              >
+                <img src={Published} alt="" />
                 <Link to="/published">Published</Link>
-                <div className='pcount'>{publishedCount}</div>
+                <div className="pcount">{publishedCount}</div>
               </li>
-              <li className={`list-item-side-bar ${location.pathname === '/drafts' ? 'active' : ''}`}>
-                <img src={Drafts} alt='' />
+              <li
+                className={`list-item-side-bar ${
+                  location.pathname === "/drafts" ? "active" : ""
+                }`}
+              >
+                <img src={Drafts} alt="" />
                 <Link to="/drafts">Drafts</Link>
-                <div className='pcount'>{draftsCount}</div>
+                <div className="pcount">{draftsCount}</div>
               </li>
-              <li className={`list-item-side-bar ${location.pathname === '/workspaces' ? 'active' : ''}`}>
-                <img src={Workspace} alt='' />
+              <li
+                className={`list-item-side-bar ${
+                  location.pathname === "/workspaces" ? "active" : ""
+                }`}
+              >
+                <img src={Workspace} alt="" />
                 <Link to="/workspaces">Workspaces</Link>
-                <div className='pcount'>{workspacesCount}</div>
+                <div className="pcount">{workspacesCount}</div>
+              </li>
+              <li
+                className={`list-item-side-bar ${
+                  location.pathname === "/list-user" ? "active" : ""
+                }`}
+              >
+                <img src={Workspace} alt="" />
+                <Link to="/list-user">Manage Users</Link>
+                {/* <div className='pcount'>{workspacesCount}</div> */}
               </li>
             </div>
           </div>
         </div>
-        <div className='dashboard-wrapper-header'>
+        <div className="dashboard-wrapper-header">
           {/* Adding main content header */}
-          <div className='main-container-header-dashboard-wrapper'>
+          <div className="main-container-header-dashboard-wrapper">
             {/* first div */}
-            <div className='first-div-header-dashboard-wrapper'>
-              <div className='first-div-header-dashboard-wrapper-image'>
+            <div className="first-div-header-dashboard-wrapper">
+              <div className="first-div-header-dashboard-wrapper-image">
                 <img src={Workspace} alt="" />
               </div>
-              <div className='first-div-first-row'>
-                <p className='first-div-first-row-text'>Selected Workspace</p>
-                <select className='first-div-first-row-select'>
+              <div className="first-div-first-row">
+                <p className="first-div-first-row-text">Selected Workspace</p>
+                <select className="first-div-first-row-select">
                   <option>DASO</option>
                   <option>SADO</option>
                 </select>
               </div>
             </div>
             {/* Second div */}
-            <div className='first-div-second-row'>
+            <div className="first-div-second-row">
               {/* 1st button */}
               <div>
-                <button className='first-div-second-row-btn-I' onClick={handleCreateGrids}>
+                <button
+                  className="first-div-second-row-btn-I"
+                  onClick={handleCreateGrids}
+                >
                   <img src={Group} alt="logo" />
                   <p>Dashboard Builder</p>
                 </button>
               </div>
               {/* 2nd button */}
               <div>
-                <button className='first-div-second-row-btn-II' onClick={handleCreateDataset}>
+                <button
+                  className="first-div-second-row-btn-II"
+                  onClick={handleCreateDataset}
+                >
                   <img src={Square} alt="logo" />
                   <p>Create a Dataset</p>
                 </button>
               </div>
               {/* 3rd button */}
               <div>
-                <button className='first-div-second-row-btn-III'  onClick={handleCreateDashboard}>
+                <button
+                  className="first-div-second-row-btn-III"
+                  onClick={handleCreateDashboard}
+                >
                   <img src={Square} alt="logo" />
                   <p>Create a Dashboard</p>
                 </button>
               </div>
               {/* 4th Select option */}
-              <div className='first-div-second-row-btn-IV'>
-                <img src={Dataset} alt="logo" />
-                <select className='first-div-second-row-btn-IV-select' onChange={handleSelectChange}>
+              <div className="first-div-second-row-btn-IV">
+                <img src={user?.profileImage} alt="logo" />
+                <select
+                  className="first-div-second-row-btn-IV-select"
+                  onChange={handleSelectChange}
+                >
                   <option value="">Select an option</option>
                   <option value="settings">Account Settings</option>
                   <option value="logout">Logout</option>
                 </select>
               </div>
               {/* 5th div */}
-              <div className='first-div-second-row-btn-V'>
+              <div className="first-div-second-row-btn-V">
                 <img src={Bell} alt="logo" />
               </div>
             </div>
           </div>
-          <div className='dashboard-wrapper-content'>
-            {children}
-          </div>
+          <div className="dashboard-wrapper-content">{children}</div>
         </div>
       </div>
     </div>
   );
-}
+};
 
-export default DashboardWrapper;
+const mapStateToProps = (state) => ({
+  user: state.login.user,
+});
+
+export default connect(mapStateToProps, {
+  clearLogin,
+})(DashboardWrapper);

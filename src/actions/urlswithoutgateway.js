@@ -1,6 +1,5 @@
-export default function urlswithoutgateway( key ) {
+export default function urlswithoutgateway(key) {
   let valx = "";
-  
   switch (key) {
     case "connector":
       valx = "https://localhost:44342/api/";
@@ -15,6 +14,6 @@ export default function urlswithoutgateway( key ) {
     default:
       break;
   }
-  
+
   return valx;
 }

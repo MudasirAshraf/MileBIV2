@@ -15,8 +15,9 @@ import { getAuth } from "../../actions/loginActions";
 
 // Import Bootstrap styles
 import "bootstrap/dist/css/bootstrap.min.css";
+import { registerUser } from "../../actions/userActions";
 
-const LoginPage = ({ response, getAuth }) => {
+const LoginPage = ({ response, getAuth, registerUser }) => {
   const navigate = useNavigate();
 
   const initialValues = {
@@ -197,12 +198,8 @@ const LoginPage = ({ response, getAuth }) => {
   );
 };
 
-LoginPage.propTypes = {
-  getAuth: PropTypes.func.isRequired,
-};
-
 const mapStateToProps = (state) => ({
   response: state.response.response,
 });
 
-export default connect(mapStateToProps, { getAuth })(LoginPage);
+export default connect(mapStateToProps, { registerUser, getAuth })(LoginPage);

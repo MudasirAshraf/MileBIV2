@@ -3,10 +3,21 @@ import { connect } from "react-redux";
 import { updateDashboard } from "../../actions/dashboardActions";
 import "./simple-table.scss";
 
-const SimpleTable = ({ option, gridHeight, overflow, index, dashboard, updateDashboard }) => {
-  const initialHeaders = option?.options?.data?.length > 0 ? Object.keys(option?.options?.data[0]) : [];
+const SimpleTable = ({
+  option,
+  gridHeight,
+  overflow,
+  index,
+  dashboard,
+  updateDashboard,
+}) => {
+  const initialHeaders =
+    option?.options?.data?.length > 0
+      ? Object.keys(option?.options?.data[0])
+      : [];
 
-  const existingHeaders = dashboard?.datasetsTree?.[index]?.headerMappings || {};
+  const existingHeaders =
+    dashboard?.datasetsTree?.[index]?.headerMappings || {};
   const savedHeaders = initialHeaders.reduce((acc, key) => {
     acc[key] = existingHeaders[key] ?? key;
     return acc;
@@ -37,12 +48,19 @@ const SimpleTable = ({ option, gridHeight, overflow, index, dashboard, updateDas
   };
 
   return (
-    <div className="simple-table-container" style={{ height: gridHeight + "px", overflowY: overflow }}>
+    <div
+      className="simple-table-container"
+      style={{ height: gridHeight + "px", overflowY: overflow }}
+    >
       <table className="simple-table">
         <thead>
           <tr>
             {initialHeaders.map((key, colIndex) => (
-              <th key={colIndex} className="table-header" onClick={() => setEditingHeader(key)}>
+              <th
+                key={colIndex}
+                className="table-header"
+                onClick={() => setEditingHeader(key)}
+              >
                 {editingHeader === key ? (
                   <input
                     type="text"

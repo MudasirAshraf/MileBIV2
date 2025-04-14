@@ -7,7 +7,21 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSave, faCog } from "@fortawesome/free-solid-svg-icons";
 import Card from "../../chart-components/card";
 import SimpleTable from "../../chart-components/table";
-import { Popover, OverlayTrigger, Button, Form } from "react-bootstrap";
+import Typography from "../../chart-components/typography";
+import { useDashboardAccess } from "../../hooks/useDashboardAccess";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  TextField,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Box,
+} from "@mui/material";
 
 const Grid = ({
   rows,
@@ -21,12 +35,14 @@ const Grid = ({
   onSelect,
   selectedIndex,
   updateDashboard,
+  user,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [datasetLabel, setDatasetLabel] = useState(dataset.datasetLabel || "");
   const [iconUrl, setIconUrl] = useState(dataset.iconUrl || "");
   const [gridHeight, setGridHeight] = useState(dataset.gridHeight || "400");
   const [overflow, setOverflow] = useState(dataset.overflow || "auto");
+  const canAccess = useDashboardAccess(user, dashboard);
 
   const handleSave = async () => {
     setIsEditing(false);
@@ -60,124 +76,172 @@ const Grid = ({
     }
   };
 
-  const popover = (
-    <Popover id={`popover-grid-settings-${index}`} style={{ maxWidth: "350px" }}>
-      <Popover.Header as="h3">Grid Settings</Popover.Header>
-      <Popover.Body>
-        <Form>
-          {/* Label Input */}
-          <Form.Group className="mb-2">
-            <Form.Label>Dataset Label</Form.Label>
-            <Form.Control
-              type="text"
+  return (
+    <>
+      <div
+        key={`grid-item-${index}`}
+        className={`grid-item p-0 ${
+          index === selectedIndex ? "selected-chart" : ""
+        }`}
+        style={{
+          flex: `0 0 calc(${colWidth} - 6px)`,
+          maxWidth: `calc(${colWidth} - 6px)`,
+          margin: "3px",
+        }}
+        onClick={() => onSelect(index)}
+      >
+        <div
+          className="grid-header d-flex align-items-center justify-content-between"
+          style={{
+            background: "#1c9ca7",
+            textAlign: "center",
+            fontSize: "20px",
+            padding: "5px",
+          }}
+        >
+          <div
+            className="grid-title"
+            style={{ cursor: "pointer", display: "flex", alignItems: "center" }}
+          >
+            {iconUrl && (
+              <img
+                src={iconUrl}
+                alt="icon"
+                style={{ width: "25px", height: "25px", marginRight: "5px" }}
+              />
+            )}
+            {datasetLabel || "Chart"}
+          </div>
+          {canAccess && (
+            <Button
+              variant="outlined"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsEditing(true);
+              }}
+            >
+              <FontAwesomeIcon icon={faCog} />
+            </Button>
+          )}
+        </div>
+        <div className="grid-body">
+          {chart ? (
+            <div className="uploaded-file-container">
+              {chart.chartType === "card" && chartOptions && (
+                <Card option={chartOptions} gridHeight={gridHeight} />
+              )}
+              {chart.chartType === "table" && chartOptions && (
+                <SimpleTable
+                  option={chartOptions}
+                  gridHeight={gridHeight}
+                  overflow={overflow}
+                  index={index}
+                />
+              )}
+              {chart.chartType !== "card" &&
+                chart.chartType !== "table" &&
+                chart.chartType !== "typography" &&
+                chartOptions && (
+                  <Chart
+                    option={chartOptions}
+                    gridHeight={gridHeight}
+                    overflow={overflow}
+                  />
+                )}
+              {chart.chartType === "typography" && chartOptions && (
+                <Typography
+                  data={chartOptions}
+                  gridHeight={gridHeight}
+                  overflow={overflow}
+                  index={index}
+                />
+              )}
+            </div>
+          ) : (
+            <div className="empty-grid d-flex justify-content-center align-items-center">
+              <span>No Chart Selected</span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* MUI Dialog for Grid Settings */}
+      <Dialog
+        open={isEditing}
+        onClose={() => setIsEditing(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>Grid Settings</DialogTitle>
+        <DialogContent>
+          <Box component="form" noValidate sx={{ mt: 1 }}>
+            <TextField
+              fullWidth
+              label="Dataset Label"
               value={datasetLabel}
               onChange={(e) => setDatasetLabel(e.target.value)}
+              margin="normal"
             />
-          </Form.Group>
-
-          {/* Icon Upload */}
-          <Form.Group className="mb-2">
-            <Form.Label>Upload Icon</Form.Label>
-            <Form.Control type="file" accept="image/*" onChange={handleIconUpload} />
+            <Button variant="contained" component="label" sx={{ mt: 2 }}>
+              Upload Icon
+              <input
+                type="file"
+                accept="image/*"
+                hidden
+                onChange={handleIconUpload}
+              />
+            </Button>
             {iconUrl && (
-              <div className="mt-2">
+              <Box sx={{ mt: 2 }}>
                 <img
                   src={iconUrl}
                   alt="icon preview"
                   style={{ width: "40px", height: "40px", borderRadius: "5px" }}
                 />
-              </div>
+              </Box>
             )}
-          </Form.Group>
-
-          {/* Grid Height */}
-          <Form.Group className="mb-2">
-            <Form.Label>Grid Height (px)</Form.Label>
-            <Form.Control
+            <TextField
+              fullWidth
               type="number"
+              label="Grid Height (px)"
               value={gridHeight}
               onChange={(e) => setGridHeight(e.target.value)}
+              margin="normal"
             />
-          </Form.Group>
-
-          {/* Overflow Settings */}
-          <Form.Group className="mb-2">
-            <Form.Label>Overflow</Form.Label>
-            <Form.Select value={overflow} onChange={(e) => setOverflow(e.target.value)}>
-              <option value="auto">Auto</option>
-              <option value="hidden">Hidden</option>
-              <option value="scroll">Scroll</option>
-              <option value="visible">Visible</option>
-            </Form.Select>
-          </Form.Group>
-
-          <Button variant="primary" onClick={handleSave} className="w-100">
-            <FontAwesomeIcon icon={faSave} /> Save
+            <FormControl fullWidth margin="normal">
+              <InputLabel id="overflow-label">Overflow</InputLabel>
+              <Select
+                labelId="overflow-label"
+                value={overflow}
+                label="Overflow"
+                onChange={(e) => setOverflow(e.target.value)}
+              >
+                <MenuItem value="auto">Auto</MenuItem>
+                <MenuItem value="hidden">Hidden</MenuItem>
+                <MenuItem value="scroll">Scroll</MenuItem>
+                <MenuItem value="visible">Visible</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setIsEditing(false)}>Cancel</Button>
+          <Button
+            onClick={handleSave}
+            variant="contained"
+            startIcon={<FontAwesomeIcon icon={faSave} />}
+          >
+            Save
           </Button>
-        </Form>
-      </Popover.Body>
-    </Popover>
-  );
-
-  return (
-    <div
-      key={`grid-item-${index}`}
-      className={`grid-item p-0 ${index === selectedIndex ? "selected-chart" : ""}`}
-      style={{
-        flex: `0 0 calc(${colWidth} - 6px)`,
-        maxWidth: `calc(${colWidth} - 6px)`,
-        margin: "3px",
-      }}
-      onClick={() => onSelect(index)}
-    >
-      <div
-        className="grid-header d-flex align-items-center justify-content-between"
-        style={{
-          background: "#1c9ca7",
-          textAlign: "center",
-          fontSize: "20px",
-          padding: "5px",
-        }}
-      >
-        <div className="grid-title" style={{ cursor: "pointer", display: "flex", alignItems: "center" }}>
-          {iconUrl && (
-            <img
-              src={iconUrl}
-              alt="icon"
-              style={{ width: "25px", height: "25px", marginRight: "5px" }}
-            />
-          )}
-          {datasetLabel || "Chart"}
-        </div>
-        <OverlayTrigger trigger="click" placement="bottom" overlay={popover} rootClose>
-          <Button variant="light" size="sm">
-            <FontAwesomeIcon icon={faCog} />
-          </Button>
-        </OverlayTrigger>
-      </div>
-      <div className="grid-body">
-        {chart ? (
-          <div className="uploaded-file-container">
-            {chart.chartType === "card" && chartOptions && (
-              <Card option={chartOptions} gridHeight={gridHeight} />
-            )}
-            {chart.chartType === "table" && chartOptions && (
-              <SimpleTable option={chartOptions} gridHeight={gridHeight} overflow={overflow} index={index} />
-            )}
-            {chart.chartType !== "card" &&
-              chart.chartType !== "table" &&
-              chartOptions && <Chart option={chartOptions} gridHeight={gridHeight} overflow={overflow} />}
-          </div>
-        ) : (
-          <div className="empty-grid d-flex justify-content-center align-items-center">
-            <span>No Chart Selected</span>
-          </div>
-        )}
-      </div>
-    </div>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 };
 
-const mapStateToProps = (state) => ({});
+const mapStateToProps = (state) => ({
+  user: state.login.user,
+  dashboard: state.dashboard.current,
+});
 
 export default connect(mapStateToProps, { updateDashboard })(Grid);

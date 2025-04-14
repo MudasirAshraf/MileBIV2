@@ -1,5 +1,5 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import "./forget-pass-III.scss";
@@ -21,6 +21,9 @@ import { useDispatch } from "react-redux";
 import { postResetDetails } from "../../actions/loginActions";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
+import urlswithoutgateway from "../../actions/urlswithoutgateway";
+import axiosInstance from "../../components/axios";
+import { toast } from "react-toastify";
 
 // Validation schema for SetNewPassword && ConfirmPassword
 const validationSchema = Yup.object({
@@ -39,24 +42,34 @@ const validationSchema = Yup.object({
 const ForgetPasswordIII = (props) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  const { email } = useParams();
+  const [loading, setLoading] = useState(false);
   const handleLoginPage = () => {
     navigate("/");
   };
 
   const handleSubmit = async (values, { resetForm }) => {
-    const { setNewPassword } = values;
     try {
-      const response = await dispatch(
-        postResetDetails({ Email: props.email, NewPassword: setNewPassword })
-      );
-      if (response && response.success) {
-        resetForm();
+      const { setNewPassword } = values;
+      setLoading(true);
+      axiosInstance.defaults.baseURL = urlswithoutgateway("admin");
+      const response = await axiosInstance
+        .post("User/resetdetail", { Email: email, NewPassword: setNewPassword }, {
+          headers: {
+            "Content-Type": "application/json",
+          }
+        })
+
+      setLoading(false);
+      if (response.data.messageType === 1) {
+        toast.success(response.data.message);
         navigate("/update-password");
+      } else {
+        toast.warning(response.data.message);
       }
     } catch (error) {
-      console.error("Verification Reset failed", error);
-      navigate("/error-page");
+      setLoading(false);
+      toast.error(response.data.message);
     }
   };
 

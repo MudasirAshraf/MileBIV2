@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./grids.scss";
-import Dashboard from "../../components/dashboard";
+import Dashboard from "../../pages/dashboard";
 import Grid from "../../components/grid-charts";
 import { updateDashboard } from "../../actions/dashboardActions";
 import { connect } from "react-redux";

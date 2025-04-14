@@ -7,7 +7,7 @@ import Arrow from "../../assets/svg/arrow.svg";
 import SmallArrow from "../../assets/svg/smallarrow.svg";
 import { useNavigate } from "react-router-dom";
 
-const DropdownMenu = ({ deleteDataset, datasetId, dashboardId }) => {
+const DropdownMenu = ({ onDelete, datasetId, dashboardId }) => {
   const [showSubmenu, setShowSubmenu] = useState(false);
   const navigate = useNavigate();
   const handleMoveToClick = (e) => {
@@ -20,7 +20,7 @@ const DropdownMenu = ({ deleteDataset, datasetId, dashboardId }) => {
   }
 
   const handleDelete = () => {
-    deleteDataset(datasetId);
+    onDelete(dashboardId);
   };
 
   return (

@@ -25,6 +25,7 @@ import {
 import axiosInstance from "../components/axios";
 import { store } from "../store";
 import urlswithoutgateway from "./urlswithoutgateway";
+import { toast } from "react-toastify";
 
 const config = ({ id }) => ({
   params: {
@@ -211,6 +212,7 @@ export const registerUser = (user) => async (dispatch) => {
         type: RESPONSE,
         regresponse: response.data,
       });
+
       if (response.data.messageType !== 2) {
         dispatch({
           type: REGSTEP,
@@ -221,13 +223,19 @@ export const registerUser = (user) => async (dispatch) => {
           type: SET_LOGIN,
           payload: response.data.data,
         });
-      }else{
+      } else {
         dispatch({
           type: SET_LOADING,
           payload: false,
         });
       }
 
+      if (response.data.messageType === 1) {
+        localStorage.removeItem("tempUser");
+      } else {
+        toast.warning(response.data.message);
+      }
+      
     })
     .catch((error) => {
       dispatch({
@@ -273,7 +281,7 @@ export const verifyUser = (user) => async (dispatch) => {
       }
     })
     .catch((error) => {
-      console.log("error",error)
+      console.log("error", error);
       dispatch({
         type: USERS_ERROR,
         payload: error.response,
@@ -324,7 +332,6 @@ export const deleteUser = (id) => async (dispatch) => {
         dispatch({
           type: DELETE_USER,
           payload: response.data,
-
         });
       }
     })

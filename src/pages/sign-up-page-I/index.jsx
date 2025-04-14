@@ -18,71 +18,56 @@ import Message from "../../assets/svg/Message_light.svg";
 import Phone from "../../assets/svg/Phone_light.svg";
 import LineI from "../../assets/svg/line1.svg";
 import Question from "../../assets/svg/Question_light.svg";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { registerUser } from '../../actions/userActions';
+import { connect } from 'react-redux';
+import { re } from 'mathjs';
 
-const SignpageI = () => {
+const SignpageI = ({ registerUser }) => {
   const navigate = useNavigate();
 
   const handleLoginPage = () => {
     navigate('/');
   };
 
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phoneNumber: "",
-    CreatePassword: "",
-    ConfirmPassword: "",
+  const validationSchema = Yup.object({
+    userName: Yup.string().required("Username is required"),
+    firstName: Yup.string().required("First name is required"),
+    lastName: Yup.string().required("Last name is required"),
+    email: Yup.string().email("Invalid email format").required("Email is required"),
+    phoneNumber: Yup.string()
+      .matches(/^[0-9]{7,13}$/, "Phone number must be between 7 and 13 digits")
+      .required("Phone number is required"),
+    Password: Yup.string()
+      .min(8, "Password must be at least 8 characters long")
+      .matches(/^(?=.*[a-zA-Z])(?=.*[^a-zA-Z]).{8,}$/, "Password must be a combination of letters and other characters")
+      .required("Password is required"),
+    ConfirmPassword: Yup.string()
+      .oneOf([Yup.ref("Password"), null], "Passwords must match")
+      .required("Confirm Password is required"),
   });
 
-  const handleChangeName = (event) => {
-    const fieldValue = event.target.name;
-    const newValue = event.target.value;
-    setFormData((currData) => ({
-      ...currData,
-      [fieldValue]: newValue
-    }));
-  };
-
-  const isEmailValid = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
-  const isPhoneNumberValid = (phoneNumber) => {
-    return phoneNumber.length >= 7 && phoneNumber.length <= 13;
-  };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    console.log(formData);
-    if (formData.CreatePassword !== formData.ConfirmPassword) {
-      alert("Passwords do not match!");
-      return;
-    }
-
-    if (!isEmailValid(formData.email)) {
-      alert("Email address is not valid!");
-      return;
-    }
-
-    if (!isPhoneNumberValid(formData.phoneNumber)) {
-      alert("Phone number must be between 7 and 13 digits!");
-      return;
-    }
-
-    if (formData.CreatePassword.length < 8 || formData.ConfirmPassword.length < 8) {
-      alert("Password must be at least 8 characters long.");
-      return;
-    }
-  
-    const passwordRegex = /^(?=.*[a-zA-Z])(?=.*[^a-zA-Z]).{8,}$/;
-    if (!passwordRegex.test(formData.CreatePassword) || !passwordRegex.test(formData.ConfirmPassword)) {
-      alert("Password must be a combination of letters and other characters.");
-      return;
-    }
+  // Define form submission function
+  const onSubmit = (values) => {
+    localStorage.setItem('tempUser', JSON.stringify(values));
     navigate('/sign-up-page-II');
   };
+
+  const formik = useFormik({
+    initialValues: {
+      userName: "",
+      firstName: "",
+      lastName: "",
+      email: "",
+      phoneNumber: "",
+      Password: "",
+      ConfirmPassword: "",
+    },
+    validationSchema,
+    onSubmit
+  });
+
 
   return (
     <div className='main-container-sign-in-page-I'>
@@ -150,9 +135,22 @@ const SignpageI = () => {
             </div>
           </div>
           <div>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={formik.handleSubmit}>
               <div className='form-column-details'></div>
               <div className='first-column-details'>
+                <div className="input-group-sign-in-row-I">
+                  <input
+                    className='input-details-sign-in-row-I'
+                    type="text"
+                    placeholder="Username"
+                    name="userName"
+                    id='userName'
+                    value={formik.values.userName}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                  />
+                  {formik.touched.userName && formik.errors.userName && <p>{formik.errors.userName}</p>}
+                </div>
                 <div className="input-group-sign-in-row-I">
                   <input
                     className='input-details-sign-in-row-I'
@@ -160,10 +158,11 @@ const SignpageI = () => {
                     placeholder="First Name"
                     name="firstName"
                     id='firstName'
-                    value={formData.firstName}
-                    onChange={handleChangeName}
-                    required
+                    value={formik.values.firstName}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
                   />
+                  {formik.touched.firstName && formik.errors.firstName && <p>{formik.errors.firstName}</p>}
                 </div>
                 <div className="input-group-sign-in-row-I">
                   <input
@@ -172,10 +171,11 @@ const SignpageI = () => {
                     placeholder="Last Name"
                     name="lastName"
                     id='lastName'
-                    value={formData.lastName}
-                    onChange={handleChangeName}
-                    required
+                    value={formik.values.lastName}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
                   />
+                  {formik.touched.lastName && formik.errors.firstName && <p>{formik.errors.lastName}</p>}
                 </div>
               </div>
               <div className='second-column-details'>
@@ -187,10 +187,11 @@ const SignpageI = () => {
                     placeholder="Email"
                     name="email"
                     id='email'
-                    value={formData.email}
-                    onChange={handleChangeName}
-                    required
+                    value={formik.values.email}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
                   />
+                  {formik.touched.email && formik.errors.email && <p>{formik.errors.email}</p>}
                 </div>
                 <div className="input-group-sign-in">
                   <img src={Phone} alt="passlogo" />
@@ -200,10 +201,11 @@ const SignpageI = () => {
                     placeholder="Phone Number"
                     name="phoneNumber"
                     id='phoneNumber'
-                    value={formData.phoneNumber}
-                    onChange={handleChangeName}
-                    required
+                    value={formik.values.phoneNumber}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
                   />
+                  {formik.touched.phoneNumber && formik.errors.phoneNumber && <p>{formik.errors.phoneNumber}</p>}
                 </div>
               </div>
               <div className='third-column-details'>
@@ -213,12 +215,13 @@ const SignpageI = () => {
                     className='input-details-sign-in'
                     type="password"
                     placeholder="Create a Password"
-                    name="CreatePassword"
-                    value={formData.CreatePassword}
-                    id='CreatePassword'
-                    onChange={handleChangeName}
-                    required
+                    name="Password"
+                    id='Password'
+                    value={formik.values.Password}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
                   />
+                  {formik.touched.Password && formik.errors.Password && <p>{formik.errors.Password}</p>}
                 </div>
                 <div className="input-group-sign-in">
                   <img src={Password} alt="passlogo" />
@@ -227,24 +230,29 @@ const SignpageI = () => {
                     type="password"
                     placeholder="Confirm Password"
                     name="ConfirmPassword"
-                    value={formData.ConfirmPassword}
                     id='ConfirmPassword'
-                    onChange={handleChangeName}
-                    required
+                    value={formik.values.ConfirmPassword}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
                   />
+                  {formik.touched.ConfirmPassword && formik.errors.ConfirmPassword && <p>{formik.errors.ConfirmPassword}</p>}
                 </div>
               </div>
               <div className='form-sign-in-page-button'>
-            <button type='submit'>Proceed</button>
-          </div>
+                <button type='submit'>Proceed</button>
+              </div>
             </form>
           </div>
           <div>
             <img src={LineI} alt='' />
           </div>
           <div className='form-sign-in-button-div'>
-            <div><a href="" className='form-sign-in-link-i'>Already have an account?</a></div>
-            <div><button className='button-1' onClick={handleLoginPage}>Sign In</button></div>
+            <div>
+              <a href="" className='form-sign-in-link-i'>Already have an account?</a>
+            </div>
+            <div>
+              <button className='button-1' onClick={handleLoginPage}>Sign In</button>
+            </div>
           </div>
         </div>
         <div className='login-help-div'>
@@ -258,4 +266,10 @@ const SignpageI = () => {
   );
 }
 
-export default SignpageI;
+const mapStateToProps = (state) => ({
+});
+
+export default connect(
+  mapStateToProps,
+  { registerUser }
+)(SignpageI);

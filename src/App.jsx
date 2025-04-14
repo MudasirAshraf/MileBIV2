@@ -1,5 +1,10 @@
 import "./App.scss";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Navigate,
+} from "react-router-dom";
 import { useState } from "react";
 import LoginPage from "./pages/login-page";
 import SignpageI from "./pages/sign-up-page-I";
@@ -43,6 +48,11 @@ import "react-toastify/dist/ReactToastify.css";
 import Loader from "./components/loader";
 import ShowJsonNodes from "./pages/show-json-nodes";
 import DatasetJoiner from "./components/dataset-joiner";
+import PrivateRoute from "./components/private-route";
+import ListUser from "./pages/user-list";
+import SaveUser from "./pages/user-save";
+import AccountSettingsPermission from "./pages/account-settings-permission";
+import SetUserPermissions from "./pages/set-user-permissions";
 function App() {
   const [data, setData] = useState();
   return (
@@ -56,101 +66,112 @@ function App() {
               <Route path="/" element={<LoginPage />} />
               {/* Sign-up-page-details */}
               <Route path="/sign-up-page-I" element={<SignpageI />} />
-              <Route path="/sign-up-page-II" element={<SignPageII />} />
-              <Route path="/sign-up-page-III" element={<SignPageIII />} />
+              <Route path="/sign-up-page-III" element={<SignPageII />} />
+              <Route path="/sign-up-page-II" element={<SignPageIII />} />
               {/* Forget-password-Details */}
               <Route path="/forget-password-I" element={<ForgetPasswordI />} />
               <Route
-                path="/forget-password-II"
+                path="/forget-password-II/:email"
                 element={<ForgetPasswordII />}
               />
               <Route
-                path="/forget-password-III"
+                path="/forget-password-III/:email"
                 element={<ForgetPasswordIII />}
               />
               <Route path="/update-password" element={<UpdatePassword />} />
               <Route path="/error-page" element={<ErrorPage />} />
-              {/* Account Settings */}
-              <Route path="/account-settings" element={<AccountSettings />} />
-              <Route
-                path="/account-settings-pi"
-                element={<AccountSettingsPI />}
-              />
-              <Route
-                path="/account-settings-security"
-                element={<AccoutSettingsSecurity />}
-              />
-              <Route
-                path="/account-settings-ci"
-                element={<AccountSettingsCI />}
-              />
-              {/* Create Dashboard */}
-              <Route path="/create-dashboard" element={<CreateDashboard />} />
-              <Route path="/published" element={<Published />} />
-              <Route path="/drafts" element={<Drafts />} />
-              <Route path="/workspaces" element={<WorkSpaces />} />
-              <Route
-                path="/workspace-dashboard"
-                element={<WorkspaceDashboard />}
-              />
-              <Route path="/dataset-view" element={<DatasetView />} />
-              {/* Dashboard Modals */}
-              <Route
-                path="/create-dashboard-modals"
-                element={<CreateDashboardModals />}
-              />
-              <Route
-                path="/create-dashboard-I"
-                element={<CreateDashboardModalI />}
-              />
-              <Route
-                path="/create-dashboard-II"
-                element={<CreateDashboardModalII />}
-              />
-              <Route
-                path="/create-dashboard-III"
-                element={<CreateDashboardModalIII />}
-              />
-              <Route
-                path="/create-dashboard-IV"
-                element={<CreateDashboardModalIV />}
-              />
-              <Route
-                path="/create-dashboard-V"
-                element={<CreateDashboardModalV />}
-              />
-              <Route
-                path="/dataset-joiner"
-                element={<DatasetJoiner datasets={[]} />}
-              />
-              {/* View Templates */}
-              <Route path="/template-I" element={<TemplateI />} />
-              <Route path="/template-II" element={<TemplateII />} />
-              <Route path="/template-III" element={<TemplateIII />} />
-              {/* Dataset Modals */}
-              <Route path="/create-dataset-I" element={<DatasetI />} />
-              <Route
-                path="/create-dataset-II"
-                element={<DatasetII setData={setData} />}
-              />
-              <Route
-                path="/create-dataset-III"
-                element={<DatasetIII data={data} setData={setData} />}
-              />
-              <Route
-                path="/show-json-nodes"
-                element={<ShowJsonNodes />}
-              />
-              <Route path="/create-dataset-IV" element={<DatasetIV />} />
-              {/* Show Transformation Steps */}
-              <Route
-                path="/transformation-steps"
-                element={<TransformationSteps />}
-              />
-              {/* Grid Wrapper */}
-              <Route path="/grids" element={<Grids />} />
-              {/* Grid Wrapper */}
-              <Route path="/grids/:id" element={<Grids />} />
+              <Route element={<PrivateRoute />}>
+                {/* Create Dashboard */}
+                <Route path="/create-dashboard" element={<CreateDashboard />} />
+                <Route path="/published" element={<Published />} />
+                <Route path="/drafts" element={<Drafts />} />
+                <Route path="/workspaces" element={<WorkSpaces />} />
+                <Route
+                  path="/workspace-dashboard"
+                  element={<WorkspaceDashboard />}
+                />
+                <Route path="/dataset-view" element={<DatasetView />} />
+                {/* Dashboard Modals */}
+                <Route
+                  path="/create-dashboard-modals"
+                  element={<CreateDashboardModals />}
+                />
+                <Route path="/list-user" element={<ListUser />} />
+                <Route path="/save-user" element={<SaveUser />} />
+                <Route path="/edit-user/:id" element={<SaveUser />} />
+                <Route
+                  path="/create-dashboard-I"
+                  element={<CreateDashboardModalI />}
+                />
+                <Route
+                  path="/create-dashboard-II"
+                  element={<CreateDashboardModalII />}
+                />
+                <Route
+                  path="/create-dashboard-III"
+                  element={<CreateDashboardModalIII />}
+                />
+                <Route
+                  path="/create-dashboard-IV"
+                  element={<CreateDashboardModalIV />}
+                />
+                <Route
+                  path="/create-dashboard-V"
+                  element={<CreateDashboardModalV />}
+                />
+                <Route
+                  path="/dataset-joiner"
+                  element={<DatasetJoiner datasets={[]} />}
+                />
+                {/* View Templates */}
+                <Route path="/template-I" element={<TemplateI />} />
+                <Route path="/template-II" element={<TemplateII />} />
+                <Route path="/template-III" element={<TemplateIII />} />
+                {/* Dataset Modals */}
+                <Route path="/create-dataset-I" element={<DatasetI />} />
+                <Route
+                  path="/create-dataset-II"
+                  element={<DatasetII setData={setData} />}
+                />
+                <Route
+                  path="/create-dataset-III"
+                  element={<DatasetIII data={data} setData={setData} />}
+                />
+                <Route path="/show-json-nodes" element={<ShowJsonNodes />} />
+                <Route path="/create-dataset-IV" element={<DatasetIV />} />
+                {/* Show Transformation Steps */}
+                <Route
+                  path="/transformation-steps"
+                  element={<TransformationSteps />}
+                />
+                {/* Grid Wrapper */}
+                <Route path="/grids" element={<Grids />} />
+                {/* Grid Wrapper */}
+                <Route path="/grids/:id" element={<Grids />} />
+                {/* Account Settings */}
+                <Route path="/account-settings" element={<AccountSettings />} />
+                <Route
+                  path="/account-settings-pi"
+                  element={<AccountSettingsPI />}
+                />
+                <Route
+                  path="/account-settings-security"
+                  element={<AccoutSettingsSecurity />}
+                />
+                <Route
+                  path="/account-settings-ci"
+                  element={<AccountSettingsCI />}
+                />
+                <Route
+                  path="/account-settings-permission"
+                  element={<AccountSettingsPermission />}
+                />
+                <Route
+                  path="/set-user-permissions/:dashboardId"
+                  element={<SetUserPermissions />}
+                />
+              </Route>
+              <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </Router>
           <ToastContainer />

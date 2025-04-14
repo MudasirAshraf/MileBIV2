@@ -954,7 +954,14 @@ const options = [
     chartType: "table",
     options: {
       data: [],
-      title:""
+      title: "",
+    },
+  },
+  {
+    chartType: "typography",
+    options: {
+      title: "",
+      data: "",
     },
   },
 ];

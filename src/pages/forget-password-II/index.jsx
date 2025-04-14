@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import "./forget-pass-II.scss";
 import Logo from "../../assets/svg/logo.svg";
 import Back from "../../assets/svg/Back.svg";
@@ -11,18 +11,21 @@ import EllipseI from "../../assets/svg/Ellipse 103.svg";
 import Polygon from "../../assets/svg/Polygon 3.svg";
 import Union from "../../assets/svg/Union.svg";
 import EllipseII from "../../assets/svg/Ellipse 104.svg";
+import SPIN from "../../assets/svg/spin.svg";
 import Line from "../../assets/svg/line.svg";
 import B2 from "../../assets/png/2.png";
 import LineI from "../../assets/svg/line1.svg";
 import Question from "../../assets/svg/Question_light.svg";
 import { verifyCode } from '../../actions/loginActions';
 import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import PropTypes from "prop-types";
 import { forgotPassword } from "../../actions/loginActions";
 import { connect } from "react-redux";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import axiosInstance from '../../components/axios';
+import urlswithoutgateway from '../../actions/urlswithoutgateway';
 
 
 const ForgetPasswordII = (props) => {
@@ -30,8 +33,8 @@ const ForgetPasswordII = (props) => {
   const inputRefs = useRef([]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  
-
+  const { email } = useParams();
+  const [loading, setLoading] = useState(false);
   const handleChange = (e, index) => {
     const { value } = e.target;
     if (/^[0-9]$/.test(value) || value === '') {
@@ -50,35 +53,66 @@ const ForgetPasswordII = (props) => {
       inputRefs.current[index - 1].focus();
     }
   };
+
   const handleProceed = async () => {
     try {
-      const codeString = code.join('');
-      const response = await dispatch(verifyCode({ email: props.email, ResetCode: codeString }));
-      if (response && response.success) { 
-        navigate('/forget-password-III'); 
-      } 
+      setLoading(true);
+      axiosInstance.defaults.baseURL = urlswithoutgateway("admin");
+      if (code.length < 4 || code.some((digit) => !digit)) {
+        setLoading(false);
+        toast.warning("Please enter a valid code");
+        return;
+      }
+      const joinedCode = code.join('');
+      const response = await axiosInstance
+        .post("User/resetcodevalidation", { email: email, resetCode: joinedCode }, {
+          headers: {
+            "Content-Type": "application/json",
+          }
+        })
+
+      setLoading(false);
+      if (response.data.messageType === 1) {
+        toast.success(response.data.message);
+        navigate('/forget-password-III/' + email);
+      } else {
+        toast.warning(response.data.message);
+      }
     } catch (error) {
-      toast.error("OTP is Invalid");
-      console.error("Verification failed", error);
+      setLoading(false);
+      toast.error(error?.response?.data?.message);
     }
   };
-  
+
   const handleResendCode = async () => {
     try {
-      await dispatch(forgotPassword(props.email));
-      toast.success("Code resent successfully");
+      setLoading(true);
+      axiosInstance.defaults.baseURL = urlswithoutgateway("admin");
+      const response = await axiosInstance
+        .post("User/forgetpassword/" + email, {}, {
+          headers: {
+            "Content-Type": "application/json",
+          }
+        })
+
+      setLoading(false);
+      if (response.data.messageType === 1) {
+        toast.success(response.data.message);
+      } else {
+        toast.warning(response.data.message);
+      }
     } catch (error) {
-      console.error("Verification failed", error);
-      toast.error("Failed to resend code");
+      setLoading(false);
+      toast.error(error.response.data.message);
     }
   };
-  
+
 
   return (
     <div className="main-container-forget-password-II">
       <div className='header-details-sign-in-page-I'>
         <div>
-          <img src={Back} alt="backlogo" className='image-sign-up'/>
+          <img src={Back} alt="backlogo" className='image-sign-up' />
         </div>
         {/* adding select option */}
         <div className='login-page-select-option'>
@@ -91,7 +125,7 @@ const ForgetPasswordII = (props) => {
       <div className='container-sign-in-page-II'>
         {/* adding Logo to the page */}
         <div>
-          <img src={Logo} alt='logo'/>
+          <img src={Logo} alt='logo' />
         </div>
         {/* adding form container */}
         <div className='form-container-sign-in-page-I'>
@@ -105,38 +139,38 @@ const ForgetPasswordII = (props) => {
               <div className='progress-bar-forget-password-II'>
                 {/* first */}
                 <div className='progress-sp-I'>
-                  <div className='progress-sp-I-image-I-fp-II'><img src={I} alt=""/></div>
-                  <div className='progress-sp-I-image-II'><img src={EllipseI} alt=""/></div>
-                  <div className='progress-sp-I-image-III-fp-II'><img src={Ring} alt=""/></div>
+                  <div className='progress-sp-I-image-I-fp-II'><img src={I} alt="" /></div>
+                  <div className='progress-sp-I-image-II'><img src={EllipseI} alt="" /></div>
+                  <div className='progress-sp-I-image-III-fp-II'><img src={Ring} alt="" /></div>
                 </div>
                 {/* Second */}
                 <div className='progress-sp-II'>
                   <div className='progress-sp-II-image-I-fp-II'>
-                    <img src={UnionII} alt=""/></div>
+                    <img src={UnionII} alt="" /></div>
                 </div>
                 {/* Third */}
                 <div className='progress-sp-III-fp-II'>
                   <div className='progress-sp-III-image-I-fp-II'>
-                    <img src={Two} alt=""/>
+                    <img src={Two} alt="" />
                   </div>
                   <div className='progress-sp-III-image-II'>
-                    <img src={EllipseI} alt=""/>
+                    <img src={EllipseI} alt="" />
                   </div>
                   <div className='progress-sp-III-image-III-fp-II'>
-                    <img src={Polygon} alt=""/>
+                    <img src={Polygon} alt="" />
                   </div>
                   {/* Fourth */}
                   <div className='progress-sp-IV'>
                     <div className='progress-sp-IV-image-I-fp-II'>
-                      <img src={Union} alt=""/></div>
+                      <img src={Union} alt="" /></div>
                   </div>
                   {/* Fifth */}
                   <div className='progress-sp-V-fp-II'>
                     <div className='progress-sp-V-image-I'>
-                      <img src={EllipseII} alt=""/>
+                      <img src={EllipseII} alt="" />
                     </div>
                     <div className='progress-sp-V-image-II-fp-II'>
-                      <img src={III} alt=""/>
+                      <img src={III} alt="" />
                     </div>
                   </div>
                 </div>
@@ -144,7 +178,7 @@ const ForgetPasswordII = (props) => {
             </div>
             {/* Adding side logo */}
             <div className='side-logo-sign-in-page'>
-              <img src={B2} alt="logo"/>
+              <img src={B2} alt="logo" />
             </div>
           </div>
           {/* adding text */}
@@ -153,7 +187,7 @@ const ForgetPasswordII = (props) => {
               <p>Verification</p>
             </div>
             <div>
-              <img src={Line} alt=""/>
+              <img src={Line} alt="" />
             </div>
           </div>
           {/* adding Paragraph */}
@@ -167,54 +201,45 @@ const ForgetPasswordII = (props) => {
             </div>
             {/* Code entry inputs */}
             <div className='code-div'>
-            <div className="code-entry">
-              {code.map((digit, index) => (
-                <input
-                  key={index}
-                  type="text"
-                  maxLength="1"
-                  value={digit}
-                  onChange={(e) => handleChange(e, index)}
-                  onKeyDown={(e) => handleKeyDown(e, index)}
-                  ref={(el) => (inputRefs.current[index] = el)}
-                />
-              ))}
-            </div>
-            <div>
-              <a onClick={handleResendCode} className='code-resend-sp-II'>Resend Code</a>
-            </div>
+              <div className="code-entry">
+                {code.map((digit, index) => (
+                  <input
+                    key={index}
+                    type="text"
+                    maxLength="1"
+                    value={digit}
+                    onChange={(e) => handleChange(e, index)}
+                    onKeyDown={(e) => handleKeyDown(e, index)}
+                    ref={(el) => (inputRefs.current[index] = el)}
+                  />
+                ))}
+              </div>
+              <div>
+                {/* {loading && <img src={SPIN} alt="" />} */}
+                <a onClick={handleResendCode} className='code-resend-sp-II'>Resend Code</a>
+              </div>
             </div>
           </div>
           <div className='proceed-button'>
-               <button onClick={handleProceed}>Proceed</button>
-            </div>
-               {/* adding center line */}
-               <div className='line-fp-I'>
-            <img src={LineI} alt=''/>
+            <button onClick={handleProceed}>{loading && <img src={SPIN} alt="" />}
+              Proceed</button>
+          </div>
+          {/* adding center line */}
+          <div className='line-fp-I'>
+            <img src={LineI} alt='' />
           </div>
           <div className='form-sign-in-fp-II'>
-         <div><button className='button-1'>Sign In</button></div>
-        </div>
+            <div><button className='button-1'>Sign In</button></div>
+          </div>
         </div>
         <div className='login-help-div'>
           <div className='login-hepl-image'>
-            <img src={Question} alt='logo'/>
+            <img src={Question} alt='logo' />
           </div>
           <div className='login-help-link'><a href=''>Need Help ?</a></div>
-          
-         </div>
+
+        </div>
       </div>
-         {/* Toast container */}
-         <ToastContainer 
-        autoClose={4000}        
-        hideProgressBar={false} 
-        newestOnTop={false}     
-        closeOnClick            
-        rtl={false}             
-        pauseOnFocusLoss       
-        draggable              
-        pauseOnHover            
-      />
     </div>
   )
 }
@@ -223,9 +248,9 @@ ForgetPasswordII.propTypes = {
   verifyCode: PropTypes.func.isRequired,
 };
 const mapStateToProps = (state) => {
-  console.log("Current Redux state:", state); 
+  console.log("Current Redux state:", state);
   return {
-    email: state.login.resetEmail, 
+    email: state.login.resetEmail,
     response: state.response.response,
   };
 };

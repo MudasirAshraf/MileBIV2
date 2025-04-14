@@ -12,19 +12,25 @@ import CardIII from "../../components/card-III";
 import CardIV from "../../components/card-IV";
 import { getDatasets } from "../../actions/datasetActions";
 import { Row, Col } from "react-bootstrap";
-import { getDashboards } from "../../actions/dashboardActions";
+import { deleteDashboard, getDashboards, getDashboardsByUserId } from "../../actions/dashboardActions";
 import moment from "moment/moment";
 import Pagination from "@mui/material/Pagination";
-
-import { GridPagination } from "@mui/x-data-grid";
-const CreateDashboard = ({ datasets, getDatasets, getDashboards, dashboards }) => {
+const CreateDashboard = ({
+  datasets,
+  getDatasets,
+  getDashboards,
+  dashboards,
+  getDashboardsByUserId,
+  user,
+  deleteDashboard
+}) => {
   const [activeTab, setActiveTab] = useState("create-dashboards");
   const [page, setPage] = useState(1);
   const itemsPerPage = activeTab === "datasets" ? 12 : 8;
 
   useEffect(() => {
     getDatasets();
-    getDashboards()
+    getDashboardsByUserId(user.id,user.role,user.organizationId);  
   }, []);
 
   const handleTabClick = (tab) => {
@@ -68,6 +74,10 @@ const CreateDashboard = ({ datasets, getDatasets, getDashboards, dashboards }) =
   const handlePageChange = (event, value) => {
     setPage(value);
   };
+
+  const deleteDataset = (id) => {
+    deleteDashboard(id);
+  }
 
   return (
     datasets && (
@@ -130,6 +140,7 @@ const CreateDashboard = ({ datasets, getDatasets, getDashboards, dashboards }) =
                   .slice((page - 1) * itemsPerPage, page * itemsPerPage)
                   .map((card, index) => (
                     <CardII
+                      onDelete={deleteDataset}
                       key={index}
                       title={card.dashboardTitle}
                       title1={moment(card.modifiedDate).format("DD-MM-YYYY")}
@@ -199,8 +210,9 @@ const mapStateToProps = (state) => ({
   response: state.response.response,
   datasets: state.dataset.datasets,
   dashboards: state.dashboard.dashboards,
+  user: state.login.user
 });
 export default connect(
   mapStateToProps,
-  { getDatasets, getDashboards }
+  { getDatasets, getDashboards, getDashboardsByUserId, deleteDashboard }
 )(CreateDashboard);
