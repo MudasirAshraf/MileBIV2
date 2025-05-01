@@ -189,7 +189,8 @@ export const getDashboards = () => async (dispatch) => {
 };
 
 export const getDashboardsByUserId =
-  (userId, roleId, organizationId) => async (dispatch) => {
+  (userId, roleId, organizationId, workSpaceId, published, draft) =>
+  async (dispatch) => {
     axiosInstance.defaults.baseURL = urlswithoutgateway("dashboard");
 
     dispatch({
@@ -198,10 +199,18 @@ export const getDashboardsByUserId =
 
     axiosInstance
       .get(
-        `Dashboard/getbyuserid/${userId}/role/${roleId}/organization/${organizationId}`,
+        `Dashboard/getbyuserid`,
         {
           headers: {
             "Content-Type": "application/json",
+          },
+          params: {
+            userId: userId,
+            roleId: roleId,
+            organizationId: organizationId,
+            workSpaceId: workSpaceId,
+            published: published,
+            draft: draft,
           },
         }
       )

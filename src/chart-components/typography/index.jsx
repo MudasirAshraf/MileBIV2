@@ -15,6 +15,7 @@ const Typography = ({
   gridHeight,
   overflow,
   index,
+  downloading,
 }) => {
   const quillRef = useRef(null);
   const [editorContent, setEditorContent] = useState("");
@@ -76,12 +77,14 @@ const Typography = ({
               style={{ height: 200, width: "100%" }}
             />
           </div>
-          <div style={{ textAlign: "right" }}>
-            <button onClick={saveContent} className="save-btn mt-5">
-              <FontAwesomeIcon icon={faSave} style={{ marginRight: 8 }} />
-              Save
-            </button>
-          </div>
+          {!downloading && (
+            <div style={{ textAlign: "right" }}>
+              <button onClick={saveContent} className="save-btn mt-5">
+                <FontAwesomeIcon icon={faSave} style={{ marginRight: 8 }} />
+                Save
+              </button>
+            </div>
+          )}
         </>
       ) : (
         <>
@@ -92,9 +95,11 @@ const Typography = ({
               marginBottom: "10px",
             }}
           >
-            <button onClick={toggleMode} className="edit-btn">
-              <FontAwesomeIcon icon={faEdit} style={{ marginRight: 6 }} />
-            </button>
+            {!downloading && (
+              <button onClick={toggleMode} className="edit-btn">
+                <FontAwesomeIcon icon={faEdit} style={{ marginRight: 6 }} />
+              </button>
+            )}
           </div>
           {savedContent ? (
             <div

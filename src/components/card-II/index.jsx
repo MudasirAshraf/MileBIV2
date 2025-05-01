@@ -7,7 +7,17 @@ import Ring from "../../assets/svg/ring.svg";
 import Temp from "../../assets/png/template.png";
 import Draft from "../../assets/svg/draft.svg";
 
-const CardII = ({ title, title1, title2,dashboardId,onDelete }) => {
+const CardII = ({
+  title,
+  title1,
+  title2,
+  workSpaceName,
+  dashboardId,
+  onDelete,
+  onWorkspaceUpdate,
+  onPublish,
+  isPublished
+}) => {
   const [showDropdown, setShowDropdown] = useState(false);
 
   const handleSettingClick = () => {
@@ -22,13 +32,13 @@ const CardII = ({ title, title1, title2,dashboardId,onDelete }) => {
           <img src={Temp} alt="image" />
         </div>
         <div className="card-ii-rows">
-          {status === "published" && (
+          {isPublished && (
             <div className="first-column-card-ii-row-i">
               <img src={Ring} alt="logo" />
               <p>Published</p>
             </div>
           )}
-          {status === "draft" && (
+          {!isPublished && (
             <div className="first-column-card-ii-row-i-part-i">
               <img src={Draft} alt="logo" />
               <p>Draft</p>
@@ -39,7 +49,14 @@ const CardII = ({ title, title1, title2,dashboardId,onDelete }) => {
             onClick={handleSettingClick}
           >
             <img src={Setting} alt="logo" />
-            {showDropdown && <DropdownMenu dashboardId={dashboardId} onDelete={onDelete}/>}
+            {showDropdown && (
+              <DropdownMenu
+                onWorkspaceUpdate={onWorkspaceUpdate}
+                dashboardId={dashboardId}
+                onDelete={onDelete}
+                onPublish = {onPublish}
+              />
+            )}
           </div>
         </div>
         <div>
@@ -55,6 +72,10 @@ const CardII = ({ title, title1, title2,dashboardId,onDelete }) => {
         <div className="second-column-card-ii-data-ii">
           <img src={Calendar} alt="logo" />
           <p>Last Updated: {title2}</p>
+        </div>
+        <div className="second-column-card-ii-data-ii">
+          <img src={Calendar} alt="logo" />
+          <p>Workspace: {workSpaceName}</p>
         </div>
       </div>
       {/* third column */}

@@ -16,8 +16,9 @@ import { getAuth } from "../../actions/loginActions";
 // Import Bootstrap styles
 import "bootstrap/dist/css/bootstrap.min.css";
 import { registerUser } from "../../actions/userActions";
+import { getWorkspaces } from "../../actions/workspaceAction";
 
-const LoginPage = ({ response, getAuth, registerUser }) => {
+const LoginPage = ({ response, getAuth, registerUser, getWorkspaces }) => {
   const navigate = useNavigate();
 
   const initialValues = {
@@ -37,6 +38,7 @@ const LoginPage = ({ response, getAuth, registerUser }) => {
       const res = await getAuth(values);
       if (res && res.success) {
         sessionStorage.setItem("token", res.data.token);
+        getWorkspaces(res.data.organizationId);
         navigate("/create-dashboard");
       } else {
         toast.error("Invalid Credentials");
@@ -202,4 +204,8 @@ const mapStateToProps = (state) => ({
   response: state.response.response,
 });
 
-export default connect(mapStateToProps, { registerUser, getAuth })(LoginPage);
+export default connect(mapStateToProps, {
+  registerUser,
+  getAuth,
+  getWorkspaces,
+})(LoginPage);

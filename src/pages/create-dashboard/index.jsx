@@ -12,9 +12,16 @@ import CardIII from "../../components/card-III";
 import CardIV from "../../components/card-IV";
 import { getDatasets } from "../../actions/datasetActions";
 import { Row, Col } from "react-bootstrap";
-import { deleteDashboard, getDashboards, getDashboardsByUserId } from "../../actions/dashboardActions";
+import {
+  deleteDashboard,
+  getDashboards,
+  getDashboardsByUserId,
+} from "../../actions/dashboardActions";
 import moment from "moment/moment";
 import Pagination from "@mui/material/Pagination";
+import axiosInstance from "../../components/axios";
+import { toast } from "react-toastify";
+import urlswithoutgateway from "../../actions/urlswithoutgateway";
 const CreateDashboard = ({
   datasets,
   getDatasets,
@@ -22,7 +29,7 @@ const CreateDashboard = ({
   dashboards,
   getDashboardsByUserId,
   user,
-  deleteDashboard
+  deleteDashboard,
 }) => {
   const [activeTab, setActiveTab] = useState("create-dashboards");
   const [page, setPage] = useState(1);
@@ -30,12 +37,33 @@ const CreateDashboard = ({
 
   useEffect(() => {
     getDatasets();
-    getDashboardsByUserId(user.id,user.role,user.organizationId);  
+    getDashboardsByUserId(user.id, user.role, user.organizationId);
   }, []);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
     setPage(1);
+  };
+
+  const updateWorkSpace = async (dashboardId, workspaceId, workSpaceName) => {
+    try {
+      axiosInstance.defaults.baseURL = urlswithoutgateway("dashboard");
+
+      const response = await axiosInstance.put(
+        `/Dashboard/updateworkspace/${dashboardId}/${workspaceId}/${workSpaceName}`
+      );
+
+      if (response.data.messageType === 1) {
+        toast.success(response.data.message);
+        getDashboardsByUserId(user.id, user.role, user.organizationId);
+      } else {
+        toast.warn(response.data.message);
+      }
+    } catch (error) {
+      console.error("Error fetching workspaces:", error);
+    } finally {
+      // setLoading(false);
+    }
   };
 
   const cardsData = [
@@ -61,10 +89,12 @@ const CreateDashboard = ({
 
   const totalPages =
     activeTab === "create-dashboards"
-      ? dashboards ? Math.ceil(dashboards.length / itemsPerPage) : 0
+      ? dashboards
+        ? Math.ceil(dashboards.length / itemsPerPage)
+        : 0
       : activeTab === "available-templates"
-        ? Math.ceil(cardsDataI.length / itemsPerPage)
-        : Math.ceil(datasets && datasets.length / itemsPerPage);
+      ? Math.ceil(cardsDataI.length / itemsPerPage)
+      : Math.ceil(datasets && datasets.length / itemsPerPage);
 
   const visiblePages = Array.from(
     { length: totalPages },
@@ -77,7 +107,24 @@ const CreateDashboard = ({
 
   const deleteDataset = (id) => {
     deleteDashboard(id);
-  }
+  };
+
+  const publishDashboard = (id) => {
+    axiosInstance.defaults.baseURL = urlswithoutgateway("dashboard");
+    axiosInstance
+      .put(`/Dashboard/publish/${id}`)
+      .then((response) => {
+        if (response.data.messageType === 1) {
+          toast.success(response.data.message);
+          getDashboardsByUserId(user.id, user.role, user.organizationId);
+        } else {
+          toast.warn(response.data.message);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching workspaces:", error);
+      });
+  };
 
   return (
     datasets && (
@@ -87,8 +134,9 @@ const CreateDashboard = ({
             {/* Adding header */}
             <div className="header-create-dasdhboard">
               <div
-                className={`header-I-create-dashboard ${activeTab === "create-dashboards" ? "active" : ""
-                  }`}
+                className={`header-I-create-dashboard ${
+                  activeTab === "create-dashboards" ? "active" : ""
+                }`}
               >
                 <a
                   href="#"
@@ -98,12 +146,13 @@ const CreateDashboard = ({
                   Dashboards
                 </a>
                 <div className="create-dashboard-circle">
-                  {cardsData.length}
+                  {dashboards?.length}
                 </div>
               </div>
               <div
-                className={`header-II-create-dashboard ${activeTab === "available-templates" ? "active" : ""
-                  }`}
+                className={`header-II-create-dashboard ${
+                  activeTab === "available-templates" ? "active" : ""
+                }`}
               >
                 <a
                   href="#"
@@ -117,8 +166,9 @@ const CreateDashboard = ({
                 </div>
               </div>
               <div
-                className={`header-III-create-dashboard ${activeTab === "datasets" ? "active" : ""
-                  }`}
+                className={`header-III-create-dashboard ${
+                  activeTab === "datasets" ? "active" : ""
+                }`}
               >
                 <a
                   href="#"
@@ -136,19 +186,24 @@ const CreateDashboard = ({
             {/* Create Dashboard */}
             {activeTab === "create-dashboards" && (
               <div className="main-container-create-dashboard-card-component">
-                {dashboards && dashboards
-                  .slice((page - 1) * itemsPerPage, page * itemsPerPage)
-                  .map((card, index) => (
-                    <CardII
-                      onDelete={deleteDataset}
-                      key={index}
-                      title={card.dashboardTitle}
-                      title1={moment(card.modifiedDate).format("DD-MM-YYYY")}
-                      title2={moment(card.modifiedDate).format("DD-MM-YYYY")}
-                      dashboardId={card.dashboardId}
-                    // status={card.statusUpdate}
-                    />
-                  ))}
+                {dashboards &&
+                  dashboards
+                    .slice((page - 1) * itemsPerPage, page * itemsPerPage)
+                    .map((card, index) => (
+                      <CardII
+                        onWorkspaceUpdate={updateWorkSpace}
+                        onDelete={deleteDataset}
+                        onPublish={publishDashboard}
+                        key={index}
+                        title={card.dashboardTitle}
+                        title1={moment(card.modifiedDate).format("DD-MM-YYYY")}
+                        title2={moment(card.modifiedDate).format("DD-MM-YYYY")}
+                        isPublished={card.isPublished}
+                        workSpaceName={card.workSpaceName}
+                        dashboardId={card.dashboardId}
+                        // status={card.statusUpdate}
+                      />
+                    ))}
               </div>
             )}
             {/* Available Templates */}
@@ -210,9 +265,11 @@ const mapStateToProps = (state) => ({
   response: state.response.response,
   datasets: state.dataset.datasets,
   dashboards: state.dashboard.dashboards,
-  user: state.login.user
+  user: state.login.user,
 });
-export default connect(
-  mapStateToProps,
-  { getDatasets, getDashboards, getDashboardsByUserId, deleteDashboard }
-)(CreateDashboard);
+export default connect(mapStateToProps, {
+  getDatasets,
+  getDashboards,
+  getDashboardsByUserId,
+  deleteDashboard,
+})(CreateDashboard);

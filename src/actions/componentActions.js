@@ -23,13 +23,12 @@ const config = ({ id }) => ({
 
 export const setRole = (value) => async (dispatch) => {
   dispatch({
-    type: 'SET_ROLE',
-     payload :value
+    type: "SET_ROLE",
+    payload: value,
   });
-
-}
+};
 export const addComponent = (component) => async (dispatch) => {
-  axiosInstance.defaults.baseURL= urlswithoutgateway("dashboard");
+  axiosInstance.defaults.baseURL = urlswithoutgateway("dashboard");
   dispatch({
     type: COMPONENT_LOADING,
   });
@@ -65,10 +64,11 @@ export const addComponent = (component) => async (dispatch) => {
       });
     });
 };
+
 export const getComponents = (id) => async (dispatch) => {
-  axiosInstance.defaults.baseURL= urlswithoutgateway("dashboard");
+  axiosInstance.defaults.baseURL = urlswithoutgateway("dashboard");
   axiosInstance
-  .get(`Component/${id}`, {
+    .get(`Component/${id}`, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -93,7 +93,7 @@ export const getComponents = (id) => async (dispatch) => {
     });
 };
 export const updateComponent = () => async (dispatch) => {
-  axiosInstance.defaults.baseURL= urlswithoutgateway("dashboard");
+  axiosInstance.defaults.baseURL = urlswithoutgateway("dashboard");
   const component = store.getState().component.current;
   axiosInstance
     .put("Component", JSON.stringify(component), {
@@ -106,7 +106,7 @@ export const updateComponent = () => async (dispatch) => {
         type: RESPONSE,
         regresponse: response.data,
       });
-  
+
       if (response.data.messageType !== 2) {
         dispatch({
           type: UPDATE_COMPONENT,
@@ -121,8 +121,9 @@ export const updateComponent = () => async (dispatch) => {
       });
     });
 };
+
 export const deleteComponent = (id) => async (dispatch) => {
-  axiosInstance.defaults.baseURL= urlswithoutgateway("dashboard");
+  axiosInstance.defaults.baseURL = urlswithoutgateway("dashboard");
   axiosInstance
     .delete(`PaymentCredential/delete/${id}`, {
       headers: {
@@ -157,10 +158,10 @@ export const setLoading = () => {
 };
 
 export const setFreesize = (payload) => {
-  console.log(payload,'payloadpayload')
+  console.log(payload, "payloadpayload");
   return {
-    type: 'SET_FREE_SIZE',
-    payload: payload
+    type: "SET_FREE_SIZE",
+    payload: payload,
   };
 };
 //set Current Component

@@ -10,6 +10,7 @@ import { datasetReducer } from "./datasetReducer";
 import { dashboardReducer } from "./dashboardReducer";
 import { componentReducer } from "./componentReducer";
 import { dataSourceReducer } from "./dataSourceReducer";
+import { workspaceReducer } from "./workspaceReducer";
 
 
 export default combineReducers({
@@ -23,5 +24,7 @@ export default combineReducers({
   dataset:datasetReducer,
   dashboard:dashboardReducer,
   component:componentReducer,
-  dataSource:dataSourceReducer
+  dataSource:dataSourceReducer,
+  workspace:workspaceReducer,
+
 });

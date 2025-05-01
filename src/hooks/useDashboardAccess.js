@@ -3,7 +3,7 @@ import { useMemo } from "react";
 
 export const useDashboardAccess = (user, dashboard) => {
   return useMemo(() => {
-    if (!user || !dashboard) return false;
+    if (!user || !dashboard) return true;
     if (dashboard.userId === user.id) return true;
 
     return (

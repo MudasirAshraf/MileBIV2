@@ -1,50 +1,67 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from "react";
 import "./workspaces.scss";
-import DashboardWrapper from '../../components/dashboard-wrapper';
+import DashboardWrapper from "../../components/dashboard-wrapper";
 import Book from "../../assets/svg/book.svg";
-import CardV from '../../components/card-V';
+import CardV from "../../components/card-V";
+import { useNavigate } from "react-router-dom";
+import urlswithoutgateway from "../../actions/urlswithoutgateway";
+import axiosInstance from "../../components/axios";
+import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 const WorkSpaces = () => {
-  const [cardsData, setCardsData] = useState([
-    { id: 1, date: "23 Mar 2024", dashboard: "Dashboard", datasets: 'Datasets', title: "DASO" },
-    { id: 2, date: "23 Apr 2022", dashboard: "Dashboard", datasets: 'Datasets', title: "ARROW DT" },
-    { id: 3, date: "13 Mar 2021", dashboard: "Dashboard", datasets: 'Datasets', title: "DASO" },
-    { id: 4, date: "29 Dec 2023", dashboard: "Dashboard", datasets: "Datasets", title: "ARROW DT" },
-  ]);
+  const navigate = useNavigate();
+  const [workspaces, setWorkspaces] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const user = useSelector((state) => state.login.user);
+  const pageSize = 5;
+  
+  useEffect(() => {
+    const fetchWorkspaces = async () => {
+      try {
+        axiosInstance.defaults.baseURL = urlswithoutgateway("admin");
+        const response = await axiosInstance.get(
+          `/workspace/getactiveworkspaces/${user.organizationId}`
+        );
+        setWorkspaces(response?.data?.data || []);
+      } catch (error) {
+        console.error("Error fetching workspaces:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchWorkspaces();
+  }, [user.organizationId]);
 
-  const handleDelete = (id) => {
-    const updatedCards = cardsData.filter(card => card.id !== id);
-    setCardsData(updatedCards);
-  };
 
   return (
-    <div className='main-container-workspaces'>
-      <div className='container-workspaces'>
-        <DashboardWrapper workspacesCount={cardsData.length}>
-          <div className='published-header'>
+    <div className="main-container-workspaces">
+      <div className="container-workspaces">
+        <DashboardWrapper workspacesCount={workspaces?.length}>
+          <div className="published-header text-end">
             <img src={Book} alt="" />
             <p>WorkSpaces</p>
-            <div className='published-circle-div'>
-              {cardsData.length}
-            </div>
+            <div className="published-circle-div">{workspaces?.length}</div>
           </div>
-          <div className='main-container-workspaces-cards'>
-            {cardsData.map(card => (
-              <CardV
-                key={card.id}
-                id={card.id}
-                title={card.title}
-                date={card.date}
-                dashboard={card.dashboard}
-                datasets={card.datasets}
-                onDelete={handleDelete} 
-              />
-            ))}
+          <div className="main-container-workspaces-cards">
+            {workspaces &&
+              workspaces.map((card) => (
+                <CardV
+                  key={card.id}
+                  id={card.id}
+                  title={card.workSpaceName}
+                  date={card.date}
+                  dashboard={card.workspaceId}
+                  datasets={card.datasets}
+                  createdDate={card.createdDate}
+                  // onDelete={deleteWorkspace}
+                />
+              ))}
           </div>
         </DashboardWrapper>
       </div>
     </div>
   );
-}
+};
 
 export default WorkSpaces;

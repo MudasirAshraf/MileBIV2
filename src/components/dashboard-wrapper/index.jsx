@@ -80,7 +80,7 @@ const DashboardWrapper = ({
               >
                 <img src={Published} alt="" />
                 <Link to="/published">Published</Link>
-                <div className="pcount">{publishedCount}</div>
+                {/* <div className="pcount">{publishedCount}</div> */}
               </li>
               <li
                 className={`list-item-side-bar ${
@@ -89,7 +89,7 @@ const DashboardWrapper = ({
               >
                 <img src={Drafts} alt="" />
                 <Link to="/drafts">Drafts</Link>
-                <div className="pcount">{draftsCount}</div>
+                {/* <div className="pcount">{draftsCount}</div> */}
               </li>
               <li
                 className={`list-item-side-bar ${
@@ -98,7 +98,7 @@ const DashboardWrapper = ({
               >
                 <img src={Workspace} alt="" />
                 <Link to="/workspaces">Workspaces</Link>
-                <div className="pcount">{workspacesCount}</div>
+                {/* <div className="pcount">{workspacesCount}</div> */}
               </li>
               <li
                 className={`list-item-side-bar ${
@@ -154,10 +154,10 @@ const DashboardWrapper = ({
               <div>
                 <button
                   className="first-div-second-row-btn-III"
-                  onClick={handleCreateDashboard}
+                  onClick={()=>navigate("/list-workspaces")}
                 >
-                  <img src={Square} alt="logo" />
-                  <p>Create a Dashboard</p>
+                  <img src={Group} alt="logo" />
+                  <p>Manage Workspaces</p>
                 </button>
               </div>
               {/* 4th Select option */}

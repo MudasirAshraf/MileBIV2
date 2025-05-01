@@ -2,6 +2,7 @@ import axios from "axios";
 import { store } from "../store";
 
 const axiosInstance = axios.create({
+  // baseURL:"http://143.110.181.105/mile_bi_adminstration/api/",
   baseURL: "https://localhost:44381/api/",
   withCredentials: true,
   headers: {

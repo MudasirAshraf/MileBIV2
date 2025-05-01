@@ -53,6 +53,8 @@ import ListUser from "./pages/user-list";
 import SaveUser from "./pages/user-save";
 import AccountSettingsPermission from "./pages/account-settings-permission";
 import SetUserPermissions from "./pages/set-user-permissions";
+import ListWorkspace from "./pages/workspace-list";
+import SaveWorkspace from "./pages/workspace-save";
 function App() {
   const [data, setData] = useState();
   return (
@@ -87,7 +89,7 @@ function App() {
                 <Route path="/drafts" element={<Drafts />} />
                 <Route path="/workspaces" element={<WorkSpaces />} />
                 <Route
-                  path="/workspace-dashboard"
+                  path="/workspace-dashboard/:id"
                   element={<WorkspaceDashboard />}
                 />
                 <Route path="/dataset-view" element={<DatasetView />} />
@@ -169,6 +171,18 @@ function App() {
                 <Route
                   path="/set-user-permissions/:dashboardId"
                   element={<SetUserPermissions />}
+                />
+                <Route
+                  path="/list-workspaces"
+                  element={<ListWorkspace />}
+                />
+                <Route
+                  path="/save-workspaces"
+                  element={<SaveWorkspace />}
+                />
+                <Route
+                  path="/save-workspaces/:id"
+                  element={<SaveWorkspace />}
                 />
               </Route>
               <Route path="*" element={<Navigate to="/" replace />} />

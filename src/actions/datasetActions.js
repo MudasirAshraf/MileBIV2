@@ -14,6 +14,7 @@ import {
   SET_REQUEST_PAYLOAD,
   GET_SINGLE_TABLE_DATA,
   RAW_JSON_DATA,
+  DASHBOARD_LOADING,
 } from "./types";
 
 import axiosInstance from "../components/axios";
@@ -376,6 +377,49 @@ export const getDatasets = () => async (dispatch) => {
       });
     });
 };
+
+export const getDatasetsByUserId =
+  (userId, roleId, organizationId, workSpaceId, published, draft) =>
+  async (dispatch) => {
+    axiosInstance.defaults.baseURL = urlswithoutgateway("dashboard");
+
+    dispatch({
+      type: DASHBOARD_LOADING,
+    });
+
+    axiosInstance
+      .get(`Dataset/getbyuserid`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        params: {
+          userId: userId,
+          roleId: roleId,
+          organizationId: organizationId,
+          workSpaceId: workSpaceId,
+          published: published,
+          draft: draft,
+        },
+      })
+      .then((response) => {
+        dispatch({
+          type: RESPONSE,
+          regresponse: response.data,
+        });
+        if (response.data.messageType !== 2) {
+          dispatch({
+            type: GET_ALL_DATASETS,
+            payload: response.data.data,
+          });
+        }
+      })
+      .catch((error) => {
+        dispatch({
+          type: DATASET_ERROR,
+          payload: error.response,
+        });
+      });
+  };
 
 export const getSpecificDataset = (id) => async (dispatch) => {
   try {

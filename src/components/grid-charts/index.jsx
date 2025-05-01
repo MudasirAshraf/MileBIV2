@@ -36,6 +36,7 @@ const Grid = ({
   selectedIndex,
   updateDashboard,
   user,
+  downloading
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [datasetLabel, setDatasetLabel] = useState(dataset.datasetLabel || "");
@@ -81,7 +82,7 @@ const Grid = ({
       <div
         key={`grid-item-${index}`}
         className={`grid-item p-0 ${
-          index === selectedIndex ? "selected-chart" : ""
+          index === selectedIndex || downloading ? "selected-chart" : ""
         }`}
         style={{
           flex: `0 0 calc(${colWidth} - 6px)`,
@@ -154,6 +155,7 @@ const Grid = ({
                   gridHeight={gridHeight}
                   overflow={overflow}
                   index={index}
+                  downloading= {downloading}
                 />
               )}
             </div>

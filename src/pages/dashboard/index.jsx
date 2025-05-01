@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Select from "react-select";
 import { TextField, MenuItem, Box, Chip } from "@mui/material";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faAdd,
@@ -80,6 +82,8 @@ import TableRelations from "../../components/table-relations";
 import LimitSortField from "../../components/limit-sort-field";
 import { useDashboardAccess } from "../../hooks/useDashboardAccess";
 import { clearLogin } from "../../actions/loginActions";
+import urlswithoutgateway from "../../actions/urlswithoutgateway";
+import axiosInstance from "../../components/axios";
 
 const Dashboard = ({
   children,
@@ -102,36 +106,105 @@ const Dashboard = ({
   user,
   removeCurrentDashboard,
   clearLogin,
+  selectedIndex,
+  handleDownloadingStatus,
 }) => {
   const [activeTab, setActiveTab] = useState("Grids");
   const [selectedComponent, setSelectedComponent] = useState(null);
   const [showChartList, setShowChartList] = useState(false);
   const [columns, setColumns] = useState([]);
+  const [workspaces, setWorkspaces] = useState([]);
+  const [downloading, setDownloading] = useState(false);
   const navigate = useNavigate();
   const [dashboardName, setDashboardName] = useState(
     dashboard ? dashboard.dashboardTitle : ""
   );
+  const [copy, setCopy] = useState(false);
+  const [cut, setCut] = useState(false);
+  const [cutIndex, setCutIndex] = useState(0);
+
+  const copyGrid = () => {
+    if (selectedIndex < 0) {
+      toast.error("Please select a grid to copy.");
+      return;
+    }
+
+    setCutIndex(selectedIndex);
+    const copiedItem = dashboard.datasetsTree[selectedIndex];
+    const jsonString = JSON.stringify(copiedItem, null, 2);
+    navigator.clipboard
+      .writeText(jsonString)
+      .then(() => toast.success("Copied to clipboard!"))
+      .catch((err) => console.error("Copy failed:", err));
+  };
+
+  const pasteGrid = async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      const parsed = JSON.parse(text);
+
+      if (
+        dashboard &&
+        Array.isArray(dashboard.datasetsTree) &&
+        selectedIndex >= 0
+      ) {
+        if (cut) {
+          const newDatasetsTree = [...dashboard.datasetsTree];
+          newDatasetsTree[selectedIndex] = parsed;
+          newDatasetsTree[cutIndex] = {};
+          const updatedDashboard = {
+            ...dashboard,
+            datasetsTree: newDatasetsTree,
+          };
+
+          setCut(false);
+          setCutIndex(0);
+          updateDashboard(updatedDashboard);
+        }
+
+        if (copy) {
+          const newDatasetsTree = [...dashboard.datasetsTree];
+          newDatasetsTree[selectedIndex] = parsed;
+
+          const updatedDashboard = {
+            ...dashboard,
+            datasetsTree: newDatasetsTree,
+          };
+          setCopy(false);
+          updateDashboard(updatedDashboard);
+        }
+        toast.success("Pasted Successfully");
+      }
+      setCopy(false);
+    } catch (err) {
+      console.error("Paste or parse failed:", err);
+      alert("Please copy grid to paste");
+      setCopy(false);
+    }
+  };
+
+  const printRef = useRef();
+
+  const handleDownloadPdf = async () => {
+    setDownloading(true);
+    handleDownloadingStatus(true);
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    const element = printRef.current;
+    const canvas = await html2canvas(element);
+    const data = canvas.toDataURL("image/png");
+    const pdf = new jsPDF("p", "mm", "a4");
+    const imgProperties = pdf.getImageProperties(data);
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (imgProperties.height * pdfWidth) / imgProperties.width;
+
+    pdf.addImage(data, "PNG", 0, 0, pdfWidth, pdfHeight);
+    pdf.save("download.pdf");
+    setDownloading(false);
+    handleDownloadingStatus(false);
+  };
+
   const { id } = useParams();
   const canAccess = useDashboardAccess(user, dashboard);
-  const typographyOptions = [
-    { label: "Heading 1", value: "h1" },
-    { label: "Heading 2", value: "h2" },
-    { label: "Heading 3", value: "h3" },
-    { label: "Paragraph", value: "p" },
-  ];
-
-  const fontSizeOptions = [
-    { label: "Small", value: "12px" },
-    { label: "Medium", value: "16px" },
-    { label: "Large", value: "20px" },
-    { label: "Extra Large", value: "24px" },
-  ];
-
-  const fontWeightOptions = [
-    { label: "Light", value: "300" },
-    { label: "Regular", value: "400" },
-    { label: "Bold", value: "700" },
-  ];
 
   const aggregateFunctions = {
     SUM: (data) =>
@@ -850,6 +923,7 @@ const Dashboard = ({
     // Update chart options state
     onUpdateChartOptions(updatedOptions);
   };
+
   const mergeDatasets = (datasets, relationships) => {
     // Convert datasets array to an object for quick lookup
     const datasetMap = datasets.reduce((acc, dataset) => {
@@ -902,12 +976,13 @@ const Dashboard = ({
       dashboardTitle: value,
     };
 
-    // Determine whether to update or add
     if (dashboard && dashboard.dashboardId != null) {
       console.log("Updating dashboard...");
       await updateDashboard(updatedDashboard);
     } else {
       console.log("Adding new dashboard...");
+      updatedDashboard["userId"] = user.id;
+      updatedDashboard["organizationId"] = user.organizationId;
       await addDashboard(updatedDashboard);
     }
   };
@@ -948,7 +1023,6 @@ const Dashboard = ({
 
     if (chartOptions && chartOptions["datasets"]) {
       const selectedDatasets = chartOptions["datasets"];
-
       if (selectedDatasets.length > 0) {
         chartOptions["datasets"] = selectedDatasets;
         const newColumns = selectedDatasets.map((dataset) => ({
@@ -966,7 +1040,7 @@ const Dashboard = ({
       setColumns([]);
       // setSelectedDatasets([]);
     }
-  }, [chartOptions]);
+  }, [chartOptions, dashboard]);
 
   const handleCreateDashboard = () => {
     navigate("/create-dashboard-modals");
@@ -1022,6 +1096,8 @@ const Dashboard = ({
         await updateDashboard(dashboard);
       } else {
         console.log("Adding new dashboard...");
+        dashboard["userId"] = user.id;
+        dashboard["organizationId"] = user.organizationId;
         await addDashboard(dashboard);
       }
 
@@ -1033,13 +1109,40 @@ const Dashboard = ({
 
   useEffect(() => {
     getDatasets();
+    getWorkSpaces(user.organizationId);
+    if (dashboard) {
+      const updatedDashboard = {
+        ...dashboard,
+        isPublished: false,
+      };
+      updateDashboard(updatedDashboard);
+    }
     if (id) {
       getSpecificDashboard(id);
     }
+
     return () => {
       removeCurrentDashboard();
     };
   }, []);
+
+  const getWorkSpaces = async (id) => {
+    axiosInstance.defaults.baseURL = urlswithoutgateway("admin");
+    axiosInstance
+      .get(`workspace/getactiveworkspaces/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((response) => {
+        if (response.data.messageType !== 2) {
+          setWorkspaces(response.data.data);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching workspaces:", error);
+      });
+  };
 
   // Handle Selection of Charts
   const handleChartSelection = (chartName) => {
@@ -3547,85 +3650,6 @@ const Dashboard = ({
             </label>
           </>
         )}
-        {/* Typography */}
-        {chartOptions.chartType === "typography" && (
-          <>
-            {/* Title */}
-            <label className="chart-properties-labels">
-              Title:
-              <input
-                type="text"
-                name="title"
-                value={properties.title || ""}
-                onChange={handlePropertyChange}
-              />
-            </label>
-
-            {/* Subtitle */}
-            <label className="chart-properties-labels">
-              Subtitle:
-              <input
-                type="text"
-                name="subtitle"
-                value={properties.subtitle || ""}
-                onChange={handlePropertyChange}
-              />
-            </label>
-
-            {/* Paragraph */}
-            <label className="chart-properties-labels">
-              Paragraph:
-              <textarea
-                name="para"
-                value={properties.para || ""}
-                onChange={handlePropertyChange}
-              />
-            </label>
-
-            {/* Subtitle I */}
-            <label className="chart-properties-labels">
-              Subtitle I:
-              <input
-                type="text"
-                name="subtitleI"
-                value={properties.subtitleI || ""}
-                onChange={handlePropertyChange}
-              />
-            </label>
-
-            {/* Paragraph I */}
-            <label className="chart-properties-labels">
-              Paragraph I:
-              <textarea
-                name="paraI"
-                value={properties.paraI || ""}
-                onChange={handlePropertyChange}
-              />
-            </label>
-
-            {/* Subtitle II */}
-            <label className="chart-properties-labels">
-              Subtitle II:
-              <input
-                type="text"
-                name="subtitleII"
-                value={properties.subtitleII || ""}
-                onChange={handlePropertyChange}
-              />
-            </label>
-
-            {/* Paragraph II */}
-            <label className="chart-properties-labels">
-              Paragraph II:
-              <textarea
-                name="paraII"
-                value={properties.paraII || ""}
-                onChange={handlePropertyChange}
-              />
-            </label>
-          </>
-        )}
-        {/* Add More Charts here */}
       </div>
     );
   };
@@ -3955,42 +3979,47 @@ const Dashboard = ({
               <hr />
             </div>
             {/* Dataset */}
-            {chartOptions?.chartType && (
+            {chartOptions?.chartType != "typography" && (
               <div>
-                <Select
-                  options={
-                    datasets
-                      ? datasets.map((item) => ({
-                          label: item.datasetTitle,
-                          value: item.datasetId,
-                        }))
-                      : []
-                  }
-                  isMulti={true}
-                  value={
-                    chartOptions && chartOptions["datasets"]
-                      ? chartOptions["datasets"].map((dataset) => ({
-                          label: dataset.datasetTitle,
-                          value: dataset.datasetId,
-                        }))
-                      : []
-                  }
-                  onChange={(selectedOptions) => {
-                    handleChange(
-                      selectedOptions
-                        ? selectedOptions.map((option) => ({
-                            datasetTitle: option.label,
-                            datasetId: option.value,
-                          }))
-                        : []
-                    );
-                  }}
-                  placeholder="Select dataset"
-                  closeMenuOnSelect={false}
-                />
+                {chartOptions?.chartType && (
+                  <div>
+                    <Select
+                      options={
+                        datasets
+                          ? datasets.map((item) => ({
+                              label: item.datasetTitle,
+                              value: item.datasetId,
+                            }))
+                          : []
+                      }
+                      isMulti={true}
+                      value={
+                        chartOptions && chartOptions["datasets"]
+                          ? chartOptions["datasets"].map((dataset) => ({
+                              label: dataset.datasetTitle,
+                              value: dataset.datasetId,
+                            }))
+                          : []
+                      }
+                      onChange={(selectedOptions) => {
+                        handleChange(
+                          selectedOptions
+                            ? selectedOptions.map((option) => ({
+                                datasetTitle: option.label,
+                                datasetId: option.value,
+                              }))
+                            : []
+                        );
+                      }}
+                      placeholder="Select dataset"
+                      closeMenuOnSelect={false}
+                    />
+                  </div>
+                )}
+                <TableRelations datasets={datasets} />
               </div>
             )}
-            <TableRelations datasets={datasets} />
+
             {/* Series */}
             {[
               "line",
@@ -5593,7 +5622,7 @@ const Dashboard = ({
           </div>
         </div>
         <div className="second-row-navbar">
-          <div className="user-permission">
+          {/* <div className="user-permission">
             <div className="DS">
               <img src={DS} alt="logo" />
             </div>
@@ -5608,7 +5637,7 @@ const Dashboard = ({
             <div onClick={handleCreateDashboard}>
               <p>Create a Dashboard</p>
             </div>
-          </div>
+          </div> */}
           <div className="first-div-second-row-btn-IV">
             <img src={user?.profileImage} alt="logo" />
             <select
@@ -5633,20 +5662,63 @@ const Dashboard = ({
               {/* <p>Dashboard title</p> */}
               <input
                 type="text"
-                className="form-control"
+                className="form-control w-50"
                 placeholder="Enter dashboard title"
                 value={dashboardName}
                 onChange={(e) => setDashboardName(e.target.value)}
                 onBlur={(e) => handleDashboardName(e.target.value)}
               />
               {/* <img src={Pen} alt="logo" /> */}
+              <div className="workspace">
+                <Select
+                  options={workspaces.map((workspace) => ({
+                    label: workspace.workSpaceName,
+                    value: workspace.id,
+                  }))}
+                  value={
+                    workspaces.find((w) => w.id === dashboard?.workspaceId)
+                      ? {
+                          label: workspaces.find(
+                            (w) => w.id === dashboard.workspaceId
+                          )?.workSpaceName,
+                          value: dashboard.workspaceId,
+                        }
+                      : null
+                  }
+                  onChange={async (selectedOption) => {
+                    if (selectedOption) {
+                      const updatedDashboard = {
+                        ...dashboard,
+                        workspaceId: selectedOption.value,
+                        workSpaceName: selectedOption.label,
+                      };
+
+                      if (dashboard && dashboard.dashboardId != null) {
+                        console.log("Updating dashboard...");
+                        await updateDashboard(updatedDashboard);
+                      } else {
+                        console.log("Adding new dashboard...");
+                        updatedDashboard["userId"] = user.id;
+                        updatedDashboard["dashboardTitle"] = "Blank";
+                        updatedDashboard["organizationId"] =
+                          user.organizationId;
+                        await addDashboard(updatedDashboard);
+                      }
+                    }
+                  }}
+                  className="react-select-container"
+                  classNamePrefix="react-select"
+                  placeholder="Choose Series"
+                />
+              </div>
             </div>
             <div className="sr-CDB">
-              <div className="user-permission">
-                <div className="DS">
-                  <img src={USER} alt="logo" />
-                </div>
-                {canAccess && (
+              {canAccess && (
+                <div className="user-permission">
+                  <div className="DS">
+                    <img src={USER} alt="logo" />
+                  </div>
+
                   <div
                     onClick={() =>
                       navigate(`/set-user-permissions/${dashboard.dashboardId}`)
@@ -5654,41 +5726,55 @@ const Dashboard = ({
                   >
                     <p>User Permissions</p>
                   </div>
-                )}
-              </div>
+                </div>
+              )}
 
-              <div className="sr-CDB-I">
-                <img src={S1} alt="logo" />
-              </div>
-              <div>
+              {canAccess && (
+                <div className="sr-CDB-I" onClick={handleSaveChart}>
+                  <img src={S1} alt="logo" />
+                </div>
+              )}
+              {/* <div>
                 <img src={L1} alt="logo" />
-              </div>
+              </div> */}
               <div className="sr-CDB-III">
-                <div className="sr-CDB-I">
+                <div
+                  className="sr-CDB-I"
+                  onClick={() => {
+                    setCut(true);
+                    copyGrid();
+                  }}
+                >
                   <img src={S2} alt="logo" />
                 </div>
-                <div className="sr-CDB-I">
+                <div
+                  className="sr-CDB-I"
+                  onClick={() => {
+                    setCopy(true);
+                    copyGrid();
+                  }}
+                >
                   <img src={S3} alt="logo" />
                 </div>
-                <div className="sr-CDB-I">
+                <div className="sr-CDB-I" onClick={pasteGrid}>
                   <img src={S4} alt="logo" />
                 </div>
                 <div className="sr-CDB-I" onClick={handleDeleteChart}>
                   <img src={S5} alt="logo" />
                 </div>
               </div>
-              <div>
+              {/* <div>
                 <img src={L1} alt="logo" />
-              </div>
-              <div className="sr-CDB-III">
+              </div> */}
+              {/* <div className="sr-CDB-III">
                 <div className="sr-CDB-I">
                   <img src={M2} alt="logo" />
                 </div>
                 <div className="sr-CDB-I">
                   <img src={M1} alt="logo" />
                 </div>
-              </div>
-              <div>
+              </div> */}
+              {/* <div>
                 <img src={L1} alt="logo" />
               </div>
               <div className="sr-CDB-III">
@@ -5698,15 +5784,15 @@ const Dashboard = ({
                 <div className="sr-CDB-I">
                   <img src={S6} alt="logo" />
                 </div>
-              </div>
+              </div> */}
               <div>
                 <img src={L1} alt="logo" />
               </div>
               <div className="sr-CDB-III">
-                <div className="sr-CDB-I">
+                {/* <div className="sr-CDB-I">
                   <img src={M4} alt="logo" />
-                </div>
-                <div className="sr-CDB-I">
+                </div> */}
+                <div className="sr-CDB-I" onClick={handleDownloadPdf}>
                   <img src={M5} alt="logo" />
                 </div>
               </div>
@@ -5723,13 +5809,6 @@ const Dashboard = ({
                 >
                   Shuffle Charts
                 </button>
-                <div>
-                  {canAccess && (
-                    <button className="sr-btn" onClick={handleSaveChart}>
-                      Save Changes
-                    </button>
-                  )}
-                </div>
                 <div className="sr-btn-I">
                   <img src={S7} alt="logo" />
                 </div>
@@ -5739,10 +5818,12 @@ const Dashboard = ({
               </div>
             </div>
           </div>
-          <div style={{ padding: "0px 18px", margin: "10px 0px" }}>
-            <DashboardHeader />
+          <div ref={printRef}>
+            <div style={{ padding: "0px 18px", margin: "10px 0px" }}>
+              <DashboardHeader downloading={downloading} />
+            </div>
+            <div className="parent-container-CDB">{children}</div>
           </div>
-          <div className="parent-container-CDB">{children}</div>
         </div>
         {canAccess && (
           <div className="content-CDB-I">

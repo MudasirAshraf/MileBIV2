@@ -40,7 +40,7 @@ const CardIV = ({
   return (
     <div className="card-iv">
       {/* first column */}
-      <div className="card-iv-setting">
+      {/* <div className="card-iv-setting">
         <div className="first-column-card-iv">
           <img
             src={Setting}
@@ -55,7 +55,7 @@ const CardIV = ({
             />
           )}
         </div>
-      </div>
+      </div> */}
       {/* second column */}
       <div className="second-column-card-iv">
         <img

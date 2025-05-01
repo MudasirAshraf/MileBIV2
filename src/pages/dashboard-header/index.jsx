@@ -15,7 +15,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
 // import SaveIcon from "@mui/icons-material/Save";
 
-const DashboardHeader = ({ dashboard, updateDashboard }) => {
+const DashboardHeader = ({ dashboard, updateDashboard, downloading }) => {
   const defaultHeader = {
     logo: null,
     title: "Title 1",
@@ -84,7 +84,7 @@ const DashboardHeader = ({ dashboard, updateDashboard }) => {
         justifyContent: "center",
         padding: "20px",
         boxSizing: "border-box",
-        zIndex: 999,
+        // zIndex: 999,
       }}
     >
       {headerConfig.logo && !headerConfig.isEditMode && (
@@ -113,7 +113,7 @@ const DashboardHeader = ({ dashboard, updateDashboard }) => {
         </Typography>
       )}
 
-      <IconButton
+    { !downloading && <IconButton
         onClick={() =>
           setHeaderConfig((prev) => ({ ...prev, isEditMode: true }))
         }
@@ -127,7 +127,7 @@ const DashboardHeader = ({ dashboard, updateDashboard }) => {
       >
         <FontAwesomeIcon icon={faEdit} />
       </IconButton>
-
+    }
       <Dialog
         open={headerConfig.isEditMode}
         onClose={handleCancel}

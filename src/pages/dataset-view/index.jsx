@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Select from "react-select";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import {
   getSpecificDataset,
@@ -23,11 +24,11 @@ import {
   Button,
   FormControl,
   InputLabel,
-  Select,
-  
   MenuItem,
   Modal,
 } from "@mui/material";
+import axiosInstance from "../../components/axios";
+import urlswithoutgateway from "../../actions/urlswithoutgateway";
 
 export const evaluateExpression = (data, expression) => {
   try {
@@ -50,6 +51,7 @@ const DatasetView = ({
   setSpecificDataset,
   setDatabaseDataPayload,
   dataSource,
+  user,
 }) => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -61,10 +63,12 @@ const DatasetView = ({
   const [newColumnType, setNewColumnType] = useState("Regular");
   const [newColumnExpression, setNewColumnExpression] = useState("");
   const [selectedColumn, setSelectedColumn] = useState("");
+  const [workspaces, setWorkspaces] = useState([]);
 
   // Main useEffect to fetch data on initial render
   useEffect(() => {
     fetchData();
+    getWorkSpaces(user.organizationId);
   }, []);
 
   const fetchData = async () => {
@@ -73,7 +77,10 @@ const DatasetView = ({
     if (value) {
       await setSpecificDataset(value);
     }
-    if (!["excel", "json"].includes(dataset.databaseType)) {
+    if (!dataset) {
+      return;
+    }
+    if (!["excel", "json"].includes(dataset?.databaseType)) {
       const value = await getSingleTableData(dataSource.tableName, dataSource);
       if (value) {
         await setSingleTableData(value);
@@ -308,6 +315,23 @@ const DatasetView = ({
     }
   };
 
+  const getWorkSpaces = async (id) => {
+    axiosInstance.defaults.baseURL = urlswithoutgateway("admin");
+    axiosInstance
+      .get(`workspace/getactiveworkspaces/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((response) => {
+        if (response.data.messageType !== 2) {
+          setWorkspaces(response.data.data);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching workspaces:", error);
+      });
+  };
 
   //Updating  Data rows
   let rows = safeData.map((row, index) => ({ id: index, ...row }));
@@ -427,6 +451,38 @@ const DatasetView = ({
             )}
 
             <Row className="d-flex justify-content-end align-items-center mt-4">
+              <div className="workspace w-25">
+                <Select
+                  options={workspaces.map((workspace) => ({
+                    label: workspace.workSpaceName,
+                    value: workspace.id,
+                  }))}
+                  value={
+                    workspaces.find((w) => w.id === dataset?.workspaceId)
+                      ? {
+                          label: workspaces.find(
+                            (w) => w.id === dataset.workspaceId
+                          )?.workSpaceName,
+                          value: dataset.workspaceId,
+                        }
+                      : null
+                  }
+                  onChange={async (selectedOption) => {
+                    if (selectedOption) {
+                      const updatedDataset = {
+                        ...dataset,
+                        workspaceId: selectedOption.value,
+                        workSpaceName: selectedOption.label,
+                      };
+                      await updateDataset(updatedDataset);
+                    }
+                  }}
+                  className="react-select-container"
+                  classNamePrefix="react-select"
+                  placeholder="Choose Series"
+                />
+              </div>
+
               {!isAddingColumn && (
                 <button
                   className="btn btn-primary w-auto"
@@ -488,6 +544,7 @@ const mapStateToProps = (state) => ({
   dataset: state.dataset.current,
   tableData: state.dataset.tabledata,
   dataSource: state.dataSource.data,
+  user: state.login.user,
 });
 
 export default connect(mapStateToProps, {
