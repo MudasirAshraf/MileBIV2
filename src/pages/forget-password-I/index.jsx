@@ -2,6 +2,7 @@ import React from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch } from 'react-redux';
+import Group from "../../assets/svg/group-I.svg";
 import { forgotPassword } from "../../actions/loginActions";
 import { useNavigate } from 'react-router-dom';
 import "./forget-pass-I.scss";
@@ -67,7 +68,7 @@ const ForgetPasswordI = () => {
         <div>
           <img src={Back} alt="backlogo" className='image-sign-up' onClick={() => navigate('/')} />
         </div>
-        <div className='login-page-select-option'>
+        <div className='login-page-select-option hide'>
           <select className='select-option'>
             <option>English</option>
             <option>Arabic</option>
@@ -79,45 +80,19 @@ const ForgetPasswordI = () => {
           <img src={Logo} alt='logo' />
         </div>
         <div className='form-container-sign-in-page-I'>
-          <div className='header-container-forget-password-I'>
-            <div className='form-header-sign-in-page'>
-              <div className='form-header-text-forget-password-div'>
-                <h1 className='form-header-forget-password-I'>Forget Password</h1>
-              </div>
-              <div className='progress-bar-forget-password-I'>
-                <div className='progress-I-fp-I'>
-                  <div className='progress-I-image-I-fp-I'><img src={I} alt="" /></div>
-                  <div><img src={EllipseI} alt="" /></div>
-                  <div className="progress-I-image-III-fp-I"><img src={Polygon} alt="" /></div>
-                </div>
-                <div className='progress-II-fp-I'>
-                  <img src={Union} alt="" className='progress-II-image-I-fp-I' />
-                </div>
-                <div className='progress-III-fp-I'>
-                  <div className='progress-III-image-I-fp-I'>
-                    <img src={EllipseII} alt="" />
-                  </div>
-                  <div className='progress-III-image-II-fp-I'>
-                    <img src={II} alt="" />
-                  </div>
-                </div>
-                <div className='progress-IV-fp-I'>
-                  <div className='progress-IV-image-I-fp-I'><img src={UnionI} alt="" /></div>
-                </div>
-                <div className='progress-V-fp-I'>
-                  <div className='progress-V-image-I-fp-I'>
-                    <img src={EllipseII} alt="" />
-                  </div>
-                  <div className='progress-V-image-II-fp-I'>
-                    <img src={III} alt="" />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className='side-logo-sign-in-page'>
-              <img src={One} alt="logo" />
-            </div>
-          </div>
+                 <div className='header-container-forget-password-II'>
+                   <div className='form-header-forget-password-II'>
+                     <div className='form-header-text-forget-password-II-div'>
+                       <h1 className='form-header-text-sign-in-page'>Forget Password</h1>
+                     </div>
+                     <div className='progress-bar-forget-password-II'>
+                       <img src={Group} alt="logo" />
+                     </div>
+                   </div>
+                   <div className='side-logo-sign-in-page'>
+                     <img src={One} alt="logo" />
+                   </div>
+                 </div>
           <div className='sub-header-sign-in-page-I'>
             <div className='sub-header-sign-in-page-I-text'>
               <p>Personal Info</p>
@@ -155,7 +130,7 @@ const ForgetPasswordI = () => {
             <img src={LineI} alt='' />
           </div>
           <div className='form-sign-in-fp-I'>
-            <div><button className='button-1' onClick={() => navigate('/')}>Sign In</button></div>
+            <div><button className='btn-create' onClick={() => navigate('/')}>Sign In</button></div>
           </div>
           <div className='login-help-div'>
             <div className='login-hepl-image'>

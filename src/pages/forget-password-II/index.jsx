@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import "./forget-pass-II.scss";
 import Logo from "../../assets/svg/logo.svg";
 import Back from "../../assets/svg/Back.svg";
+import Group from "../../assets/svg/group-II.svg";
 import Ring from '../../assets/svg/ringtick.svg';
 import I from "../../assets/svg/1.svg";
 import UnionII from '../../assets/svg/Union(3).svg';
@@ -115,7 +116,7 @@ const ForgetPasswordII = (props) => {
           <img src={Back} alt="backlogo" className='image-sign-up' />
         </div>
         {/* adding select option */}
-        <div className='login-page-select-option'>
+        <div className='login-page-select-option hide'>
           <select className='select-option'>
             <option>English</option>
             <option>Arabic</option>
@@ -129,58 +130,19 @@ const ForgetPasswordII = (props) => {
         </div>
         {/* adding form container */}
         <div className='form-container-sign-in-page-I'>
-          <div className='header-container-forget-password-II'>
-            {/* header */}
-            <div className='form-header-forget-password-II'>
-              <div className='form-header-text-forget-password-II-div'>
-                <h1 className='form-header-text-sign-in-page'>Forget Password</h1>
-              </div>
-              {/* Progress bar */}
-              <div className='progress-bar-forget-password-II'>
-                {/* first */}
-                <div className='progress-sp-I'>
-                  <div className='progress-sp-I-image-I-fp-II'><img src={I} alt="" /></div>
-                  <div className='progress-sp-I-image-II'><img src={EllipseI} alt="" /></div>
-                  <div className='progress-sp-I-image-III-fp-II'><img src={Ring} alt="" /></div>
-                </div>
-                {/* Second */}
-                <div className='progress-sp-II'>
-                  <div className='progress-sp-II-image-I-fp-II'>
-                    <img src={UnionII} alt="" /></div>
-                </div>
-                {/* Third */}
-                <div className='progress-sp-III-fp-II'>
-                  <div className='progress-sp-III-image-I-fp-II'>
-                    <img src={Two} alt="" />
-                  </div>
-                  <div className='progress-sp-III-image-II'>
-                    <img src={EllipseI} alt="" />
-                  </div>
-                  <div className='progress-sp-III-image-III-fp-II'>
-                    <img src={Polygon} alt="" />
-                  </div>
-                  {/* Fourth */}
-                  <div className='progress-sp-IV'>
-                    <div className='progress-sp-IV-image-I-fp-II'>
-                      <img src={Union} alt="" /></div>
-                  </div>
-                  {/* Fifth */}
-                  <div className='progress-sp-V-fp-II'>
-                    <div className='progress-sp-V-image-I'>
-                      <img src={EllipseII} alt="" />
-                    </div>
-                    <div className='progress-sp-V-image-II-fp-II'>
-                      <img src={III} alt="" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            {/* Adding side logo */}
-            <div className='side-logo-sign-in-page'>
-              <img src={B2} alt="logo" />
-            </div>
-          </div>
+  <div className='header-container-forget-password-II'>
+    <div className='form-header-forget-password-II'>
+      <div className='form-header-text-forget-password-II-div'>
+        <h1 className='form-header-text-sign-in-page'>Forget Password</h1>
+      </div>
+      <div className='progress-bar-forget-password-II'>
+        <img src={Group} alt="logo" />
+      </div>
+    </div>
+    <div className='side-logo-sign-in-page'>
+      <img src={B2} alt="logo" />
+    </div>
+  </div>
           {/* adding text */}
           <div className='sub-header-sign-in-page-I'>
             <div className='sub-header-sign-in-page-I-text'>
@@ -229,7 +191,7 @@ const ForgetPasswordII = (props) => {
             <img src={LineI} alt='' />
           </div>
           <div className='form-sign-in-fp-II'>
-            <div><button className='button-1'>Sign In</button></div>
+            <div><button className='btn-create'>Sign In</button></div>
           </div>
         </div>
         <div className='login-help-div'>

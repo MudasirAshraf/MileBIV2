@@ -61,7 +61,7 @@ const LoginPage = ({ response, getAuth, registerUser, getWorkspaces }) => {
 
   return (
     <div className="main-container-login-page">
-      <div className="login-page-select-option">
+      <div className="login-page-select-option hide">
         <select className="select-option">
           <option>English</option>
           <option>Arabic</option>
@@ -83,36 +83,40 @@ const LoginPage = ({ response, getAuth, registerUser, getWorkspaces }) => {
             >
               {({ isSubmitting }) => (
                 <Form>
-                  <div className="input-group mb-3">
+                  <div className="input-wrapper">
+                  <div className="input-group">
                     <img src={User} alt="userlogo" />
                     <Field
-                      className="form-control"
+                      className="input-details"
                       type="text"
                       placeholder="Username"
                       name="username"
                       id="username"
                     />
-                    <ErrorMessage
+                  </div>
+                   <ErrorMessage
                       name="username"
                       component="div"
-                      className="form-text text-danger"
+                      className="custom-error"
                     />
-                  </div>
-                  <div className="input-group mb-3">
+                    </div>
+                    <div className="input-wrapper">
+                  <div className="input-group">
                     <img src={Password} alt="passlogo" />
                     <Field
-                      className="form-control"
+                      className="input-details"
                       type="password"
                       placeholder="Password"
                       name="password"
                       id="password"
                     />
-                    <ErrorMessage
+                  </div>
+                   <ErrorMessage
                       name="password"
                       component="div"
-                      className="form-text text-danger"
+                      className="custom-error"
                     />
-                  </div>
+                    </div>
                   <div className="button-text-div">
                     <div className="form-button-div">
                       <div className="form-link">
@@ -129,7 +133,6 @@ const LoginPage = ({ response, getAuth, registerUser, getWorkspaces }) => {
                       <div>
                         <button
                           type="submit"
-                          className="btn btn-primary"
                           disabled={isSubmitting}
                         >
                           {isSubmitting ? (
@@ -163,7 +166,7 @@ const LoginPage = ({ response, getAuth, registerUser, getWorkspaces }) => {
                       <div>
                         <button
                           type="button"
-                          className="btn btn-secondary"
+                          className="btn-create"
                           onClick={handleCreateAccount}
                         >
                           Create Account

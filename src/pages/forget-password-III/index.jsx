@@ -4,6 +4,7 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import "./forget-pass-III.scss";
 import Logo from "../../assets/svg/logo.svg";
+import Group from "../../assets/svg/group-III.svg";
 import Thrd from "../../assets/svg/third.svg";
 import Back from "../../assets/svg/Back.svg";
 import Three from "../../assets/png/3.png";
@@ -53,12 +54,15 @@ const ForgetPasswordIII = (props) => {
       const { setNewPassword } = values;
       setLoading(true);
       axiosInstance.defaults.baseURL = urlswithoutgateway("admin");
-      const response = await axiosInstance
-        .post("User/resetdetail", { Email: email, NewPassword: setNewPassword }, {
+      const response = await axiosInstance.post(
+        "User/resetdetail",
+        { Email: email, NewPassword: setNewPassword },
+        {
           headers: {
             "Content-Type": "application/json",
-          }
-        })
+          },
+        }
+      );
 
       setLoading(false);
       if (response.data.messageType === 1) {
@@ -81,7 +85,7 @@ const ForgetPasswordIII = (props) => {
           <img src={Back} alt="backlogo" className="image-sign-up" />
         </div>
         {/* Adding select option */}
-        <div className="login-page-select-option">
+        <div className="login-page-select-option hide">
           <select className="select-option">
             <option>English</option>
             <option>Arabic</option>
@@ -95,71 +99,17 @@ const ForgetPasswordIII = (props) => {
         </div>
         {/* Adding form container */}
         <div className="form-container-sign-in-page-I">
-          <div className="header-container-forget-password-III">
-            {/* Header */}
-            <div className="form-header-forget-password-III">
-              <div className="form-header-forget-password-III-div">
+          <div className="header-container-forget-password-II">
+            <div className="form-header-forget-password-II">
+              <div className="form-header-text-forget-password-II-div">
                 <h1 className="form-header-text-sign-in-page">
                   Forget Password
                 </h1>
               </div>
-              {/* Progress bar */}
-              <div className="progress-bar-forget-password-III">
-                {/* First */}
-                <div className="progress-sp-III-I-fp-III">
-                  <div className="progress-sp-III-I-image-I-fp-III">
-                    <img src={I} alt="" />
-                  </div>
-                  <div className="progress-sp-III-I-image-II-fp-III">
-                    <img src={EllipseI} alt="" />
-                  </div>
-                  <div className="progress-sp-III-I-image-III-fp-III">
-                    <img src={Ring} alt="" />
-                  </div>
-                </div>
-                {/* Second */}
-                <div className="progress-sp-III-II-fp-III">
-                  <div className="progress-sp-III-II-image-I-fp-III">
-                    <img src={UnionII} alt="" />
-                  </div>
-                </div>
-                {/* Third */}
-                <div className="progress-sp-III-III-fp-III">
-                  <div className="progress--III-images-fp-III">
-                    <div className="progress-sp-III-III-image-II-fp-III">
-                      <img src={EllipseI} alt="" />
-                      <img
-                        src={Two}
-                        alt=""
-                        className="progress-sp-III-III-image-I-fp-III"
-                      />
-                    </div>
-                    <div className="progress-sp-III-III-image-III-fp-III">
-                      <img src={Ring} alt="" />
-                    </div>
-                  </div>
-                </div>
-                {/* Fourth */}
-                <div className="progress-sp-III-IV-fp-III">
-                  <div className="progress-sp-III-IV--image-I-fp-III">
-                    <img src={UnionII} alt="" />
-                  </div>
-                </div>
-                {/* Fifth */}
-                <div className="progress-sp-III-V-fp-III">
-                  <div className="progress-sp-III-V-image-I-fp-III">
-                    <img src={EllipseI} alt="" />
-                  </div>
-                  <div className="progress-sp-III-V-image-II-fp-III">
-                    <img src={Thrd} alt="" />
-                  </div>
-                  <div className="progress-sp-III-V-image-III-fp-III">
-                    <img src={Polygon} alt="" />
-                  </div>
-                </div>
+              <div className="progress-bar-forget-password-II">
+                <img src={Group} alt="logo" />
               </div>
             </div>
-            {/* Adding side logo */}
             <div className="side-logo-sign-in-page">
               <img src={Three} alt="logo" />
             </div>
@@ -222,7 +172,7 @@ const ForgetPasswordIII = (props) => {
           </div>
           <div className="button-fp-III">
             <div>
-              <button className="button-1" onClick={handleLoginPage}>
+              <button className="btn-create" onClick={handleLoginPage}>
                 Sign In
               </button>
             </div>

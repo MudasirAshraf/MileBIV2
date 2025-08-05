@@ -4,6 +4,7 @@ import "./sign-page-I.scss";
 import Logo from "../../assets/svg/logo.svg";
 import Back from "../../assets/svg/Back.svg";
 import One from "../../assets/png/1.png";
+import Group from "../../assets/svg/group-I.svg";
 import I from "../../assets/svg/1.svg";
 import II from "../../assets/svg/2.svg";
 import III from "../../assets/svg/3.svg";
@@ -76,7 +77,7 @@ const SignpageI = ({ registerUser }) => {
           <img src={Back} alt="backlogo" className='image-sign-up' onClick={handleLoginPage} />
         </div>
         <div className='login-page-select-option'>
-          <select className='select-option'>
+          <select className='select-option hide'>
             <option>English</option>
             <option>Arabic</option>
           </select>
@@ -86,46 +87,20 @@ const SignpageI = ({ registerUser }) => {
         <div>
           <img src={Logo} alt='logo' />
         </div>
-        <div className='form-container-sign-in-page-I'>
-          <div className='header-container-sign-in-page'>
-            <div className='form-header-sign-in-page'>
-              <div className='form-header-text-sign-in-page-div'>
-                <h1 className='form-header-text-sign-in-page'>Sign Up</h1>
-              </div>
-              <div className='progress-bar-sign-in-page-I'>
-                <div className='progress-I'>
-                  <div className='progress-I-image-I'><img src={I} alt="" /></div>
-                  <div><img src={EllipseI} alt="" /></div>
-                  <div className="progress-I-image-III"><img src={Polygon} alt="" /></div>
-                </div>
-                <div className='progress-II'>
-                  <img src={Union} alt="" className='progress-II-image-I' />
-                </div>
-                <div className='progress-III'>
-                  <div className='progress-III-image-I'>
-                    <img src={EllipseII} alt="" />
-                  </div>
-                  <div className='progress-III-image-II'>
-                    <img src={II} alt="" />
-                  </div>
-                </div>
-                <div className='progress-IV'>
-                  <div className='progress-IV-image-I'><img src={UnionI} alt="" /></div>
-                </div>
-                <div className='progress-V'>
-                  <div className='progress-V-image-I'>
-                    <img src={EllipseII} alt="" />
-                  </div>
-                  <div className='progress-V-image-II'>
-                    <img src={III} alt="" />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className='side-logo-sign-in-page'>
-              <img src={One} alt="logo" />
-            </div>
-          </div>
+          <div className='form-container-sign-in-page-I'>
+         <div className='header-container-forget-password-II'>
+           <div className='form-header-forget-password-II'>
+             <div className='form-header-text-forget-password-II-div'>
+               <h1 className='form-header-text-sign-in-page'>Sign Up</h1>
+             </div>
+             <div className='progress-bar-forget-password-II'>
+               <img src={Group} alt="logo" />
+             </div>
+           </div>
+           <div className='side-logo-sign-in-page'>
+             <img src={One} alt="logo" />
+           </div>
+         </div>
           <div className='sub-header-sign-in-page-I'>
             <div className='sub-header-sign-in-page-I-text'>
               <p>Personal Info</p>
@@ -138,6 +113,7 @@ const SignpageI = ({ registerUser }) => {
             <form onSubmit={formik.handleSubmit}>
               <div className='form-column-details'></div>
               <div className='first-column-details'>
+                <div className='input-wrapper'>
                 <div className="input-group-sign-in-row-I">
                   <input
                     className='input-details-sign-in-row-I'
@@ -149,8 +125,10 @@ const SignpageI = ({ registerUser }) => {
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                   />
-                  {formik.touched.userName && formik.errors.userName && <p>{formik.errors.userName}</p>}
+                  </div>
+                  {formik.touched.userName && formik.errors.userName && <p className='custom-error'>{formik.errors.userName}</p>}
                 </div>
+                <div className='input-wrapper'>
                 <div className="input-group-sign-in-row-I">
                   <input
                     className='input-details-sign-in-row-I'
@@ -162,8 +140,13 @@ const SignpageI = ({ registerUser }) => {
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                   />
-                  {formik.touched.firstName && formik.errors.firstName && <p>{formik.errors.firstName}</p>}
+                  </div>
+                  {formik.touched.firstName && formik.errors.firstName && <p className='custom-error'>{formik.errors.firstName}</p>}
                 </div>
+               
+              </div>
+              <div className='second-column-details'>
+                <div className='input-wrapper'>
                 <div className="input-group-sign-in-row-I">
                   <input
                     className='input-details-sign-in-row-I'
@@ -175,24 +158,10 @@ const SignpageI = ({ registerUser }) => {
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                   />
-                  {formik.touched.lastName && formik.errors.firstName && <p>{formik.errors.lastName}</p>}
+                  </div>
+                  {formik.touched.lastName && formik.errors.firstName && <p className='custom-error'>{formik.errors.lastName}</p>}
                 </div>
-              </div>
-              <div className='second-column-details'>
-                <div className="input-group-sign-in">
-                  <img src={Message} alt="userlogo" />
-                  <input
-                    className='input-details-sign-in'
-                    type="email"
-                    placeholder="Email"
-                    name="email"
-                    id='email'
-                    value={formik.values.email}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                  />
-                  {formik.touched.email && formik.errors.email && <p>{formik.errors.email}</p>}
-                </div>
+                <div className='input-wrapper'>
                 <div className="input-group-sign-in">
                   <img src={Phone} alt="passlogo" />
                   <input
@@ -205,10 +174,12 @@ const SignpageI = ({ registerUser }) => {
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                   />
-                  {formik.touched.phoneNumber && formik.errors.phoneNumber && <p>{formik.errors.phoneNumber}</p>}
+                  </div>
+                  {formik.touched.phoneNumber && formik.errors.phoneNumber && <p className='custom-error'>{formik.errors.phoneNumber}</p>}
                 </div>
               </div>
               <div className='third-column-details'>
+                <div className='input-wrapper'>
                 <div className="input-group-sign-in">
                   <img src={Password} alt="userlogo" />
                   <input
@@ -221,8 +192,11 @@ const SignpageI = ({ registerUser }) => {
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                   />
-                  {formik.touched.Password && formik.errors.Password && <p>{formik.errors.Password}</p>}
+                  </div>
+                  {formik.touched.Password && formik.errors.Password && <p className='custom-error'>{formik.errors.Password}</p>}
                 </div>
+
+                <div className='input-wrapper'>
                 <div className="input-group-sign-in">
                   <img src={Password} alt="passlogo" />
                   <input
@@ -235,23 +209,42 @@ const SignpageI = ({ registerUser }) => {
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                   />
-                  {formik.touched.ConfirmPassword && formik.errors.ConfirmPassword && <p>{formik.errors.ConfirmPassword}</p>}
+                  </div>
+                  {formik.touched.ConfirmPassword && formik.errors.ConfirmPassword && <p className='custom-error'>{formik.errors.ConfirmPassword}</p>}
                 </div>
               </div>
+              <div className='second-column-details'>
+              <div className='input-wrapper'>
+                <div className="input-group-fourth-column">
+                  <img src={Message} alt="userlogo" />
+                  <input
+                    className='input-fourth-column'
+                    type="email"
+                    placeholder="Email"
+                    name="email"
+                    id='email'
+                    value={formik.values.email}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                  />
+                  </div>
+                  {formik.touched.email && formik.errors.email && <p className='custom-error'>{formik.errors.email}</p>}
+                </div>
+                </div>
               <div className='form-sign-in-page-button'>
                 <button type='submit'>Proceed</button>
               </div>
             </form>
           </div>
-          <div>
-            <img src={LineI} alt='' />
+          <div className='line-fp-I'>
+            <img src={LineI} alt="logo" />
           </div>
           <div className='form-sign-in-button-div'>
             <div>
               <a href="" className='form-sign-in-link-i'>Already have an account?</a>
             </div>
             <div>
-              <button className='button-1' onClick={handleLoginPage}>Sign In</button>
+              <button className='btn-create' onClick={handleLoginPage}>Sign In</button>
             </div>
           </div>
         </div>

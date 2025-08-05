@@ -10,28 +10,50 @@
         }
       }
 
-.form-header-forget-password-II{
-    font-size: 1.3rem;
+
+.header-container-forget-password-II {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-left: 50px;
 }
-.header-container-forget-password-II{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    gap: 310px;
+.form-header-forget-password-II {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
 }
-.form-header-text-forget-password-II-div{
-    margin-left: 390px;
+.form-header-text-forget-password-II-div {
+  padding-bottom: 5px;
 }
-.progress-bar-forget-password-II{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    margin-left: 142px; 
-    margin-top: 30px;
+
+.form-header-text-sign-in-page {
+  color: white;
+  font-size: 1.7rem;
+  font-weight: 400;
 }
+
+/* Number "2" image aligned right */
+.side-logo-sign-in-page img {
+  width: 60px;
+  height: auto;
+}
+// .form-header-text-forget-password-II-div{
+//     padding-left: 63px;
+// }
+// .progress-bar-forget-password-II{
+//     display: flex;
+//     flex-direction: column;
+//     align-items: center;
+//     justify-content: center;
+//     position: relative;
+//     margin-left: 142px; 
+//     margin-top: 30px;
+// }
+// .side-logo-sign-in-page{
+//     display: flex;
+//     align-items: center;
+// }
 .progress-sp-I-image-I-fp-II{
     position: absolute;
     left:48.7%;

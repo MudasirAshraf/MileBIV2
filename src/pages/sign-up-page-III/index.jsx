@@ -3,6 +3,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import "./sign-up-page-III.scss";
 import Logo from "../../assets/svg/logo.svg";
+import Group from "../../assets/svg/group-III.svg";
 import Thrd from "../../assets/svg/third.svg";
 import Back from "../../assets/svg/Back.svg";
 import Three from "../../assets/png/3.png";
@@ -86,7 +87,7 @@ const SignPageIII = ({ registerUser }) => {
         <div>
           <img src={Back} alt="backlogo" className="image-sign-up" />
         </div>
-        <div className="login-page-select-option">
+        <div className="login-page-select-option hide">
           <select className="select-option">
             <option>English</option>
             <option>Arabic</option>
@@ -99,17 +100,20 @@ const SignPageIII = ({ registerUser }) => {
           <img src={Logo} alt="logo" />
         </div>
 
-        <div className="form-container-sign-in-page-I">
-          <div className="header-container-sign-in-page-III">
-            <div className="form-header-sign-in-page">
-              <div className="form-header-text-sign-in-page-div">
-                <h1 className="form-header-text-sign-in-page">Sign Up</h1>
-              </div>
-            </div>
-            <div className="side-logo-sign-in-page">
-              <img src={Three} alt="logo" />
-            </div>
-          </div>
+         <div className='form-container-sign-in-page-I'>
+                 <div className='header-container-forget-password-II'>
+                   <div className='form-header-forget-password-II'>
+                     <div className='form-header-text-forget-password-II-div'>
+                       <h1 className='form-header-text-sign-in-page'>Sign Up</h1>
+                     </div>
+                     <div className='progress-bar-forget-password-II'>
+                       <img src={Group} alt="logo" />
+                     </div>
+                   </div>
+                   <div className='side-logo-sign-in-page'>
+                     <img src={Three} alt="logo" />
+                   </div>
+                 </div>
 
           <div className="sub-header-sign-in-page-I">
             <div className="sub-header-sign-in-page-I-text">
@@ -124,6 +128,7 @@ const SignPageIII = ({ registerUser }) => {
           <form onSubmit={formik.handleSubmit}>
             {/* First Column */}
             <div className="first-column-details">
+              <div className="input-wrapper">
               <div className="input-group-sign-in-row-I">
                 <input
                   className="input-details-sign-in-row-I"
@@ -134,11 +139,12 @@ const SignPageIII = ({ registerUser }) => {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                 />
+                </div>
                 {formik.touched.name && formik.errors.name ? (
-                  <p className="error-message">{formik.errors.name}</p>
+                  <p className="custom-error">{formik.errors.name}</p>
                 ) : null}
               </div>
-
+              <div className="input-wrapper">
               <div className="input-group-sign-in-row-I">
                 <img src={Message} alt="email-icon" />
                 <input
@@ -150,14 +156,16 @@ const SignPageIII = ({ registerUser }) => {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                 />
+                </div>
                 {formik.touched.email && formik.errors.email ? (
-                  <p className="error-message">{formik.errors.email}</p>
+                  <p className="custom-error">{formik.errors.email}</p>
                 ) : null}
               </div>
             </div>
 
             {/* Second Column */}
             <div className="second-column-details">
+              <div className="input-wrapper">
               <div className="input-group-sign-in">
                 <select
                   className="select-login-page-III"
@@ -174,11 +182,12 @@ const SignPageIII = ({ registerUser }) => {
                   <option value="Pakistan">Pakistan</option>
                   <option value="Bangladesh">Bangladesh</option>
                 </select>
+                </div>
                 {formik.touched.country && formik.errors.country ? (
-                  <p className="error-message">{formik.errors.country}</p>
+                  <p className="custom-error">{formik.errors.country}</p>
                 ) : null}
               </div>
-
+              <div className="input-wrapper">
               <div className="input-group-sign-in">
                 <select
                   className="select-login-page-III"
@@ -195,14 +204,16 @@ const SignPageIII = ({ registerUser }) => {
                   <option value="Madina">Madina</option>
                   <option value="Jeddah">Jeddah</option>
                 </select>
+                </div>
                 {formik.touched.city && formik.errors.city ? (
-                  <p className="error-message">{formik.errors.city}</p>
+                  <p className="custom-error">{formik.errors.city}</p>
                 ) : null}
               </div>
             </div>
 
             {/* Third Column */}
             <div className="second-column-details">
+              <div className="input-wrapper">
               <div className="input-group-sign-in">
                 <img src={Adress} alt="address-icon" />
                 <input
@@ -214,8 +225,9 @@ const SignPageIII = ({ registerUser }) => {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                 />
+                </div>
                 {formik.touched.address && formik.errors.address ? (
-                  <p className="error-message">{formik.errors.address}</p>
+                  <p className="custom-error">{formik.errors.address}</p>
                 ) : null}
               </div>
             </div>
