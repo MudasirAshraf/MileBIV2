@@ -210,7 +210,7 @@ const WorkspaceDashboard = ({
             <div>
               <div className="main-container-filter-data">
                 <div className="filter-data-div" onClick={handleFilterClick}>
-                  <p>Filter by</p>
+                  <p className="para-filter">Filter by</p>
                   <img src={Filter} alt="logo" />
                 </div>
                 {showFilters && (

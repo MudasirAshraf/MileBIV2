@@ -46,7 +46,13 @@ const CardV = ({
       {/* second column */}
       <div className="second-column-card-v">
         <img src={Calendar} alt="logo" />
-        <p>Date Created: {moment(createdDate).format("DD-MM-YYYY")}</p>
+        <p className="para-wrk">
+          <span className="label-wrk">Date Created :</span>
+          <span className="value-wrk">
+            {" "}
+            {moment(createdDate).format("DD-MM-YYYY")}
+          </span>
+        </p>
       </div>
       {/* third column */}
       <div className="third-column-card-v">

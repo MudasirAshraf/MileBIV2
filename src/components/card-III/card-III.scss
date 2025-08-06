@@ -4,6 +4,8 @@
     background-color: rgba(255, 255, 255, 0.05);
     gap: 10px;
     border-radius: 10px;
+    width: 100%;
+    max-width: 380px;
 }
 .first-column-cardiii{
     background-color: #1B2534;
@@ -17,7 +19,7 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    padding-bottom: 5px;
+    padding: 10px;
 }
 .card-iii-image{
     padding: 10px;
@@ -25,8 +27,15 @@
 .second-column-cardiii-buttton{
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 10px;
-    padding: 0px 143px;
-    font-size: 0.8rem;
+    width: 100%;
     cursor: pointer;
+}
+.paragraph-button{
+    margin: 0;
+    font-weight: 700;
+    font-size: 1rem;
+    line-height: 1.2rem;
+    color: #FFFFFF;
 }

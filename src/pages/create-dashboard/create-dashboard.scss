@@ -53,26 +53,36 @@
 .header-III-create-dashboard.active::after {
   content: "";
   position: absolute;
-  bottom: -19px;
+  bottom: -15px;
   left: 0;
   width: 100%;
   height: 2px;
   background-color: #1c9ca7;
 }
 
-.main-container-create-dashboard-card-component {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr); // 4 columns
-  gap: 16px;
-  padding: 16px;
-}
+// Dashboard-Card && Template-Card
 
+.main-container-create-dashboard-card-component,
 .main-container-available-templates {
   display: grid;
-  grid-template-columns: repeat(4, 1fr); // 4 columns
+  grid-template-columns: repeat(6, 1fr);
   gap: 16px;
   padding: 16px;
+
+  @media (max-width: 1600px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media (max-width: 1200px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
+
+// Datasets
 .main-container-datasets {
   display: grid;
   grid-template-columns: repeat(6, 1fr); // 4 columns
@@ -96,7 +106,7 @@
   font-size: 1rem;
   transition: background-color 0.3s, color 0.3s;
 }
-.MuiPaginationItem-rounded{
+.MuiPaginationItem-rounded {
   color: #fff !important;
 }
 

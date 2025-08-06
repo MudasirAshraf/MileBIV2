@@ -16,7 +16,7 @@ const CardII = ({
   onDelete,
   onWorkspaceUpdate,
   onPublish,
-  isPublished
+  isPublished,
 }) => {
   const [showDropdown, setShowDropdown] = useState(false);
 
@@ -29,53 +29,62 @@ const CardII = ({
       {/* first column */}
       <div className="first-column-cardii">
         <div className="sub-first-column">
-          <img src={Temp} alt="image" />
-        </div>
-        <div className="card-ii-rows">
-          {isPublished && (
-            <div className="first-column-card-ii-row-i">
-              <img src={Ring} alt="logo" />
-              <p>Published</p>
-            </div>
-          )}
-          {!isPublished && (
-            <div className="first-column-card-ii-row-i-part-i">
-              <img src={Draft} alt="logo" />
-              <p>Draft</p>
-            </div>
-          )}
-          <div
-            className="first-column-card-ii-row-ii"
-            onClick={handleSettingClick}
-          >
-            <img src={Setting} alt="logo" />
-            {showDropdown && (
-              <DropdownMenu
-                onWorkspaceUpdate={onWorkspaceUpdate}
-                dashboardId={dashboardId}
-                onDelete={onDelete}
-                onPublish = {onPublish}
-              />
+          <img src={Temp} alt="image" className="image-dash" />
+          <div className="card-ii-rows">
+            {isPublished && (
+              <div className="first-column-card-ii-row-i">
+                <img src={Ring} alt="logo" />
+                <p className="para-pub">Published</p>
+              </div>
             )}
+            {!isPublished && (
+              <div className="first-column-card-ii-row-i-part-i">
+                <img src={Draft} alt="logo" />
+                <p className="para-pub">Draft</p>
+              </div>
+            )}
+            <div
+              className="first-column-card-ii-row-ii"
+              onClick={handleSettingClick}
+            >
+              <img src={Setting} alt="logo" />
+              {showDropdown && (
+                <DropdownMenu
+                  onWorkspaceUpdate={onWorkspaceUpdate}
+                  dashboardId={dashboardId}
+                  onDelete={onDelete}
+                  onPublish={onPublish}
+                />
+              )}
+            </div>
           </div>
         </div>
         <div>
-          <p>{title}</p>
+          <p className="paragraph-card-outlet">{title}</p>
         </div>
       </div>
       {/* second column */}
       <div className="second-column-card-ii">
         <div className="second-column-card-ii-data-i">
           <img src={Calendar} alt="logo" />
-          <p>Published: {title1}</p>
+          <p className="para-data">
+            <span className="label-pub">Published :</span>
+            <span className="value-pub"> {title1}</span>
+          </p>
         </div>
         <div className="second-column-card-ii-data-ii">
           <img src={Calendar} alt="logo" />
-          <p>Last Updated: {title2}</p>
+          <p className="para-data">
+            <span className="label-pub">Last Updated :</span>
+            <span className="value-pub"> {title2}</span>
+          </p>
         </div>
         <div className="second-column-card-ii-data-ii">
           <img src={Calendar} alt="logo" />
-          <p>Workspace: {workSpaceName}</p>
+          <p className="para-data">
+            <span className="label-pub">Workspace :</span>
+            <span className="value-pub"> {workSpaceName}</span>
+          </p>
         </div>
       </div>
       {/* third column */}

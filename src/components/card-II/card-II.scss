@@ -1,93 +1,133 @@
-.card-ii{
-    display: flex;
-    flex-direction: column;
-    background-color: rgba(255, 255, 255, 0.05);
-    gap: 10px;
-    border-radius: 10px;
+.card-ii {
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(255, 255, 255, 0.05);
+  gap: 10px;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 380px;
 }
-.first-column-cardii{
-    background-color: #1B2534;
-    display: flex;
-    flex-direction: column;
-    border-radius: 10px;
-    align-items: center;
+.first-column-cardii {
+  background-color: #1b2534;
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
+  align-items: center;
+  padding: 10px;
 }
-.sub-first-column{
-padding: 10px;
-position: relative;
-opacity: 0.4;
+.sub-first-column {
+  position: relative;
+  opacity: 1;
 }
-.card-ii-rows{
-    display: flex;
-    flex-direction: row;
-    gap: 227px;
-    position: absolute;
+.image-dash {
+  display: block;
 }
-.first-column-card-ii-row-i{
-    background-color: #0E6C17;
-    border-radius: 15px;
-    display: flex;
-    align-items: center;
-    gap:5px;
-    // height: 17px;
-    padding: 3px;
-    font-size: 0.5rem;
-    margin-top: 15px;
+.card-ii-rows {
+  position: absolute;
+  top: 3px;
+  left: 10px;
+  right: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  z-index: 2;
 }
-.first-column-card-ii-row-i-part-i{
-    background-color: #5A5A5A;
-    border-radius: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap:5px;
-    // height: 17px;
-    padding: 3px 5px;
-    font-size: 0.5rem;
-    margin-top: 15px;
+.first-column-card-ii-row-i {
+  background-color: #0e6c17;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 4px 5px;
+  font-size: 0.5rem;
+}
+.first-column-card-ii-row-i-part-i {
+  background-color: #5a5a5a;
+  color: white;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 4px 6px;
+}
+.paragraph-card-outlet {
+  color: white;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.3rem;
+  margin-top: 7px;
+}
+.para-pub {
+  color: white;
+  text-align: center;
+  margin: 0;
+  font-size: 0.625rem;
+  font-weight: 700;
+  line-height: 1rem;
 }
 .first-column-card-ii-row-ii {
-    background-color: #1C9CA7;
-    display: flex;
-    align-items: center;
-    padding: 5px;
-    border-radius: 3px;
-    margin-top: 15px;
-    position: relative; /* Ensure this is set */
-    cursor: pointer; /* Optional: change cursor to pointer */
-  }
-  .second-column-card-ii{
-    display: flex;
-    flex-direction:column ;
-    align-items: flex-start;
-    justify-content: flex-start;
-    padding-left: 10px;
-  }
-  .second-column-card-ii-data-i,
-  .second-column-card-ii-data-ii{
-    display: flex;
-    flex-direction: row;
-    gap: 5px;
-  }
-  .third-column-card-ii{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    padding-bottom: 5px;
-  }
-  .third-column-card-ii-button{
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 0px 102px;
-    font-size: 0.8rem;
-  }
-  .third-column-card-ii-button-part-i{
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 0px 138px;
-    font-size: 0.8rem;
-  }
-  
+  background-color: #1c9ca7;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  border-radius: 3px;
+  position: relative;
+  cursor: pointer;
+}
+.second-column-card-ii {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding-left: 10px;
+  gap: 10px;
+}
+.second-column-card-ii-data-i,
+.second-column-card-ii-data-ii {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.para-data {
+  margin: 0;
+  display: flex;
+  gap: 5px;
+}
+
+.label-pub {
+  font-weight: 500;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  color: #ccc;
+}
+
+.value-pub {
+  color: #ccc;
+  font-weight: 400;
+  font-size: 0.925rem;
+  line-height: 1.5rem;
+}
+
+.third-column-card-ii {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 5px;
+}
+.third-column-card-ii-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0px 102px;
+  font-size: 0.8rem;
+}
+.third-column-card-ii-button-part-i {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0px 138px;
+  font-size: 0.8rem;
+}

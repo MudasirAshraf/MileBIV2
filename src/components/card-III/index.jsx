@@ -22,7 +22,7 @@ const CardIII = ({ image, title, id }) => {
           <img src={image} alt="logo" />
         </div>
         <div>
-          <p>{title}</p>
+          <p className='paragraph-card-outlet'>{title}</p>
         </div>
       </div>
       {/* second column */}
@@ -32,7 +32,7 @@ const CardIII = ({ image, title, id }) => {
          onClick={handleClickPage}
         >
           <img src={EYE} alt="View" />
-          <p>View</p>  
+          <p className="paragraph-button">View</p>  
         </button>
       </div>
     </div>
