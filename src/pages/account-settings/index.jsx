@@ -33,7 +33,7 @@ const AccountSettings = () => {
         <DashboardWrapper>
           <div className="account-settings">
             <img src={Check} alt="" />
-            <p>Account Settings</p>
+            <p className="accnt-sttng-para">Account Settings</p>
           </div>
           {/* Adding Card Components */}
           <div className="account-settings-card-component-container">

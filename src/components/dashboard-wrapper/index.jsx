@@ -137,7 +137,7 @@ const DashboardWrapper = ({
                   onClick={handleCreateGrids}
                 >
                   <img src={Group} alt="logo" />
-                  <p>Dashboard Builder</p>
+                  <p className="para-builder">Dashboard Builder</p>
                 </button>
               </div>
               {/* 2nd button */}
@@ -147,17 +147,17 @@ const DashboardWrapper = ({
                   onClick={handleCreateDataset}
                 >
                   <img src={Square} alt="logo" />
-                  <p>Create a Dataset</p>
+                  <p className="para-builder">Create a Dataset</p>
                 </button>
               </div>
               {/* 3rd button */}
               <div>
                 <button
                   className="first-div-second-row-btn-III"
-                  onClick={()=>navigate("/list-workspaces")}
+                  onClick={() => navigate("/list-workspaces")}
                 >
                   <img src={Group} alt="logo" />
-                  <p>Manage Workspaces</p>
+                  <p className="para-builder">Manage Workspaces</p>
                 </button>
               </div>
               {/* 4th Select option */}

@@ -87,68 +87,100 @@
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
-  margin-bottom: 8px;
+  // margin-bottom: 8px;
 }
 .first-div-first-row-text {
-  font-size: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1rem;
+  color: #ffffff;
+  margin: 0;
 }
 .first-div-first-row-select {
-  font-size: 0.7rem;
+  font-size: 0.875rem;
+  line-height: 1rem;
   background-color: transparent;
   border: none;
   color: white;
+  cursor: pointer;
 }
+
+.first-div-first-row-select option,
+.first-div-second-row-btn-IV-select option {
+  color: #1b2534;
+  background-color: #ffffff;
+}
+
 .first-div-first-row-select:hover {
-  color: black;
+  color: #1b2534;
 }
 .first-div-second-row {
   display: flex;
+  align-items: center;
   gap: 10px;
 }
+
 .first-div-second-row-btn-I,
-.first-div-second-row-btn-II {
-  display: flex;
-  gap: 8px;
-  background-color: transparent;
-  border: 2px solid white;
-  font-size: 0.7rem;
-  border-radius: 5px;
-}
 .first-div-second-row-btn-III {
   display: flex;
-  background-color: transparent;
+  align-items: center;
   gap: 8px;
+  background-color: transparent;
   border: 2px solid white;
-  font-size: 0.7rem;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.first-div-second-row-btn-II {
+  display: flex;
+  align-items: center;
+  padding: 8.275px;
+  gap: 8px;
+  background-color: transparent;
+  border: 2px solid white;
   border-radius: 5px;
 }
+
+.para-builder {
+  margin: 0;
+  font-size: 0.8275rem;
+  line-height: 1rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
 .first-div-second-row-btn-IV {
   display: flex;
   background-color: #656e7c;
-  padding: 6px;
+  border: transparent;
   gap: 5px;
   border-radius: 5px;
+  padding: 2px;
   img {
     width: 44px;
     height: 44px;
     object-fit: cover;
+    border-radius: 8px;
+    padding: 5px;
   }
 }
 .first-div-second-row-btn-IV-select {
   background-color: transparent;
   border: none;
   color: white;
+  outline: none;
+  font-size: 0.875rem;
+  line-height: 1rem;
+  font-weight: 600;
+  color: #ffffff;
+  cursor: pointer;
 }
 
-.first-div-second-row-btn-IV-select option {
-  color: black;
-  background-color: white;
-}
 .first-div-second-row-btn-V {
   background-color: #656e7c;
   align-items: center;
   display: flex;
-  padding: 15px;
+  padding: 12px;
   border-radius: 5px;
 }
 .pcount {

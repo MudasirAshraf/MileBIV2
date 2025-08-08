@@ -1,0 +1,12 @@
+.main-container-template-I,
+.main-container-template-II,
+.main-container-template-III{
+   display: flex;
+   flex-direction: column;
+}
+.container-template{
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   padding: 10px;
+}

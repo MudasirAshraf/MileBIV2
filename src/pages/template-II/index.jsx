@@ -4,7 +4,7 @@ import TempIIX from "../../assets/svg/Template-2.svg";
 const TemplateII = () => {
   return (
     <div className='main-container-template-II'>
-      <div style={{display:'flex', alignItems:'center', justifyContent:'center' , padding:"10px"}}>
+      <div className="container-template">
         <img src={TempIIX} alt="logo"/>
       </div>
     </div>

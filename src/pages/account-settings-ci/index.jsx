@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
-import * as Yup from 'yup';
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
 import "./account-settings-ci.scss";
-import DashboardWrapper from '../../components/dashboard-wrapper';
+import DashboardWrapper from "../../components/dashboard-wrapper";
 import Check from "../../assets/svg/check.svg";
 import EArrow from "../../assets/svg/expandarrow.svg";
 import Message from "../../assets/svg/Message_light.svg";
 import Adress from "../../assets/svg/adress.svg";
 import Line from "../../assets/svg/line.svg";
-import { connect } from 'react-redux';
-import axiosInstance from '../../components/axios';
-import urlswithoutgateway from '../../actions/urlswithoutgateway';
-import { toast } from 'react-toastify';
+import { connect } from "react-redux";
+import axiosInstance from "../../components/axios";
+import urlswithoutgateway from "../../actions/urlswithoutgateway";
+import { toast } from "react-toastify";
 
 const AccountSettingsCI = ({ user }) => {
   const navigate = useNavigate();
@@ -23,15 +23,16 @@ const AccountSettingsCI = ({ user }) => {
     email: "",
     country: "",
     city: "",
-    address: ""
+    address: "",
   });
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     axiosInstance.defaults.baseURL = urlswithoutgateway("admin");
     if (user) {
-      axiosInstance.get(`/organization/get/${user.organizationId}`)
-        .then(response => {
+      axiosInstance
+        .get(`/organization/get/${user.organizationId}`)
+        .then((response) => {
           const data = response?.data?.data || {};
           setInitialValues({
             id: data.id || "",
@@ -39,10 +40,10 @@ const AccountSettingsCI = ({ user }) => {
             email: data.email || "",
             country: data.country || "",
             city: data.city || "",
-            address: data.address || ""
+            address: data.address || "",
           });
         })
-        .catch(error => {
+        .catch((error) => {
           console.error("Error fetching company info", error);
         })
         .finally(() => {
@@ -50,7 +51,6 @@ const AccountSettingsCI = ({ user }) => {
         });
     }
   }, []);
-
 
   const handleAccountSettings = () => {
     navigate("/account-settings");
@@ -61,7 +61,7 @@ const AccountSettingsCI = ({ user }) => {
     email: Yup.string().email("Email is not valid").required("Required"),
     country: Yup.string().required("Required"),
     city: Yup.string().required("Required"),
-    address: Yup.string().required("Required")
+    address: Yup.string().required("Required"),
   });
 
   const onSubmit = async (values, { setSubmitting }) => {
@@ -86,18 +86,23 @@ const AccountSettingsCI = ({ user }) => {
   }
 
   return (
-    <div className='main-container-account-settings-ci'>
-      <div className='container-account-settings-ci'>
+    <div className="main-container-account-settings-ci">
+      <div className="container-account-settings-ci">
         <DashboardWrapper>
-          <div className='account-settings-ci'>
+          <div className="account-settings-ci">
             <img src={Check} alt="logo" />
-            <p className='account-settings-ci-paragraph' onClick={handleAccountSettings}>Account Settings</p>
-            <img src={EArrow} alt='logo' />
-            <p>Company Info</p>
+            <p
+              className="account-settings-ci-paragraph"
+              onClick={handleAccountSettings}
+            >
+              Account Settings
+            </p>
+            <img src={EArrow} alt="logo" />
+            <p className="account-settings-ci-paragraph">Company Info</p>
           </div>
-          <div className='account-settings-ci-header'>
+          <div className="account-settings-ci-header">
             <p>{id ? "Edit Company Info" : "Change Company Info"}</p>
-            <img src={Line} alt='line' />
+            <img src={Line} alt="line" />
           </div>
           <div>
             <Formik
@@ -107,85 +112,117 @@ const AccountSettingsCI = ({ user }) => {
               onSubmit={onSubmit}
             >
               {({ isSubmitting }) => (
-                <Form className='account-settings-ci-form-container'>
+                <Form className="account-settings-ci-form-container">
                   {/* First Row */}
-                  <div className='account-settings-ci-ist-row'>
-                    <div className='input-group-sign-in-row-I-account-settings-pi'>
-                      <Field
-                        className='input-details-sign-in-row-I-account-settings-pi'
-                        type="text"
-                        id="name"
+                  <div className="account-settings-ci-ist-row">
+                    <div className="input-wrapper">
+                      <div className="input-group-sign-in-row-I-account-settings-pi">
+                        <Field
+                          className="input-details-sign-in-row-I-account-settings-pi"
+                          type="text"
+                          id="name"
+                          name="name"
+                          placeholder="Company Name"
+                        />
+                      </div>
+                      <ErrorMessage
                         name="name"
-                        placeholder='Company Name'
+                        component="div"
+                        className="custom-error"
                       />
-                      <ErrorMessage name="name" component="div" className="error" />
                     </div>
-                    <div className='input-group-sign-in-account-settings-ci'>
-                      <img src={Message} alt="passlogo" />
-                      <Field
-                        className="input-details-sign-in-account-settings-ci"
-                        type="email"
-                        id="email"
+                    <div className="input-wrapper">
+                      <div className="input-group-sign-in-account-settings-ci">
+                        <img src={Message} alt="passlogo" />
+                        <Field
+                          className="input-details-sign-in-account-settings-ci"
+                          type="email"
+                          id="email"
+                          name="email"
+                          placeholder="Email Address"
+                        />
+                      </div>
+                      <ErrorMessage
                         name="email"
-                        placeholder="Email Address"
+                        component="div"
+                        className="custom-error"
                       />
-                      <ErrorMessage name="email" component="div" className="error" />
                     </div>
-                    <div>
-                      <Field
-                        as="select"
-                        className="styled-select"
-                        id="country"
+                    <div className="input-wrapper">
+                      <div className="input-group-sign-in-account-settings-ci">
+                        <Field
+                          as="select"
+                          className="styled-select"
+                          id="country"
+                          name="country"
+                        >
+                          <option value="" disabled>
+                            Country
+                          </option>
+                          <option value="usa">United States</option>
+                          <option value="canada">Canada</option>
+                          <option value="uk">United Kingdom</option>
+                          <option value="australia">Australia</option>
+                          <option value="india">India</option>
+                        </Field>
+                      </div>
+                      <ErrorMessage
                         name="country"
-                      >
-                        <option value="" disabled>
-                          Country
-                        </option>
-                        <option value="usa">United States</option>
-                        <option value="canada">Canada</option>
-                        <option value="uk">United Kingdom</option>
-                        <option value="australia">Australia</option>
-                        <option value="india">India</option>
-                      </Field>
-                      <ErrorMessage name="country" component="div" className="error" />
+                        component="div"
+                        className="custom-error"
+                      />
                     </div>
                   </div>
 
                   {/* Second Row */}
-                  <div className='account-settings-ci-2nd-row'>
-                    <div>
-                      <Field
-                        as="select"
-                        className="styled-select"
-                        id="city"
+                  <div className="account-settings-ci-2nd-row">
+                    <div className="input-wrapper">
+                      <div className="input-group-sign-in-account-settings-ci">
+                        <Field
+                          as="select"
+                          className="styled-select"
+                          id="city"
+                          name="city"
+                        >
+                          <option value="" disabled>
+                            City
+                          </option>
+                          <option value="madinah">Madinah</option>
+                          <option value="riyadh">Riyadh</option>
+                          <option value="haram">Haram</option>
+                          <option value="muntaha">Muntaha</option>
+                        </Field>
+                      </div>
+                      <ErrorMessage
                         name="city"
-                      >
-                        <option value="" disabled>
-                          City
-                        </option>
-                        <option value="madinah">Madinah</option>
-                        <option value="riyadh">Riyadh</option>
-                        <option value="haram">Haram</option>
-                        <option value="muntaha">Muntaha</option>
-                      </Field>
-                      <ErrorMessage name="city" component="div" className="error" />
-                    </div>
-                    <div className='input-group-ci'>
-                      <img src={Adress} alt="passlogo" />
-                      <Field
-                        className='input-details-adress-ci'
-                        type="text"
-                        id="address"
-                        name="address"
-                        placeholder='Address'
+                        component="div"
+                        className="custom-error"
                       />
-                      <ErrorMessage name="address" component="div" className="error" />
+                    </div>
+                    <div className="input-wrapper">
+                      <div className="input-group-ci">
+                        <img src={Adress} alt="passlogo" />
+                        <Field
+                          className="input-details-adress-ci"
+                          type="text"
+                          id="address"
+                          name="address"
+                          placeholder="Address"
+                        />
+                      </div>
+                      <ErrorMessage
+                        name="address"
+                        component="div"
+                        className="custom-error"
+                      />
                     </div>
                   </div>
 
                   {/* Third Row */}
-                  <div className='account-settings-ci-third-row'>
-                    <button type='submit' disabled={isSubmitting}>Update</button>
+                  <div className="account-settings-ci-third-row">
+                    <button type="submit" disabled={isSubmitting}>
+                      Update
+                    </button>
                   </div>
                 </Form>
               )}
@@ -198,7 +235,6 @@ const AccountSettingsCI = ({ user }) => {
 };
 
 const mapStateToProps = (state) => ({
-  user: state.login.user
+  user: state.login.user,
 });
 export default connect(mapStateToProps)(AccountSettingsCI);
-
