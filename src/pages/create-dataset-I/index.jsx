@@ -3,9 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import "./dataset-I.scss";
 import Back from "../../assets/svg/Back.svg";
+import Group from "../../assets/svg/group-I.svg";
 import Cross from "../../assets/svg/cross.svg";
-import DI from "../../assets/svg/D1.svg";
-import Polygon from "../../assets/svg/Polygon 3.svg";
 import One from "../../assets/png/1.png";
 import Line from "../../assets/svg/line.svg";
 import I1 from "../../assets/svg/I1.svg";
@@ -49,9 +48,8 @@ const DatasetI = () => {
         {/* first row */}
         <div className="first-row-dataset-I">
           <p>Create a Dataset</p>
-          <img src={DI} alt="logo" />
-          <div className="second-row-dataset-I">
-            <img src={Polygon} alt="logo" />
+          <div className="progress-bar-forget-password-II">
+            <img src={Group} alt="logo" />
           </div>
         </div>
         <div className="third-row-dataset-I">

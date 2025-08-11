@@ -8,6 +8,7 @@ import axiosInstance from "../../components/axios";
 import urlswithoutgateway from "../../actions/urlswithoutgateway";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
+import "./workspace.scss";
 
 const SaveWorkspace = () => {
   const { id } = useParams();
@@ -64,64 +65,66 @@ const SaveWorkspace = () => {
     <div className="main-container-workspaces">
       <div className="container-workspaces">
         <DashboardWrapper>
-          <div className="published-header mb-4">
+          <div className="published-header">
             <img src={Book} alt="workspace icon" />
             <p>{id ? "Edit Workspace" : "Save Workspace"}</p>
           </div>
-          <div className="p-4 mx-auto" style={{ maxWidth: "800px" }}>
-            <Formik
-              enableReinitialize
-              initialValues={initialValues}
-              validationSchema={Yup.object({
-                workSpaceName: Yup.string().required(
-                  "Workspace Name is required"
-                )
-              })}
-              onSubmit={(values, { resetForm }) => {
-                saveWorkspace(values);
-              }}
-            >
-              {() => (
-                <Form>
-                  <div className="row mb-3">
-                    <div className="col-md-12">
-                      <label className="block">Workspace Name</label>
-                      <Field
-                        name="workSpaceName"
-                        placeholder="Enter Workspace Name"
-                        className="form-control"
-                      />
-                      <ErrorMessage
-                        name="workSpaceName"
-                        component="div"
-                        className="text-danger"
-                      />
+          <div className="main-container-work-space-save">
+            <div className="work-space-save-container">
+              <Formik
+                enableReinitialize
+                initialValues={initialValues}
+                validationSchema={Yup.object({
+                  workSpaceName: Yup.string().required(
+                    "Workspace Name is required"
+                  ),
+                })}
+                onSubmit={(values, { resetForm }) => {
+                  saveWorkspace(values);
+                }}
+              >
+                {() => (
+                  <Form>
+                    <div className="row mb-3">
+                      <div className="col-md-12">
+                        <label className="block mb-1">Workspace Name</label>
+                        <Field
+                          name="workSpaceName"
+                          placeholder="Enter Workspace Name"
+                          className="form-control"
+                        />
+                        <ErrorMessage
+                          name="workSpaceName"
+                          component="div"
+                          className="text-danger"
+                        />
+                      </div>
                     </div>
-                  </div>
-                  <div className="row">
-                    <div className="col-md-12 d-flex justify-content-center">
-                      <button
-                        type="submit"
-                        className="btn btn-primary"
-                        disabled={loading}
-                        style={{ width: "fit-content" }}
-                      >
-                        {loading ? (
-                          <>
-                            <span className="spinner-border spinner-border-sm me-2"></span>
-                            {id ? "Updating..." : "Saving..."}
-                          </>
-                        ) : id ? (
-                          "Update Workspace"
-                        ) : (
-                          "Save Workspace"
-                        )}
-                      </button>
+                    <div className="row">
+                      <div className="col-md-12 d-flex justify-content-end mt-1">
+                        <button
+                          type="submit"
+                          className="btn btn-primary"
+                          disabled={loading}
+                          style={{ width: "fit-content" }}
+                        >
+                          {loading ? (
+                            <>
+                              <span className="spinner-border spinner-border-sm me-2"></span>
+                              {id ? "Updating..." : "Saving..."}
+                            </>
+                          ) : id ? (
+                            "Update Workspace"
+                          ) : (
+                            "Save Workspace"
+                          )}
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                </Form>
-              )}
-            </Formik>
+                  </Form>
+                )}
+              </Formik>
+            </div>
           </div>
         </DashboardWrapper>
       </div>

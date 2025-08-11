@@ -1,13 +1,10 @@
 import React, { useState } from "react";
 import "./dataset-III.scss";
 import { useNavigate, useLocation } from "react-router-dom";
+import Group from "../../assets/svg/group-III.svg";
 import Back from "../../assets/svg/Back.svg";
 import Cross from "../../assets/svg/cross.svg";
-import Three from "../../assets/png/3.png";
-import DIII from "../../assets/svg/D3.svg";
-import Polygon from "../../assets/svg/Polygon 3.svg";
 import Line from "../../assets/svg/line.svg";
-import Ring from "../../assets/svg/ringround.svg";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -243,19 +240,9 @@ const DatasetIII = ({
       <div className="container-dataset-III">
         <div className="first-row-dataset-III">
           <p>Create a Dataset</p>
-          <img src={DIII} alt="D3" />
-          <div className="second-row-dataset-III">
-            <img src={Polygon} alt="Polygon" />
+          <div className="progress-bar-forget-password-II">
+            <img src={Group} alt="logo" />
           </div>
-          <div className="ring-dataset-III">
-            <img src={Ring} alt="Ring" />
-          </div>
-          <div className="ring-i-dataset-III">
-            <img src={Ring} alt="Ring" />
-          </div>
-        </div>
-        <div className="third-row-dataset-III">
-          <img src={Three} alt="Three" />
         </div>
         <div className="header-dashboard-modals">
           <p>Select Table / Data</p>

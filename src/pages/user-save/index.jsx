@@ -9,6 +9,7 @@ import urlswithoutgateway from "../../actions/urlswithoutgateway";
 import { useSelector } from "react-redux";
 import Select from "react-select";
 import { toast } from "react-toastify";
+import "./user-save.scss";
 const SaveUser = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -74,151 +75,153 @@ const SaveUser = () => {
     <div className="main-container-workspaces">
       <div className="container-workspaces">
         <DashboardWrapper>
-          <div className="published-header mb-4">
+          <div className="published-header">
             <img src={Book} alt="" />
             <p>{id ? "Edit User" : "Save User"}</p>
           </div>
-          <div className="p-4 mx-auto" style={{ maxWidth: "800px" }}>
-            <Formik
-              enableReinitialize
-              initialValues={initialValues}
-              validationSchema={Yup.object({
-                id: Yup.number(),
-                userName: Yup.string().required("User Name is required"),
-                // password: Yup.string().required("Password is required"),
-                firstName: Yup.string().required("First Name is required"),
-                lastName: Yup.string().required("Last Name is required"),
-                email: Yup.string()
-                  .email("Invalid email")
-                  .required("Email is required"),
-                productId: Yup.string().required("Please select a product"),
-                isActive: Yup.boolean(),
-              })}
-              onSubmit={(values, { resetForm }) => {
-                save(values).then(() => {});
-              }}
-            >
-              {({ values, setFieldValue }) => (
-                <Form>
-                  {!id && (
+          <div className="main-container-save-user">
+            <div className="save-user-container">
+              <Formik
+                enableReinitialize
+                initialValues={initialValues}
+                validationSchema={Yup.object({
+                  id: Yup.number(),
+                  userName: Yup.string().required("User Name is required"),
+                  // password: Yup.string().required("Password is required"),
+                  firstName: Yup.string().required("First Name is required"),
+                  lastName: Yup.string().required("Last Name is required"),
+                  email: Yup.string()
+                    .email("Invalid email")
+                    .required("Email is required"),
+                  productId: Yup.string().required("Please select a product"),
+                  isActive: Yup.boolean(),
+                })}
+                onSubmit={(values, { resetForm }) => {
+                  save(values).then(() => {});
+                }}
+              >
+                {({ values, setFieldValue }) => (
+                  <Form>
+                    {!id && (
+                      <div className="row mb-3">
+                        <div className="col-md-12">
+                          <label className="block mb-1">UserName</label>
+                          <Field
+                            name="userName"
+                            placeholder="Enter username"
+                            className="form-control"
+                          />
+                          <ErrorMessage
+                            name="userName"
+                            component="div"
+                            className="text-danger"
+                          />
+                        </div>
+                      </div>
+                    )}
                     <div className="row mb-3">
-                      <div className="col-md-12">
-                        <label className="block">UserName</label>
+                      <div className="col-md-6">
+                        <label className="block mb-1">First Name</label>
                         <Field
-                          name="userName"
-                          placeholder="Enter username"
+                          name="firstName"
+                          placeholder="Enter firstname"
                           className="form-control"
                         />
                         <ErrorMessage
-                          name="userName"
+                          name="firstName"
+                          component="div"
+                          className="text-danger"
+                        />
+                      </div>
+                      <div className="col-md-6">
+                        <label className="block mb-1">Last Name</label>
+                        <Field
+                          name="lastName"
+                          placeholder="Enter lastname"
+                          className="form-control"
+                        />
+                        <ErrorMessage
+                          name="lastName"
                           component="div"
                           className="text-danger"
                         />
                       </div>
                     </div>
-                  )}
-                  <div className="row mb-3">
-                    <div className="col-md-6">
-                      <label className="block">First Name</label>
-                      <Field
-                        name="firstName"
-                        placeholder="Enter firstname"
-                        className="form-control"
-                      />
-                      <ErrorMessage
-                        name="firstName"
-                        component="div"
-                        className="text-danger"
-                      />
+                    <div className="row mb-3">
+                      <div className="col-md-12">
+                        <label className="block mb-1">Email</label>
+                        <Field
+                          name="email"
+                          type="email"
+                          placeholder="Enter email"
+                          className="form-control"
+                        />
+                        <ErrorMessage
+                          name="email"
+                          component="div"
+                          className="text-danger"
+                        />
+                      </div>
                     </div>
-                    <div className="col-md-6">
-                      <label className="block">Last Name</label>
-                      <Field
-                        name="lastName"
-                        placeholder="Enter lastname"
-                        className="form-control"
-                      />
-                      <ErrorMessage
-                        name="lastName"
-                        component="div"
-                        className="text-danger"
-                      />
+                    <div className="row mb-3">
+                      <div className="col-md-12">
+                        <label className="block mb-1">Select Product</label>
+                        <Select
+                          options={products?.map((product) => ({
+                            value: product.productId,
+                            label: product.title,
+                          }))}
+                          className="form-control"
+                          placeholder="Select a product"
+                          value={
+                            products
+                              ?.map((product) => ({
+                                value: product.productId,
+                                label: product.title,
+                              }))
+                              .find(
+                                (option) => option.value === values.productId
+                              ) || null
+                          }
+                          onChange={(selectedOption) =>
+                            setFieldValue(
+                              "productId",
+                              selectedOption ? selectedOption.value : ""
+                            )
+                          }
+                        />
+                        <ErrorMessage
+                          name="productId"
+                          component="div"
+                          className="text-danger"
+                        />
+                      </div>
                     </div>
-                  </div>
-                  <div className="row mb-3">
-                    <div className="col-md-12">
-                      <label className="block">Email</label>
-                      <Field
-                        name="email"
-                        type="email"
-                        placeholder="Enter email"
-                        className="form-control"
-                      />
-                      <ErrorMessage
-                        name="email"
-                        component="div"
-                        className="text-danger"
-                      />
+                    <div className="row mt-2">
+                      <div className="col-md-12 d-flex justify-content-end">
+                        <button
+                          type="submit"
+                          className="btn btn-primary"
+                          disabled={loading}
+                          style={{ width: "fit-content" }}
+                        >
+                          {loading ? (
+                            <>
+                              <span className="spinner-border spinner-border-sm me-2"></span>
+                              {id ? "Updating..." : "Saving..."}
+                            </>
+                          ) : id ? (
+                            "Update User"
+                          ) : (
+                            "Save User"
+                          )}
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                  <div className="row mb-3">
-                    <div className="col-md-12">
-                      <label className="block">Select Product</label>
-                      <Select
-                        options={products?.map((product) => ({
-                          value: product.productId,
-                          label: product.title,
-                        }))}
-                        className="form-control"
-                        placeholder="Select a product"
-                        value={
-                          products
-                            ?.map((product) => ({
-                              value: product.productId,
-                              label: product.title,
-                            }))
-                            .find(
-                              (option) => option.value === values.productId
-                            ) || null
-                        }
-                        onChange={(selectedOption) =>
-                          setFieldValue(
-                            "productId",
-                            selectedOption ? selectedOption.value : ""
-                          )
-                        }
-                      />
-                      <ErrorMessage
-                        name="productId"
-                        component="div"
-                        className="text-danger"
-                      />
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="col-md-12 d-flex justify-content-center">
-                      <button
-                        type="submit"
-                        className="btn btn-primary"
-                        disabled={loading}
-                        style={{ width: "fit-content" }}
-                      >
-                        {loading ? (
-                          <>
-                            <span className="spinner-border spinner-border-sm me-2"></span>
-                            {id ? "Updating..." : "Saving..."}
-                          </>
-                        ) : id ? (
-                          "Update User"
-                        ) : (
-                          "Save User"
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                </Form>
-              )}
-            </Formik>
+                  </Form>
+                )}
+              </Formik>
+            </div>
           </div>
         </DashboardWrapper>
       </div>

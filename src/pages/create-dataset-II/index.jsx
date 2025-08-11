@@ -4,11 +4,9 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import Back from "../../assets/svg/Back.svg";
 import Cross from "../../assets/svg/cross.svg";
-import DII from "../../assets/svg/D2.svg";
-import Polygon from "../../assets/svg/Polygon 3.svg";
+import Group from "../../assets/svg/group-II.svg";
 import Two from "../../assets/png/2.png";
 import Line from "../../assets/svg/line.svg";
-import Ring from "../../assets/svg/ringround.svg";
 import { connect } from "react-redux";
 import axios from "axios";
 import { setConnectingDetailPayload } from "../../actions/dataSourceActions";
@@ -117,12 +115,8 @@ const DatasetII = ({
       <div className="container-dataset-II">
         <div className="first-row-dataset-II">
           <p>Create a Dataset</p>
-          <img src={DII} alt="logo" />
-          <div className="second-row-dataset-II">
-            <img src={Polygon} alt="logo" />
-          </div>
-          <div className="ring-dataset-II">
-            <img src={Ring} alt="logo" />
+          <div className="progress-bar-forget-password-II">
+            <img src={Group} alt="logo" />
           </div>
         </div>
         <div className="third-row-dataset-II">

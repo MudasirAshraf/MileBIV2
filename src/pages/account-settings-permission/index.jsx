@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import Line from "../../assets/svg/line.svg";
 import { Link } from "react-router-dom";
 import DashboardWrapper from "../../components/dashboard-wrapper";
 import Book from "../../assets/svg/book.svg";
 import axiosInstance from "../../components/axios";
+import Check from "../../assets/svg/check.svg";
+import EArrow from "../../assets/svg/expandarrow.svg";
 import { connect, useSelector } from "react-redux";
 import urlswithoutgateway from "../../actions/urlswithoutgateway";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -11,12 +15,17 @@ import { DataGrid } from "@mui/x-data-grid";
 import { toast } from "react-toastify";
 
 const AccountSettingsPermission = () => {
+  const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1); // backend pages start at 1
   const [totalPages, setTotalPages] = useState(1);
   const user = useSelector((state) => state.login.user);
   const pageSize = 5;
+
+  const handleAccountSettings = () => {
+    navigate("/account-settings");
+  };
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -138,11 +147,16 @@ const AccountSettingsPermission = () => {
     <div className="main-container-workspaces" style={{ color: "white" }}>
       <div className="container-workspaces">
         <DashboardWrapper>
-          <div className="published-header d-flex align-items-center justify-content-between">
-            <div className="d-flex align-items-center">
-              <img src={Book} alt="" className="me-2" />
-              <p className="mb-0">User Permission</p>
-            </div>
+          <div className="account-settings-security">
+            <img src={Check} alt="logo" />
+            <p
+              className="account-settings-ci-paragraph"
+              onClick={handleAccountSettings}
+            >
+              Account Settings
+            </p>
+            <img src={EArrow} alt="logo" />
+            <p className="account-settings-ci-paragraph">User Permission</p>
           </div>
 
           <div className="p-4">
