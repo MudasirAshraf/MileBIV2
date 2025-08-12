@@ -24,7 +24,6 @@ import S2 from "../../assets/svg/s2.svg";
 import S3 from "../../assets/svg/s3.svg";
 import S4 from "../../assets/svg/s4.svg";
 import S5 from "../../assets/svg/s5.svg";
-import S6 from "../../assets/svg/s6.svg";
 import S7 from "../../assets/svg/s7.svg";
 import L1 from "../../assets/svg/l1.svg";
 import Ver from "../../assets/svg/Snap Horizontal.svg";
@@ -3661,7 +3660,7 @@ const Dashboard = ({
           <div className="container-grid-data">
             <div className="grid-data">
               <img src={Rarrow} alt="logo" />
-              <p>Grids</p>
+              <p className="grid-data-paragraph">Grids</p>
               <div className="grid-data-circle">7</div>
             </div>
             <div className="another-container-grid-data">
@@ -3753,7 +3752,7 @@ const Dashboard = ({
                 }}
               >
                 <img src={Rarrow} alt="logo" />
-                <p>Charts</p>
+                <p className="grid-data-paragraph">Charts</p>
                 <div className="grid-data-circle">17</div>
               </div>
               {selectedComponent === "Charts" && showChartList && (
@@ -3911,7 +3910,7 @@ const Dashboard = ({
               }
             >
               <img src={Rarrow} alt="logo" />
-              <p>Components</p>
+              <p className="grid-data-paragraph">Components</p>
               <div className="grid-data-circle">4</div>
             </div>
             {selectedComponent === "Components" && (
@@ -3951,8 +3950,8 @@ const Dashboard = ({
               }
             >
               <img src={Rarrow} alt="logo" />
-              <p>Typography</p>
-              <div className="grid-data-circle">10</div>
+              <p className="grid-data-paragraph">Typography</p>
+              <div className="grid-data-circle">1</div>
             </div>
 
             {selectedComponent === "typography" && (
@@ -3976,7 +3975,6 @@ const Dashboard = ({
               <p className="text-primary text-center">
                 {chartOptions.chartType}
               </p>
-              <hr />
             </div>
             {/* Dataset */}
             {chartOptions?.chartType != "typography" && (
@@ -5606,7 +5604,7 @@ const Dashboard = ({
       <div className="container-navbar">
         <div className="first-row-navbar">
           <div>
-            <img src={Logo} alt="logo" />
+            <img src={Logo} alt="logo" className="nav-logo-img" />
           </div>
           <div className="first-row-navbar-I">
             <div className="fr-navbar-I">
@@ -5724,7 +5722,7 @@ const Dashboard = ({
                       navigate(`/set-user-permissions/${dashboard.dashboardId}`)
                     }
                   >
-                    <p>User Permissions</p>
+                    <p className="perm-para">User Permissions</p>
                   </div>
                 </div>
               )}

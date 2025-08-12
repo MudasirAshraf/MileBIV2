@@ -11,8 +11,11 @@
 .first-row-navbar {
   display: flex;
   flex-direction: row;
-  gap: 60px;
+  gap: 55px;
   align-items: center;
+}
+.nav-logo-img {
+  height: 37px;
 }
 .dataset-panel {
   height: 150px;
@@ -24,8 +27,8 @@
     color: #fff;
   }
 }
-.active-link{
-    color: #1c9ca7 !important;
+.active-link {
+  color: #1c9ca7 !important;
 }
 .first-row-navbar-I {
   display: flex;
@@ -38,26 +41,35 @@
   align-items: center;
   justify-content: center;
   background-color: #656e7c;
-  padding: 10px;
+  padding: 7px;
   border-radius: 4px;
 }
 .fr-navbar-II {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  justify-content: flex-start;
-  margin-bottom: 8px;
+  // justify-content: flex-start;
+  // margin-bottom: 8px;
 }
 .fr-navbar-II p {
   color: #8b99ad;
-  font-size: 0.7rem;
-  font-weight: 400;
+  font-size: 0.826rem;
+  font-weight: 600;
+  line-height: 1rem;
+  margin: 0;
 }
 .fr-navbar-II select {
-  font-size: 0.7rem;
+  font-size: 0.725rem;
+  font-weight: 600;
   background-color: transparent;
   border: none;
   color: white;
+  cursor: pointer;
+  outline: none;
+}
+.fr-navbar-II select option {
+  color: #1b2534;
+  background-color: #ffffff;
 }
 .second-row-navbar {
   display: flex;
@@ -68,7 +80,7 @@
   display: flex;
   align-items: center;
   border: 2px solid white;
-  padding: 0px 6px;
+  padding: 4px 10px;
   justify-content: center;
   gap: 10px;
   cursor: pointer;
@@ -80,8 +92,13 @@
 .Dashboard:hover {
   background-color: #1c9ca7;
 }
-.DS {
-  margin-top: 5px;
+
+.perm-para {
+  margin: 0;
+  color: #ffffff;
+  font-size: 0.8275rem;
+  font-weight: 600;
+  line-height: 1rem;
 }
 .Dashboard {
   display: flex;
@@ -146,7 +163,7 @@
 .main-container-CDB {
   display: flex;
   align-items: center;
-  padding: 0px 10px;
+  padding: 8px 10px;
   justify-content: space-between;
   background-color: #1b2534;
   height: fit-content;
@@ -168,9 +185,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 5px;
+  width: 40px;
+  height: 35px;
   background-color: #303e52;
-  border-radius: 3px;
+  border-radius: 5px;
   cursor: pointer;
 }
 .sr-CDB-III {
@@ -182,21 +200,20 @@
   background-color: #1c9ca7;
   font-size: 0.8rem;
   border-radius: 3px;
-  padding: 7px;
+  padding: 8px;
 }
 .sr-btn-I {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 7px 10px;
+  width: 40px;
+  height: 35px;
   font-size: 0.8rem;
   background-color: #1c9ca7;
-  border-radius: 3px;
+  border-radius: 6px;
   cursor: pointer;
 }
-.sr-img {
-  height: 14px;
-}
+
 .content-CDB {
   display: flex;
   flex-direction: column;
@@ -249,18 +266,15 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 0.8rem;
   cursor: pointer;
 }
 .editor-data {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  font-size: 0.8rem;
-  padding-left: 10px;
+  padding: 0px 10px;
 }
 .editor-data-c-1 p {
-  font-size: 1rem;
+  margin: 0;
 }
 .editor-data-c-1 h4 {
   color: #1c9ca7;
@@ -290,18 +304,27 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 0.8rem;
   cursor: pointer;
   padding-left: 10px;
+}
+.grid-data-paragraph {
+  margin: 0;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.875rem;
+  line-height: 1.5rem;
+}
+.grid-data-paragraph:hover {
   color: #1c9ca7;
 }
-.react-select__menu{
+.react-select__menu {
   color: black !important;
 }
 .grid-data-circle {
-  height: 12px;
-  width: 12px;
-  font-size: 0.5rem;
+  height: 18px;
+  width: 18px;
+  font-size: 0.55rem;
+  font-weight: 700;
   border-radius: 100px;
   border: 0.5px solid white;
   display: flex;
@@ -314,7 +337,7 @@
 .container-grid-data {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 .another-container-grid-data {
   display: flex;
@@ -356,25 +379,3 @@
   flex-direction: column;
   gap: 15px;
 }
-// .editor-data {
-//     padding: 20px;
-//   }
-
-//   .editor-data-c-1 {
-//     margin-bottom: 20px;
-//   }
-
-//   .editor-properties {
-//     margin-top: 10px;
-//   }
-
-//   .editor-properties label {
-//     display: block;
-//     margin-bottom: 5px;
-//   }
-
-//   .editor-properties input {
-//     width: 100%;
-//     padding: 8px;
-//     box-sizing: border-box;
-//   }
