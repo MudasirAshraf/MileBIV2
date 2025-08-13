@@ -4,9 +4,7 @@ import "./modal-I.scss";
 import Back from "../../assets/svg/Back.svg";
 import Cross from "../../assets/svg/cross.svg";
 import Two from "../../assets/png/2.png";
-import PII from "../../assets/svg/P2.svg";
-import Polygon from "../../assets/svg/Polygon 3.svg";
-import Ring from "../../assets/svg/ringround.svg";
+import GII from "../../assets/svg/gI.svg";
 import Line from "../../assets/svg/line.svg";
 import Scratch from "../../assets/svg/scratch.svg";
 import T1 from "../../assets/svg/Mask group.svg";
@@ -41,14 +39,8 @@ const CreateDashboardModalI = () => {
       {/* Adding Header */}
       <div className="container-dashboard-modals-I">
         <div className="first-row-dashboard-modals-I">
-          <p>Create a Dashboard</p>
-          <img src={PII} alt="logo" />
-          <div className="third-row-dashboard-modals-I">
-            <img src={Polygon} alt="logo" />
-          </div>
-          <div className="fourth-row-dashboard-modals-I">
-            <img src={Ring} alt="logo" />
-          </div>
+          <p className="paragrapgh-modals">Create a Dashboard</p>
+          <img src={GII} alt="logo" />
         </div>
         <div className="second-row-dashboard-modals-I">
           <img src={Two} alt="logo" />
@@ -75,7 +67,7 @@ const CreateDashboardModalI = () => {
               <img src={T1} alt="logo" />
             </div>
             <div>
-              <p>Template 1</p>
+              <p className="card-I-dashboard-modal-I-para">Template 1</p>
             </div>
           </div>
           {/* third card */}
@@ -84,7 +76,7 @@ const CreateDashboardModalI = () => {
               <img src={T2} alt="logo" />
             </div>
             <div>
-              <p>Template 2</p>
+              <p className="card-I-dashboard-modal-I-para">Template 2</p>
             </div>
           </div>
           {/* fourth card */}
@@ -93,7 +85,7 @@ const CreateDashboardModalI = () => {
               <img src={T3} alt="logo" />
             </div>
             <div>
-              <p>Template 3</p>
+              <p className="card-I-dashboard-modal-I-para">Template 3</p>
             </div>
           </div>
         </div>

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./modal-III.scss";
 import { useNavigate } from "react-router-dom";
+import GIV from "../../assets/svg/gIV.svg";
 import Back from "../../assets/svg/Back.svg";
 import Cross from "../../assets/svg/cross.svg";
 import Four from "../../assets/png/4.png";
@@ -53,20 +54,8 @@ const CreateDashboardModalIII = () => {
       {/* Adding Header */}
       <div className="container-dashboard-modals-III">
         <div className="first-row-dashboard-modals-III">
-          <p>Create a Dashboard</p>
-          <img src={PIV} alt="logo" />
-          <div className="third-row-dashboard-modals-III">
-            <img src={Polygon} alt="logo" />
-          </div>
-          <div className="fourth-row-dashboard-modals-III">
-            <img src={Ring} alt="logo" />
-          </div>
-          <div className="fifth-row-dashboard-modals-III">
-            <img src={Ring} alt="logo" />
-          </div>
-          <div className="sixth-row-dashboard-modals-III">
-            <img src={Ring} alt="logo" />
-          </div>
+          <p className="paragrapgh-modals">Create a Dashboard</p>
+          <img src={GIV} alt="logo" />
         </div>
         <div className="second-row-dashboard-modals-I">
           <img src={Four} alt="logo" />

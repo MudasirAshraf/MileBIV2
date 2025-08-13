@@ -51,20 +51,22 @@ const CustomSelect = ({ id, name, value, onChange }) => {
           </div>
           <img src={SmallLine} alt="SmallLine" className="small-line" />
           <p className="para-custom-select">Create a new workspace</p>
+          <div className="create-btn-container">
           <div className="create-button">
             <input
               type="text"
               placeholder="Create a new workspace"
-              className="input"
+              className="input-create"
               required
             />
             <button
               className="create-button-btn"
               onClick={() => handleOptionClick("Create a New Workspace")}
             >
-              <p>+</p>
-              <p>Create</p>
+              <p className="icon-create-btn">+</p>
+              <p className="para-create-btn">Create</p>
             </button>
+          </div>
           </div>
           <div className="alert-custom-select">
             <p>Work name already exists!</p>

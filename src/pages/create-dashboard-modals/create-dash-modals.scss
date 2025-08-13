@@ -29,14 +29,17 @@
     font-size: 1.5rem;
     font-weight: 400;
 }
+.paragrapgh-modals{
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #FFFFFF;
+    line-height: 1.5rem;
+}
 .second-row-dashboard-modals{
     position: absolute;
     left: 90%;
 }
-.third-row-dashboard-modals{
-    display: flex;
-    padding-right: 555px;
-}
+
 .header-dashboard-modals{
     display: flex;
     align-items: center;
@@ -62,7 +65,7 @@
     align-items: center;
     margin-bottom: 1rem;
     border: 1px solid #2A374A;
-    padding:13.5px 5px;
+    padding: 9px 5px;
     width: 300px;
     border-radius: 5px;
     background-color: #2A374A;
@@ -79,6 +82,5 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    padding-right: 130px;
-    margin-top: 80px;
+    margin-top: 30px;
   }

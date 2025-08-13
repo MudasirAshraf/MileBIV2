@@ -15,7 +15,7 @@ const CreateDashboardModalV = () => {
         <div className='container-dashboard-V'>
        {/* first column */}
        <div>
-        <img src={CenterLogo} alt="logo"/>
+        <img src={CenterLogo} alt="logo" className='database-logo'/>
        </div>
        {/* second column */}
        <div className='second-column-dashboard-V'>
@@ -24,7 +24,7 @@ const CreateDashboardModalV = () => {
        </div>
        {/* Third Column */}
        <div className='third-column-dashboard-V'>
-       <button onClick={handleNavigate}>I'm Done</button>
+       <button onClick={handleNavigate} className='done-btn'>I'm Done</button>
        </div>
         </div>
       

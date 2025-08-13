@@ -1,12 +1,10 @@
 import React from "react";
 import "./modal-II.scss";
 import { useNavigate } from "react-router-dom";
+import GIII from "../../assets/svg/gIII.svg";
 import Back from "../../assets/svg/Back.svg";
 import Cross from "../../assets/svg/cross.svg";
 import Three from "../../assets/png/3.png";
-import PIII from "../../assets/svg/p3.svg";
-import Polygon from "../../assets/svg/Polygon 3.svg";
-import Ring from "../../assets/svg/ringround.svg";
 import Line from "../../assets/svg/line.svg";
 import I1 from "../../assets/svg/I1.svg";
 import I2 from "../../assets/svg/I2.svg";
@@ -42,17 +40,8 @@ const CreateDashboardModalII = () => {
       {/* Adding Header */}
       <div className="container-dashboard-modals-II">
         <div className="first-row-dashboard-modals-II">
-          <p>Create a Dashboard</p>
-          <img src={PIII} alt="logo" />
-          <div className="third-row-dashboard-modals-II">
-            <img src={Polygon} alt="logo" />
-          </div>
-          <div className="fourth-row-dashboard-modals-II">
-            <img src={Ring} alt="logo" />
-          </div>
-          <div className="fifth-row-dashboard-modals-II">
-            <img src={Ring} alt="logo" />
-          </div>
+          <p className="paragrapgh-modals">Create a Dashboard</p>
+          <img src={GIII} alt="logo" />
         </div>
         <div className="second-row-dashboard-modals-I">
           <img src={Three} alt="logo" />

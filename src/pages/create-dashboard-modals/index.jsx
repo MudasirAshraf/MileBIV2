@@ -3,8 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "./create-dash-modals.scss";
 import Cross from "../../assets/svg/cross.svg";
 import One from "../../assets/png/1.png";
-import PI from "../../assets/svg/P1.svg";
-import Polygon from "../../assets/svg/Polygon 3.svg";
+import GI from "../../assets/svg/gII.svg";
 import Line from "../../assets/svg/line.svg";
 import CustomSelect from "../../components/custom-select";
 
@@ -38,11 +37,8 @@ const CreateDashboardModals = () => {
       </div>
       <div className="container-dashboard-modals">
         <div className="first-row-dashboard-modals">
-          <p>Create a Dashboard</p>
-          <img src={PI} alt="logo" />
-          <div className="third-row-dashboard-modals">
-            <img src={Polygon} alt="logo" />
-          </div>
+          <p className="paragrapgh-modals">Create a Dashboard</p>
+          <img src={GI} alt="logo" />
         </div>
         <div className="second-row-dashboard-modals">
           <img src={One} alt="logo" />
@@ -88,10 +84,10 @@ const CreateDashboardModals = () => {
                 required
               />
             </div>
-            <div className="button-dashboard-modal">
+          </form>
+           <div className="button-dashboard-modal">
               <button type="submit">Proceed</button>
             </div>
-          </form>
         </div>
       </div>
     </div>
