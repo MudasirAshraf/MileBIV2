@@ -20,7 +20,7 @@ import Question from "../../assets/svg/Question_light.svg";
 const SignPageII = () => {
   const navigate = useNavigate();
 
-  const handleSignUpPageI = () => {
+  const handleBack = () => {
     navigate("/sign-up-page-I");
   };
   const [code, setCode] = useState(["", "", "", ""]);
@@ -54,7 +54,7 @@ const SignPageII = () => {
             src={Back}
             alt="backlogo"
             className="image-sign-up"
-            onClick={handleSignUpPageI}
+            onClick={handleBack}
           />
         </div>
         {/* adding select option */}

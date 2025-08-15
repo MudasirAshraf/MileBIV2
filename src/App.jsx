@@ -68,8 +68,8 @@ function App() {
               <Route path="/" element={<LoginPage />} />
               {/* Sign-up-page-details */}
               <Route path="/sign-up-page-I" element={<SignpageI />} />
-              <Route path="/sign-up-page-III" element={<SignPageII />} />
-              <Route path="/sign-up-page-II" element={<SignPageIII />} />
+              <Route path="/sign-up-page-II" element={<SignPageII />} />
+              <Route path="/sign-up-page-III" element={<SignPageIII />} />
               {/* Forget-password-Details */}
               <Route path="/forget-password-I" element={<ForgetPasswordI />} />
               <Route
@@ -172,14 +172,8 @@ function App() {
                   path="/set-user-permissions/:dashboardId"
                   element={<SetUserPermissions />}
                 />
-                <Route
-                  path="/list-workspaces"
-                  element={<ListWorkspace />}
-                />
-                <Route
-                  path="/save-workspaces"
-                  element={<SaveWorkspace />}
-                />
+                <Route path="/list-workspaces" element={<ListWorkspace />} />
+                <Route path="/save-workspaces" element={<SaveWorkspace />} />
                 <Route
                   path="/save-workspaces/:id"
                   element={<SaveWorkspace />}

@@ -81,11 +81,15 @@ const SignPageIII = ({ registerUser }) => {
     },
   });
 
+  const handleBack = () => {
+    navigate("/sign-up-page-II");
+  }
+
   return (
     <div className="main-container-sign-in-page-III">
       <div className="header-details-sign-in-page-I">
         <div>
-          <img src={Back} alt="backlogo" className="image-sign-up" />
+          <img src={Back} alt="backlogo" className="image-sign-up" onClick={handleBack} />
         </div>
         <div className="login-page-select-option hide">
           <select className="select-option">

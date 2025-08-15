@@ -82,9 +82,9 @@ const CreateDashboard = ({
   ];
 
   const cardsDataI = [
-    { id: 1, title: "Template 1", image: TI },
-    { id: 2, title: "Template 2", image: TII },
-    { id: 3, title: "Template 3", image: TIII },
+    { id: 1, title: "Template 1", image: TI, route: "/template-I" },
+    { id: 2, title: "Template 2", image: TII, route: "/template-I" },
+    { id: 3, title: "Template 3", image: TIII, route: "/template-I" },
   ];
 
   const totalPages =
@@ -125,6 +125,7 @@ const CreateDashboard = ({
         console.error("Error fetching workspaces:", error);
       });
   };
+
 
   return (
     datasets && (
@@ -216,7 +217,7 @@ const CreateDashboard = ({
                       key={index}
                       image={card.image}
                       title={card.title}
-                      id={card.dashboardId}
+                      route={card.route}
                     />
                   ))}
               </div>
