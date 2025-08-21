@@ -383,7 +383,7 @@ const DatasetView = ({
 
                 {isAddingColumn && (
                   <select
-                    className="form-control w-auto"
+                    className="custom-select-dropdown"
                     value={newColumnType}
                     onChange={(e) => setNewColumnType(e.target.value)}
                   >
@@ -396,6 +396,7 @@ const DatasetView = ({
                   <FormControl fullWidth>
                     <InputLabel>Select Primary Key</InputLabel>
                     <Select
+                      className="custom-select-dropdown-MUI"
                       onChange={(e) => setSelectedColumn(e.target.value)}
                       defaultValue=""
                     >
@@ -413,7 +414,7 @@ const DatasetView = ({
 
                 {newColumnType === "Expression" && isAddingColumn && (
                   <input
-                    className="inp-adding-button form-control"
+                    className="inp-adding-button"
                     type="text"
                     placeholder="Enter Expression"
                     value={newColumnExpression}
@@ -421,10 +422,10 @@ const DatasetView = ({
                   />
                 )}
 
-                <Row className="d-flex justify-content-center mt-2 w-100">
+                <div className="action-buttons-datasets">
                   {isAddingColumn && (
                     <button
-                      className="btn btn-info me-2 w-auto"
+                      className="btn-custom btn-info"
                       onClick={handleSaveColumn}
                     >
                       Save
@@ -433,7 +434,7 @@ const DatasetView = ({
 
                   {isEditingColumn && (
                     <button
-                      className="btn btn-info me-2 w-auto"
+                      className="btn-custom btn-info"
                       onClick={handleRenameColumn}
                     >
                       Rename
@@ -441,12 +442,12 @@ const DatasetView = ({
                   )}
 
                   <button
-                    className="btn btn-danger w-auto"
+                    className="btn-custom btn-danger"
                     onClick={handleCancelClick}
                   >
                     Cancel
                   </button>
-                </Row>
+                </div>
               </div>
             )}
 
@@ -485,7 +486,7 @@ const DatasetView = ({
 
               {!isAddingColumn && (
                 <button
-                  className="btn btn-primary w-auto"
+                  className="btn-custom btn-primary"
                   onClick={handleAddClick}
                 >
                   Add
@@ -493,20 +494,20 @@ const DatasetView = ({
               )}
               {!isAddingColumn && (
                 <button
-                  className="btn ms-2 btn-success w-auto"
+                  className="btn-custom btn-success"
                   onClick={handleRenameClick}
                 >
                   Rename
                 </button>
               )}
               <button
-                className="btn btn-info w-auto mx-2"
+                className="btn-custom btn-info"
                 onClick={ShowTransformationSteps}
               >
                 Show Transformation Steps
               </button>
               <button
-                className="btn btn-success w-auto"
+                className="btn-custom btn-success" 
                 onClick={handleRefresh}
               >
                 Refresh Data

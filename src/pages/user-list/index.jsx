@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { DataGrid } from "@mui/x-data-grid";
 import { toast } from "react-toastify";
+import "./user-list.scss";
 
 const ListUser = () => {
   const [users, setUsers] = useState([]);

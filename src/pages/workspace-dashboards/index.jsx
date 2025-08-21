@@ -275,7 +275,7 @@ const WorkspaceDashboard = ({
 
           {activeTab === "datasets" && (
             <div>
-              <div className="main-container-datasets">
+              <div className="main-container-datasets-grid-template">
                 {datasets
                   .slice(
                     (datasetPage - 1) * itemsPerPage,

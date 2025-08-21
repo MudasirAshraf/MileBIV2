@@ -126,7 +126,6 @@ const CreateDashboard = ({
       });
   };
 
-
   return (
     datasets && (
       <div className="main-container-create-dashboard">
@@ -223,19 +222,17 @@ const CreateDashboard = ({
               </div>
             )}
             {/* Datasets */}
+            {/* Datasets */}
             {activeTab === "datasets" && (
-              // <div className="main-container-datasets">
-              <Row className="d-flex align-items-center justify-content-center mx-0">
+              <div className="main-container-datasets-grid-template">
                 {datasets
                   .slice((page - 1) * itemsPerPage, page * itemsPerPage)
                   .map((dataset, index) => (
-                    <Col xs={6} md={3} className="mt-4">
-                      <CardIV key={index} dataset={dataset} />
-                    </Col>
+                    <CardIV key={index} dataset={dataset} />
                   ))}
-              </Row>
-              // </div>
+              </div>
             )}
+
             {/* Pagination controls for Create Dashboard, Available Templates, Data Sets */}
             <div className="pagination">
               <Pagination

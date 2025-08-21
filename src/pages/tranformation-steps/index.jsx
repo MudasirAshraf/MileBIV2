@@ -119,7 +119,7 @@ const TransformationSteps = ({ updateDataset }) => {
 
   
   return (
-    <div className="data-set-table-container">
+    <div className="transformation-steps-table-container">
       <h2>Transformation Steps</h2>
       <DataGrid
         rows={rows}
@@ -128,9 +128,11 @@ const TransformationSteps = ({ updateDataset }) => {
         rowsPerPageOptions={[5]}
         autoHeight
       />
+      <div className="back-btn-container">
       <button className="back-button" onClick={() => navigate(-1)}>
         Back
       </button>
+      </div>
     </div>
   );
 };

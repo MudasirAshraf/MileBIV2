@@ -2,10 +2,8 @@ import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { connect, useDispatch } from "react-redux";
 import "./card-IV.scss";
-import Setting from "../../assets/svg/setting.svg";
 import EYE from "../../assets/svg/eye.svg";
 import CenterLogo from "../../assets/svg/centerlogo.svg";
-import DropdownMenu from "../dropdown-menu";
 import { useNavigate } from "react-router-dom";
 import { setCurrent, deleteDataset } from "../../actions/datasetActions";
 import { setDatabaseDataPayload } from "../../actions/dataSourceActions";
@@ -17,10 +15,10 @@ const CardIV = ({
   setDatabaseDataPayload,
   dataSource,
 }) => {
-  const [showDropdown, setShowDropdown] = useState(false);
-  const handleSettingClick = () => {
-    setShowDropdown(!showDropdown);
-  };
+  // const [showDropdown, setShowDropdown] = useState(false);
+  // const handleSettingClick = () => {
+  //   setShowDropdown(!showDropdown);
+  // };
 
   const navigate = useNavigate();
   const dispatch = useDispatch()
@@ -39,23 +37,6 @@ const CardIV = ({
 
   return (
     <div className="card-iv">
-      {/* first column */}
-      {/* <div className="card-iv-setting">
-        <div className="first-column-card-iv">
-          <img
-            src={Setting}
-            alt="logo"
-            className="first-column-card-iv-image"
-            onClick={handleSettingClick}
-          />
-          {showDropdown && (
-            <DropdownMenu
-              deleteDataset={deleteDataset}
-              datasetId={dataset.datasetId}
-            />
-          )}
-        </div>
-      </div> */}
       {/* second column */}
       <div className="second-column-card-iv">
         <img
@@ -66,13 +47,13 @@ const CardIV = ({
       </div>
       {/* third column */}
       <div className="third-column-card-iv">
-        <p>{dataset?.datasetTitle}</p>
+        <p className="datasets-paragraph">{dataset?.datasetTitle}</p>
       </div>
       {/* fourth column */}
-      <div className="fourth-column-card-iv m-0 p-0" onClick={handleDataSet}>
-        <button className="fourth-column-card-iv-button w-100">
+      <div className="fourth-column-card-iv" onClick={handleDataSet}>
+        <button className="fourth-column-card-iv-button">
           <img src={EYE} alt="logo" />
-          <p className="mt-3">View</p>
+          <p className="datasets-btn-para">View</p>
         </button>
       </div>
     </div>
