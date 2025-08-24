@@ -1,15 +1,14 @@
-    .main-container-forget-password-II {
-        width: 100%;
-        // React-toast CSS
-        .Toastify__toast-container {
-          position: absolute;
-          top: 1.5%;
-          left: 55%;
-          transform: translateX(-50%);
-          margin-top: 440px;
-        }
-      }
-
+.main-container-forget-password-II {
+  width: 100%;
+  // React-toast CSS
+  .Toastify__toast-container {
+    position: absolute;
+    top: 1.5%;
+    left: 55%;
+    transform: translateX(-50%);
+    margin-top: 440px;
+  }
+}
 
 .header-container-forget-password-II {
   display: flex;
@@ -33,82 +32,39 @@
   font-weight: 400;
 }
 
-/* Number "2" image aligned right */
+.code-div {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+}
+.code-entry {
+  display: flex;
+  gap: 10px;
+}
+
+.code-entry input {
+  width: 40px;
+  height: 40px;
+  font-size: 24px;
+  text-align: center;
+  background-color: #2a374a;
+  color: #ffffff;
+}
+
 .side-logo-sign-in-page img {
   width: 60px;
   height: auto;
 }
-// .form-header-text-forget-password-II-div{
-//     padding-left: 63px;
-// }
-// .progress-bar-forget-password-II{
-//     display: flex;
-//     flex-direction: column;
-//     align-items: center;
-//     justify-content: center;
-//     position: relative;
-//     margin-left: 142px; 
-//     margin-top: 30px;
-// }
-// .side-logo-sign-in-page{
-//     display: flex;
-//     align-items: center;
-// }
-.progress-sp-I-image-I-fp-II{
-    position: absolute;
-    left:48.7%;
-    top: 11%;
-  }
-  .progress-sp-I-image-III-fp-II{
-      position: absolute;
-      top: -50%;
-      left: 47.3%;
-  }
-  .progress-sp-II-image-I-fp-II{
-      position: absolute;
-      top: 10.5%;
-      left: 52.9%;
-  }
-  .progress-sp-III-fp-II{
-      position: absolute;
-      left: 76%;
-  }
-  .progress-sp-III-image-I-fp-II{
-      position: absolute;
-      top: 13%;
-      left: 36%;
-  }
-  .progress-sp-III-image-III-fp-II{
-      position: absolute;
-      top: 65%;
-      left: 33%;
-  }
-  .progress-sp-IV-image-I-fp-II{
-      position: absolute;
-      top: 10.5%;
-      left: 80.3%;
-  }
-  .progress-sp-V-fp-II{
-      position: absolute;
-      left: 313%;
-      top: 1%;
-  }
-  .progress-sp-V-image-II-fp-II{
-      position:absolute;
-      left: 37%;
-      top: 14%;
-  }
-  .form-sign-in-fp-II{
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    align-items: flex-end;
-    padding-right: 52px;
-    margin-top: 60px;
-  }
-  .code-div {
-    position: relative; 
-  }
-  
 
-  
+.form-sign-in-fp-II {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: flex-end;
+  padding-right: 52px;
+  margin-top: 60px;
+}
+.code-div {
+  position: relative;
+}

@@ -105,13 +105,14 @@
 
 .input-details-sign-in-account-settings-pi {
   background-color: #232d3c;
+  color: #ffffff;
 }
 .input-group-sign-in-account-settings-pi input {
   flex: 1;
   border: none;
   outline: none;
   background-color: #232d3c;
-  color: white;
+  color: #ffffff;
 }
 .input-group-sign-in-row-I-account-settings-pi {
   display: flex;
@@ -125,13 +126,14 @@
 }
 .input-details-sign-in-row-I-account-settings-pi {
   background-color: #232d3c;
+  color: #ffffff;
 }
 .input-group-sign-in-row-I-account-settings-pi input {
   flex: 1;
   border: none;
   outline: none;
   background-color: #232d3c;
-  color: white;
+  color: #ffffff;
 }
 .account-settings-pi-form-button {
   display: flex;
@@ -140,7 +142,7 @@
   justify-content: flex-end;
   padding-right: 14px;
 }
-.error{
+.error {
   color: red;
   font-size: 0.725rem;
   line-height: 1rem;

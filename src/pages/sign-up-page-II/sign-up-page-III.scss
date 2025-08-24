@@ -76,18 +76,18 @@ top: 10.4%;
     left: 33%;
 }
 .select-login-page-III {
-    width: 400px; /* Adjust width as needed */
-    padding: 9px;
+    width: 400px; 
+    padding: 5px;
     font-size: 13px;
     background-color: #2A374A;
     border: none;
     color: grey;
 }
 select:invalid {
-    color: grey; /* Placeholder text color */
+    color: grey; 
 }
 option:not(:first-child) {
-    color: white;
+    color: #FFFFFF;
 }
 
 

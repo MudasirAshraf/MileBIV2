@@ -52,17 +52,30 @@
   border: none;
   outline: none;
   background-color: #232d3c;
-  color: white;
+  color: #ffffff;
 }
 .styled-select {
   width: 285px;
-  padding: 5px 5px;
+  padding: 5px;
   font-size: 14px;
-  color: white;
+  color: #ffffff;
   background-color: #232d3c;
   border: none;
   border-radius: 5px;
+  cursor: pointer;
 }
+
+.styled-select option {
+  background-color: #232d3c;
+  color: #ffffff;
+  font-size: 0.875rem;
+  line-height: 1rem;
+}
+
+.styled-select option:hover {
+  background-color: #39465a;
+}
+
 .account-settings-ci-third-row {
   display: flex;
   flex-direction: row;
@@ -81,13 +94,14 @@
 }
 .input-details-adress-ci {
   background-color: #232d3c;
+  color: #ffffff;
 }
 .input-group-ci input {
   flex: 1;
   border: none;
   outline: none;
   background-color: #232d3c;
-  color: white;
+  color: #ffffff;
 }
 .account-settings-ci-paragraph {
   cursor: pointer;
