@@ -86,7 +86,7 @@ const CreateDashboardModals = () => {
             </div>
           </form>
            <div className="button-dashboard-modal">
-              <button type="submit">Proceed</button>
+              <button type="submit" onClick={handleSubmit}>Proceed</button>
             </div>
         </div>
       </div>

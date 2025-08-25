@@ -21,8 +21,10 @@
   display: flex;
   flex-direction: column;
   border-radius: 10px;
-  background-color: #1b2534;
-  padding: 10px;
+  // background-color: #1b2534;
+   background-color: #354153;
+   box-shadow: 0 2px 6px rgba(255, 255, 255, 0.05), 0 0 12px rgba(255, 255, 255, 0.8);
+  padding: 20px 14px;
   width: 1000px;
   position: relative;
 }
@@ -33,9 +35,6 @@
   justify-content: center;
   gap: 400px;
 }
-// .form-header-text-sign-in-page-div{
-//     margin-left: 450px;
-// }
 .form-header-sign-in-page {
   display: flex;
   flex-direction: column;
@@ -54,46 +53,7 @@
   position: relative;
   margin-left: 180px;
 }
-.progress-I {
-  position: relative;
-}
-.progress-I-image-I {
-  position: absolute;
-  left: 38%;
-  top: 22%;
-}
-.progress-I-image-III {
-  position: absolute;
-  left: 33%;
-  bottom: -26%;
-}
-.progress-II {
-  position: absolute;
-  left: 53.5%;
-}
-.progress-III {
-  position: absolute;
-  left: 82.5%;
-}
-.progress-III-image-II {
-  position: absolute;
-  top: 25%;
-  left: 34%;
-}
-.progress-IV {
-  position: absolute;
-  left: 92.7%;
-}
-.progress-V {
-  position: absolute;
-  left: 120.5%;
-}
-.progress-V-image-II {
-  position: absolute;
-  left: 35.25%;
-  bottom: -1%;
-  top: 24.7%;
-}
+
 .sub-header-sign-in-page-I {
   display: flex;
   align-items: center;
@@ -121,7 +81,6 @@
 .input-group-sign-in-row-I {
   display: flex;
   align-items: center;
-  // margin-bottom: 1rem;
   border: 1px solid #2a374a;
   padding: 7px 5px;
   width: 400px;
@@ -131,7 +90,6 @@
 .input-group-sign-in {
   display: flex;
   align-items: center;
-  // margin-bottom: 1rem;
   border: 1px solid #2a374a;
   padding: 5px;
   width: 400px;
@@ -141,7 +99,6 @@
 .input-group-fourth-column {
   display: flex;
   align-items: center;
-  // margin-bottom: 1rem;
   border: 1px solid #2a374a;
   padding: 1px 5px;
   width: 830px;
@@ -152,7 +109,6 @@
 .input-fourth-column {
   display: flex;
   align-items: center;
-  // margin-bottom: 1rem;
   border: 1px solid #2a374a;
   padding: 5px;
   width: 800px;
