@@ -1269,7 +1269,9 @@ const Dashboard = ({
             {/* Border-Radius-Applications */}
             <label className="chart-properties-labels">
               Border Radius Application:
+              <div className="chart-select-wrapper">
               <select
+              className="chart-select"
                 name="options.plotOptions.bar.borderRadiusApplication"
                 value={
                   properties[
@@ -1282,6 +1284,7 @@ const Dashboard = ({
                 <option value="start">Start</option>
                 <option value="both">Both</option>
               </select>
+              </div>
             </label>
             {/* Show-legends */}
             <label className="chart-properties-labels">
@@ -1326,7 +1329,9 @@ const Dashboard = ({
             {/* Legend-position */}
             <label className="chart-properties-labels">
               Legend Position:
+              <div className="chart-select-wrapper">
               <select
+              className="chart-select"
                 name="options.legend.position"
                 value={properties["options.legend.position"] || "top"}
                 onChange={handlePropertyChange}
@@ -1336,6 +1341,7 @@ const Dashboard = ({
                 <option value="left">Left</option>
                 <option value="right">Right</option>
               </select>
+              </div>
             </label>
             {/* X-axis-Title */}
             <label className="chart-properties-labels">
@@ -3972,7 +3978,7 @@ const Dashboard = ({
         return (
           <div className="editor-data">
             <div className="editor-data-c-1">
-              <p className="text-primary text-center">
+              <p className="editor-para-data-c">
                 {chartOptions.chartType}
               </p>
             </div>
@@ -3982,6 +3988,8 @@ const Dashboard = ({
                 {chartOptions?.chartType && (
                   <div>
                     <Select
+                    className="select-container"
+                    classNamePrefix="react-select"
                       options={
                         datasets
                           ? datasets.map((item) => ({
@@ -4127,7 +4135,7 @@ const Dashboard = ({
                       <Form>
                         {/* Category Dropdown */}
                         <div>
-                          <label htmlFor="category">Category:</label>
+                          <label htmlFor="category" className="label-category">Category:</label>
                           <Select
                             options={categoriesOptions}
                             value={categoriesOptions.find((option) => {
@@ -4147,7 +4155,7 @@ const Dashboard = ({
                                 datasetName: parsedValue.datasetName,
                               });
                             }}
-                            className="react-select-container"
+                            className="select-container"
                             classNamePrefix="react-select"
                             placeholder="Choose Category"
                           />
@@ -4160,10 +4168,10 @@ const Dashboard = ({
                         </div>
 
                         {/* Group By Radio Buttons */}
-                        <div className="mt-3">
-                          <label>Group By:</label>
-                          <div>
-                            <label>
+                        <div>
+                          <label className="label-category-group">Group By:</label>
+                          <div className="radio-group-container">
+                            <label className="radio-option">
                               <Field
                                 type="radio"
                                 name="groupBy"
@@ -4173,7 +4181,7 @@ const Dashboard = ({
                               />
                               Yes
                             </label>
-                            <label style={{ marginLeft: "20px" }}>
+                            <label className="radio-option">
                               <Field
                                 type="radio"
                                 name="groupBy"
@@ -4188,8 +4196,8 @@ const Dashboard = ({
 
                         {/* Aggregate Function Dropdown (Visible if Group By is "Yes") */}
                         {values.groupBy === "yes" && (
-                          <div className="mt-2">
-                            <label htmlFor="aggregateFunction">
+                          <div>
+                            <label htmlFor="aggregateFunction" className="label-category-group">
                               Select Aggregate Function:
                             </label>
                             <Select
@@ -4213,7 +4221,7 @@ const Dashboard = ({
                                   selectedFunc.value
                                 );
                               }}
-                              className="react-select-container"
+                              className="select-container"
                               classNamePrefix="react-select"
                               placeholder="Select function"
                             />
@@ -4234,7 +4242,7 @@ const Dashboard = ({
                                 <div key={index}>
                                   {chartOptions.chartType === "mixed" && (
                                     <div>
-                                      <label htmlFor={`series[${index}].type`}>
+                                      <label htmlFor={`series[${index}].type`} className="label-category-group">
                                         Chart Type:
                                       </label>
                                       <Select
@@ -4249,7 +4257,7 @@ const Dashboard = ({
                                             selectedType.value
                                           );
                                         }}
-                                        className="react-select-container"
+                                        className="select-container"
                                         classNamePrefix="react-select"
                                         placeholder="Choose Series"
                                       />
@@ -4263,7 +4271,7 @@ const Dashboard = ({
                                   )}
 
                                   <div>
-                                    <label htmlFor={`series[${index}].column`}>
+                                    <label htmlFor={`series[${index}].column`} className="label-category-group">
                                       Series {index + 1}:
                                     </label>
                                     <Select
@@ -4294,7 +4302,7 @@ const Dashboard = ({
                                           parsedValue.datasetName
                                         );
                                       }}
-                                      className="react-select-container"
+                                      className="select-container"
                                       classNamePrefix="react-select"
                                       placeholder="Choose Series"
                                     />
@@ -4308,10 +4316,10 @@ const Dashboard = ({
                                   </div>
 
                                   {chartOptions.chartType != "mixed" && (
-                                    <div className="mt-3">
-                                      <label>Group By:</label>
-                                      <div>
-                                        <label>
+                                    <div>
+                                      <label className="label-category-group">Group By:</label>
+                                      <div className="radio-group-container">
+                                        <label className="radio-option">
                                           <Field
                                             type="radio"
                                             name={`series[${index}].groupBy`}
@@ -4328,7 +4336,7 @@ const Dashboard = ({
                                           />
                                           Yes
                                         </label>
-                                        <label style={{ marginLeft: "20px" }}>
+                                        <label className="radio-option">
                                           <Field
                                             type="radio"
                                             name={`series[${index}].groupBy`}
@@ -4476,7 +4484,7 @@ const Dashboard = ({
                     <Form>
                       {/* Category Dropdown */}
                       <div>
-                        <label htmlFor="category">Category:</label>
+                        <label htmlFor="category" className="label-category">Category:</label>
                         <Select
                           options={categoriesOptions}
                           value={categoriesOptions.find((option) => {
@@ -4496,8 +4504,8 @@ const Dashboard = ({
                               datasetName: parsedValue.datasetName,
                             });
                           }}
-                          className="react-select-container"
-                          classNamePrefix="react-select"
+                          className="select-container"
+                            classNamePrefix="react-select"
                           placeholder="Choose Category"
                         />
                         {touched.category && errors.category && (
@@ -4510,9 +4518,9 @@ const Dashboard = ({
 
                       {/* Group By Radio Buttons */}
                       <div className="mt-3">
-                        <label>Group By:</label>
-                        <div>
-                          <label>
+                        <label className="label-category-group">Group By:</label>
+                        <div className="radio-group-container">
+                          <label className="radio-option">
                             <Field
                               type="radio"
                               name="groupBy"
@@ -4522,7 +4530,7 @@ const Dashboard = ({
                             />
                             Yes
                           </label>
-                          <label style={{ marginLeft: "20px" }}>
+                          <label className="radio-option">
                             <Field
                               type="radio"
                               name="groupBy"
@@ -4538,7 +4546,7 @@ const Dashboard = ({
                       {/* Aggregate Function Dropdown (Visible if Group By is "Yes") */}
                       {values.groupBy === "yes" && (
                         <div className="mt-2">
-                          <label htmlFor="aggregateFunction">
+                          <label htmlFor="aggregateFunction" className="label-category-group">
                             Select Aggregate Function:
                           </label>
                           <Select
@@ -4562,7 +4570,7 @@ const Dashboard = ({
                                 selectedFunc.value
                               );
                             }}
-                            className="react-select-container"
+                            className="select-container"
                             classNamePrefix="react-select"
                             placeholder="Select function"
                           />
@@ -4577,7 +4585,7 @@ const Dashboard = ({
 
                       {/* Series Dropdown */}
                       <div>
-                        <label htmlFor="series">Series:</label>
+                        <label htmlFor="series" className="label-category-group">Series:</label>
                         <Select
                           options={categoriesOptions}
                           value={categoriesOptions.find((option) => {
@@ -4597,7 +4605,7 @@ const Dashboard = ({
                               datasetName: parsedValue.datasetName,
                             });
                           }}
-                          className="react-select-container"
+                          className="select-container"
                           classNamePrefix="react-select"
                           placeholder="Choose Series"
                         />
@@ -4663,7 +4671,7 @@ const Dashboard = ({
                     <Form>
                       {/* Dropdown for X */}
                       <div>
-                        <label htmlFor="x">X:</label>
+                        <label htmlFor="x" className="label-category-group">X:</label>
                         <Select
                           options={categoriesOptions}
                           value={categoriesOptions.find((option) => {
@@ -4682,8 +4690,8 @@ const Dashboard = ({
                               datasetName: parsedValue.datasetName,
                             });
                           }}
-                          className="react-select-container"
-                          classNamePrefix="react-select"
+                          className="select-container"
+                            classNamePrefix="react-select"
                           placeholder="Choose X"
                         />
                         {touched.x && errors.x && (
@@ -4695,7 +4703,7 @@ const Dashboard = ({
 
                       {/* Dropdown for Y */}
                       <div>
-                        <label htmlFor="y">Y:</label>
+                        <label htmlFor="y" className="label-category-group">Y:</label>
                         <Select
                           options={categoriesOptions}
                           value={categoriesOptions.find((option) => {
@@ -4714,8 +4722,8 @@ const Dashboard = ({
                               datasetName: parsedValue.datasetName,
                             });
                           }}
-                          className="react-select-container"
-                          classNamePrefix="react-select"
+                          className="select-container"
+                            classNamePrefix="react-select"
                           placeholder="Choose Y"
                         />
                         {touched.y && errors.y && (
@@ -4815,7 +4823,7 @@ const Dashboard = ({
                               >
                                 {/* Name Input */}
                                 <div>
-                                  <label htmlFor={`series[${index}].name`}>
+                                  <label htmlFor={`series[${index}].name`} className="label-category-group">
                                     Value:
                                   </label>
                                   <Field
@@ -4835,7 +4843,7 @@ const Dashboard = ({
 
                                 {/* Dropdown for X */}
                                 <div>
-                                  <label htmlFor={`series[${index}].x`}>
+                                  <label htmlFor={`series[${index}].x`} className="label-category-group">
                                     X:
                                   </label>
                                   <Select
@@ -4860,7 +4868,7 @@ const Dashboard = ({
                                         datasetName: parsedValue.datasetName,
                                       });
                                     }}
-                                    className="react-select-container"
+                                    className="select-container"
                                     classNamePrefix="react-select"
                                     placeholder="Choose X"
                                   />
@@ -4877,7 +4885,7 @@ const Dashboard = ({
 
                                 {/* Dropdown for Y */}
                                 <div>
-                                  <label htmlFor={`series[${index}].y`}>
+                                  <label htmlFor={`series[${index}].y`} className="label-category-group">
                                     Y:
                                   </label>
                                   <Select
@@ -4902,8 +4910,8 @@ const Dashboard = ({
                                         datasetName: parsedValue.datasetName,
                                       });
                                     }}
-                                    className="react-select-container"
-                                    classNamePrefix="react-select"
+                                    className="select-container"
+                            classNamePrefix="react-select"
                                     placeholder="Choose Y"
                                   />
                                   {errors.series &&
@@ -5058,8 +5066,8 @@ const Dashboard = ({
                               >
                                 {/* Name Field */}
                                 <div>
-                                  <label htmlFor={`datasets[${index}].name`}>
-                                    Name:
+                                  <label htmlFor={`datasets[${index}].name`} className="label-category-group">
+                                    Name: 
                                   </label>
                                   <Field
                                     className="form-control"
@@ -5079,7 +5087,7 @@ const Dashboard = ({
 
                                 {/* Dropdown for X */}
                                 <div>
-                                  <label htmlFor={`datasets[${index}].data.x`}>
+                                  <label htmlFor={`datasets[${index}].data.x`} className="label-category-group">
                                     X:
                                   </label>
                                   <Select
@@ -5107,7 +5115,7 @@ const Dashboard = ({
                                         }
                                       );
                                     }}
-                                    className="react-select-container"
+                                    className="select-container"
                                     classNamePrefix="react-select"
                                     placeholder="Choose X"
                                   />
@@ -5123,7 +5131,7 @@ const Dashboard = ({
 
                                 {/* Dropdown for Y */}
                                 <div>
-                                  <label htmlFor={`datasets[${index}].data.y`}>
+                                  <label htmlFor={`datasets[${index}].data.y`} className="label-category-group">
                                     Y:
                                   </label>
                                   <Select
@@ -5151,8 +5159,8 @@ const Dashboard = ({
                                         }
                                       );
                                     }}
-                                    className="react-select-container"
-                                    classNamePrefix="react-select"
+                                    className="select-container"
+                            classNamePrefix="react-select"
                                     placeholder="Choose Y"
                                   />
                                   {errors.datasets &&
@@ -5167,7 +5175,7 @@ const Dashboard = ({
 
                                 {/* Dropdown for Z */}
                                 <div>
-                                  <label htmlFor={`datasets[${index}].data.z`}>
+                                  <label htmlFor={`datasets[${index}].data.z`} className="label-category-group">
                                     Z:
                                   </label>
                                   <Select
@@ -5195,8 +5203,8 @@ const Dashboard = ({
                                         }
                                       );
                                     }}
-                                    className="react-select-container"
-                                    classNamePrefix="react-select"
+                                    className="select-container"
+                            classNamePrefix="react-select"
                                     placeholder="Choose Z"
                                   />
                                   {errors.datasets &&
@@ -5299,7 +5307,7 @@ const Dashboard = ({
                     <Form>
                       {/* Dropdown for Column */}
                       <div>
-                        <label htmlFor="column">Select Column:</label>
+                        <label htmlFor="column" className="label-category-group">Select Column:</label>
                         <Select
                           options={categoriesOptions}
                           value={categoriesOptions.find((option) => {
@@ -5319,8 +5327,8 @@ const Dashboard = ({
                               datasetName: parsedValue.datasetName,
                             });
                           }}
-                          className="react-select-container"
-                          classNamePrefix="react-select"
+                          className="select-container"
+                            classNamePrefix="react-select"
                           placeholder="Choose Column"
                         />
                         {touched.column && errors.column && (
@@ -5332,7 +5340,7 @@ const Dashboard = ({
 
                       {/* Dropdown for Function */}
                       <div className="mt-2">
-                        <label htmlFor="function">
+                        <label htmlFor="function" className="label-category-group">
                           Select Aggregate Function:
                         </label>
                         <Select
@@ -5353,7 +5361,7 @@ const Dashboard = ({
                           onChange={(selectedFunc) => {
                             setFieldValue("function", selectedFunc.value);
                           }}
-                          className="react-select-container"
+                          className="select-container"
                           classNamePrefix="react-select"
                           placeholder="Select function"
                         />
@@ -5452,7 +5460,7 @@ const Dashboard = ({
                     <Form>
                       {/* Multi-Select Dropdown for Columns */}
                       <div>
-                        <label htmlFor="columns">Select Columns:</label>
+                        <label htmlFor="columns" className="label-category-group">Select Columns:</label>
                         <Select
                           options={categoriesOptions}
                           isMulti
@@ -5480,8 +5488,8 @@ const Dashboard = ({
 
                             setFieldValue("columns", updatedColumns);
                           }}
-                          className="react-select-container"
-                          classNamePrefix="react-select"
+                          className="select-container"
+                            classNamePrefix="react-select"
                           placeholder="Choose Columns"
                         />
                         {touched.columns && errors.columns && (
@@ -5521,8 +5529,8 @@ const Dashboard = ({
                                   selectedFunc.value;
                                 setFieldValue("columns", updatedColumns);
                               }}
-                              className="react-select-container"
-                              classNamePrefix="react-select"
+                              className="select-container"
+                            classNamePrefix="react-select"
                               placeholder="Select function"
                               style={{ marginLeft: "10px", minWidth: "200px" }}
                             />
@@ -5532,7 +5540,7 @@ const Dashboard = ({
 
                       {/* Multi-Select for Group Columns */}
                       <div>
-                        <label htmlFor="groupColumns">
+                        <label htmlFor="groupColumns" className="label-category-group">
                           Select Group Columns:
                         </label>
                         <Select
@@ -5553,8 +5561,8 @@ const Dashboard = ({
                             );
                             setFieldValue("groupColumns", selectedGroupColumns);
                           }}
-                          className="react-select-container"
-                          classNamePrefix="react-select"
+                          className="select-container"
+                            classNamePrefix="react-select"
                           placeholder="Choose Group Columns"
                         />
                         {touched.groupColumns && errors.groupColumns && (
@@ -5704,7 +5712,7 @@ const Dashboard = ({
                       }
                     }
                   }}
-                  className="react-select-container"
+                  className="select-container"
                   classNamePrefix="react-select"
                   placeholder="Choose Series"
                 />
