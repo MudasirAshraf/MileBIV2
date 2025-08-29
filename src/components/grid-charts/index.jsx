@@ -93,12 +93,6 @@ const Grid = ({
       >
         <div
           className="grid-header d-flex align-items-center justify-content-between"
-          style={{
-            background: "#1c9ca7",
-            textAlign: "center",
-            fontSize: "20px",
-            padding: "5px",
-          }}
         >
           <div
             className="grid-title"

@@ -7,7 +7,7 @@
 .where-condition-box {
   border: 1px solid #d1d5db;
   padding: 5px;
-  border-radius: 8px;
+  border-radius: 5px;
 }
 .conditions-para-header {
   margin: 0;
@@ -25,11 +25,10 @@
 }
 
 .select-container-reactbox .react-select-box__control {
-  border-radius: 8px;
+  border-radius: 5px;
   border: 1px solid #2d3748;
   background-color: #2a374a;
   box-shadow: none;
-  min-height: 44px;
   transition: all 0.2s ease;
 }
 

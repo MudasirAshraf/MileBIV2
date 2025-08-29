@@ -1270,20 +1270,20 @@ const Dashboard = ({
             <label className="chart-properties-labels">
               Border Radius Application:
               <div className="chart-select-wrapper">
-              <select
-              className="chart-select"
-                name="options.plotOptions.bar.borderRadiusApplication"
-                value={
-                  properties[
-                    "options.plotOptions.bar.borderRadiusApplication"
-                  ] || "end"
-                }
-                onChange={handlePropertyChange}
-              >
-                <option value="end">End</option>
-                <option value="start">Start</option>
-                <option value="both">Both</option>
-              </select>
+                <select
+                  className="chart-select"
+                  name="options.plotOptions.bar.borderRadiusApplication"
+                  value={
+                    properties[
+                      "options.plotOptions.bar.borderRadiusApplication"
+                    ] || "end"
+                  }
+                  onChange={handlePropertyChange}
+                >
+                  <option value="end">End</option>
+                  <option value="start">Start</option>
+                  <option value="both">Both</option>
+                </select>
               </div>
             </label>
             {/* Show-legends */}
@@ -1330,17 +1330,17 @@ const Dashboard = ({
             <label className="chart-properties-labels">
               Legend Position:
               <div className="chart-select-wrapper">
-              <select
-              className="chart-select"
-                name="options.legend.position"
-                value={properties["options.legend.position"] || "top"}
-                onChange={handlePropertyChange}
-              >
-                <option value="top">Top</option>
-                <option value="bottom">Bottom</option>
-                <option value="left">Left</option>
-                <option value="right">Right</option>
-              </select>
+                <select
+                  className="chart-select"
+                  name="options.legend.position"
+                  value={properties["options.legend.position"] || "top"}
+                  onChange={handlePropertyChange}
+                >
+                  <option value="top">Top</option>
+                  <option value="bottom">Bottom</option>
+                  <option value="left">Left</option>
+                  <option value="right">Right</option>
+                </select>
               </div>
             </label>
             {/* X-axis-Title */}
@@ -1415,19 +1415,22 @@ const Dashboard = ({
             {/* Border-Radius-Applications */}
             <label className="chart-properties-labels">
               Border Radius Application:
-              <select
-                name="options.plotOptions.bar.borderRadiusApplication"
-                value={
-                  properties[
-                    "options.plotOptions.bar.borderRadiusApplication"
-                  ] || "end"
-                }
-                onChange={handlePropertyChange}
-              >
-                <option value="end">End</option>
-                <option value="start">Start</option>
-                <option value="both">Both</option>
-              </select>
+              <div className="chart-select-wrapper">
+                <select
+                  className="chart-select"
+                  name="options.plotOptions.bar.borderRadiusApplication"
+                  value={
+                    properties[
+                      "options.plotOptions.bar.borderRadiusApplication"
+                    ] || "end"
+                  }
+                  onChange={handlePropertyChange}
+                >
+                  <option value="end">End</option>
+                  <option value="start">Start</option>
+                  <option value="both">Both</option>
+                </select>
+              </div>
             </label>
             {/* Show-legends */}
             <label className="chart-properties-labels">
@@ -1472,16 +1475,19 @@ const Dashboard = ({
             {/* Legend-position */}
             <label className="chart-properties-labels">
               Legend Position:
-              <select
-                name="options.legend.position"
-                value={properties["options.legend.position"] || "top"}
-                onChange={handlePropertyChange}
-              >
-                <option value="top">Top</option>
-                <option value="bottom">Bottom</option>
-                <option value="left">Left</option>
-                <option value="right">Right</option>
-              </select>
+              <div className="chart-select-wrapper">
+                <select
+                  className="chart-select"
+                  name="options.legend.position"
+                  value={properties["options.legend.position"] || "top"}
+                  onChange={handlePropertyChange}
+                >
+                  <option value="top">Top</option>
+                  <option value="bottom">Bottom</option>
+                  <option value="left">Left</option>
+                  <option value="right">Right</option>
+                </select>
+              </div>
             </label>
             {/* X-axis-Title */}
             <label className="chart-properties-labels">
@@ -1672,16 +1678,19 @@ const Dashboard = ({
             {/* Legend-position */}
             <label className="chart-properties-labels">
               Legend Position:
-              <select
-                name="options.legend.position"
-                value={properties["options.legend.position"] || "top"}
-                onChange={handlePropertyChange}
-              >
-                <option value="top">Top</option>
-                <option value="bottom">Bottom</option>
-                <option value="left">Left</option>
-                <option value="right">Right</option>
-              </select>
+              <div className="chart-select-wrapper">
+                <select
+                  className="chart-select"
+                  name="options.legend.position"
+                  value={properties["options.legend.position"] || "top"}
+                  onChange={handlePropertyChange}
+                >
+                  <option value="top">Top</option>
+                  <option value="bottom">Bottom</option>
+                  <option value="left">Left</option>
+                  <option value="right">Right</option>
+                </select>
+              </div>
             </label>
             {/* X-axis-Title */}
             <label className="chart-properties-labels">
@@ -1928,19 +1937,22 @@ const Dashboard = ({
             </label>
             {/* Legend-position */}
             <label className="chart-properties-labels">
-              Legend Position:
-              <select
-                name="options.responsive.legend.position"
-                value={
-                  properties["options.responsive.legend.position"] || "bottom"
-                }
-                onChange={handlePropertyChange}
-              >
-                <option value="top">Top</option>
-                <option value="bottom">Bottom</option>
-                <option value="left">Left</option>
-                <option value="right">Right</option>
-              </select>
+              <div className="chart-select-wrapper">
+                Legend Position:
+                <select
+                  className="chart-select"
+                  name="options.responsive.legend.position"
+                  value={
+                    properties["options.responsive.legend.position"] || "bottom"
+                  }
+                  onChange={handlePropertyChange}
+                >
+                  <option value="top">Top</option>
+                  <option value="bottom">Bottom</option>
+                  <option value="left">Left</option>
+                  <option value="right">Right</option>
+                </select>
+              </div>
             </label>
           </>
         )}
@@ -1970,18 +1982,21 @@ const Dashboard = ({
             {/* Legend-position */}
             <label className="chart-properties-labels">
               Legend Position:
-              <select
-                name="options.responsive.options.legend"
-                value={
-                  properties["options.responsive.options.legend"] || "bottom"
-                }
-                onChange={handlePropertyChange}
-              >
-                <option value="top">Top</option>
-                <option value="bottom">Bottom</option>
-                <option value="left">Left</option>
-                <option value="right">Right</option>
-              </select>
+              <div className="chart-select-wrapper">
+                <select
+                  className="chart-select"
+                  name="options.responsive.options.legend"
+                  value={
+                    properties["options.responsive.options.legend"] || "bottom"
+                  }
+                  onChange={handlePropertyChange}
+                >
+                  <option value="top">Top</option>
+                  <option value="bottom">Bottom</option>
+                  <option value="left">Left</option>
+                  <option value="right">Right</option>
+                </select>
+              </div>
             </label>
           </>
         )}
@@ -2081,16 +2096,19 @@ const Dashboard = ({
             {/* Legend-Position */}
             <label className="chart-properties-labels">
               Legend Position:
-              <select
-                name="options.legend.position"
-                value={properties["options.legend.position"] || "bottom"}
-                onChange={handlePropertyChange}
-              >
-                <option value="top">Top</option>
-                <option value="bottom">Bottom</option>
-                <option value="left">Left</option>
-                <option value="right">Right</option>
-              </select>
+              <div className="chart-select-wrapper">
+                <select
+                  className="chart-select"
+                  name="options.legend.position"
+                  value={properties["options.legend.position"] || "bottom"}
+                  onChange={handlePropertyChange}
+                >
+                  <option value="top">Top</option>
+                  <option value="bottom">Bottom</option>
+                  <option value="left">Left</option>
+                  <option value="right">Right</option>
+                </select>
+              </div>
             </label>
           </>
         )}
@@ -2225,16 +2243,19 @@ const Dashboard = ({
             {/* Legend Position */}
             <label className="chart-properties-labels">
               Legend Position:
-              <select
-                name="options.legend.show"
-                value={properties["options.legend.show"] || "bottom"}
-                onChange={handlePropertyChange}
-              >
-                <option value="top">Top</option>
-                <option value="bottom">Bottom</option>
-                <option value="left">Left</option>
-                <option value="right">Right</option>
-              </select>
+              <div className="chart-select-wrapper">
+                <select
+                  className="chart-select"
+                  name="options.legend.show"
+                  value={properties["options.legend.show"] || "bottom"}
+                  onChange={handlePropertyChange}
+                >
+                  <option value="top">Top</option>
+                  <option value="bottom">Bottom</option>
+                  <option value="left">Left</option>
+                  <option value="right">Right</option>
+                </select>
+              </div>
             </label>
           </>
         )}
@@ -2408,16 +2429,19 @@ const Dashboard = ({
             {/* Legend Position */}
             <label className="chart-properties-labels">
               Legend Position:
-              <select
-                name="options.legend.position"
-                value={properties["options.legend.position"] || "bottom"}
-                onChange={handlePropertyChange}
-              >
-                <option value="top">Top</option>
-                <option value="bottom">Bottom</option>
-                <option value="left">Left</option>
-                <option value="right">Right</option>
-              </select>
+              <div className="chart-select-wrapper">
+                <select
+                  className="chart-select"
+                  name="options.legend.position"
+                  value={properties["options.legend.position"] || "bottom"}
+                  onChange={handlePropertyChange}
+                >
+                  <option value="top">Top</option>
+                  <option value="bottom">Bottom</option>
+                  <option value="left">Left</option>
+                  <option value="right">Right</option>
+                </select>
+              </div>
             </label>
           </>
         )}
@@ -2640,16 +2664,19 @@ const Dashboard = ({
             {/* Legend Position */}
             <label className="chart-properties-labels">
               Legend Position:
-              <select
-                name="legendPosition"
-                value={properties.legendPosition || "bottom"}
-                onChange={handlePropertyChange}
-              >
-                <option value="top">Top</option>
-                <option value="bottom">Bottom</option>
-                <option value="left">Left</option>
-                <option value="right">Right</option>
-              </select>
+              <div className="chart-select-wrapper">
+                <select
+                  className="chart-select"
+                  name="legendPosition"
+                  value={properties.legendPosition || "bottom"}
+                  onChange={handlePropertyChange}
+                >
+                  <option value="top">Top</option>
+                  <option value="bottom">Bottom</option>
+                  <option value="left">Left</option>
+                  <option value="right">Right</option>
+                </select>
+              </div>
             </label>
           </>
         )}
@@ -2872,16 +2899,19 @@ const Dashboard = ({
             {/* Legend Position */}
             <label className="chart-properties-labels">
               Legend Position:
-              <select
-                name="legendPosition"
-                value={properties.legendPosition || "bottom"}
-                onChange={handlePropertyChange}
-              >
-                <option value="top">Top</option>
-                <option value="bottom">Bottom</option>
-                <option value="left">Left</option>
-                <option value="right">Right</option>
-              </select>
+              <div className="chart-select-wrapper">
+                <select
+                  className="chart-select"
+                  name="legendPosition"
+                  value={properties.legendPosition || "bottom"}
+                  onChange={handlePropertyChange}
+                >
+                  <option value="top">Top</option>
+                  <option value="bottom">Bottom</option>
+                  <option value="left">Left</option>
+                  <option value="right">Right</option>
+                </select>
+              </div>
             </label>
           </>
         )}
@@ -3109,16 +3139,19 @@ const Dashboard = ({
             {/* Legend Position */}
             <label className="chart-properties-labels">
               Legend Position:
-              <select
-                name="legendPosition"
-                value={properties.legendPosition || "bottom"}
-                onChange={handlePropertyChange}
-              >
-                <option value="top">Top</option>
-                <option value="bottom">Bottom</option>
-                <option value="left">Left</option>
-                <option value="right">Right</option>
-              </select>
+              <div className="chart-select-wrapper">
+                <select
+                  className="chart-select"
+                  name="legendPosition"
+                  value={properties.legendPosition || "bottom"}
+                  onChange={handlePropertyChange}
+                >
+                  <option value="top">Top</option>
+                  <option value="bottom">Bottom</option>
+                  <option value="left">Left</option>
+                  <option value="right">Right</option>
+                </select>
+              </div>
             </label>
             {/* X-Axis Title */}
             <label className="chart-properties-labels">
@@ -3371,16 +3404,19 @@ const Dashboard = ({
             {/* Legend Position */}
             <label className="chart-properties-labels">
               Legend Position:
-              <select
-                name="options.legend.position"
-                value={properties["options.legend.position"] || "bottom"}
-                onChange={handlePropertyChange}
-              >
-                <option value="top">Top</option>
-                <option value="bottom">Bottom</option>
-                <option value="left">Left</option>
-                <option value="right">Right</option>
-              </select>
+              <div className="chart-select-wrapper">
+                <select
+                  className="chart-select"
+                  name="options.legend.position"
+                  value={properties["options.legend.position"] || "bottom"}
+                  onChange={handlePropertyChange}
+                >
+                  <option value="top">Top</option>
+                  <option value="bottom">Bottom</option>
+                  <option value="left">Left</option>
+                  <option value="right">Right</option>
+                </select>
+              </div>
             </label>
           </>
         )}
@@ -3475,16 +3511,19 @@ const Dashboard = ({
             {/* Legend Position */}
             <label className="chart-properties-labels">
               Legend Position:
-              <select
-                name="options.legend.position"
-                value={properties["options.legend.position"] || "bottom"}
-                onChange={handlePropertyChange}
-              >
-                <option value="top">Top</option>
-                <option value="bottom">Bottom</option>
-                <option value="left">Left</option>
-                <option value="right">Right</option>
-              </select>
+              <div className="chart-select-wrapper">
+                <select
+                  className="chart-select"
+                  name="options.legend.position"
+                  value={properties["options.legend.position"] || "bottom"}
+                  onChange={handlePropertyChange}
+                >
+                  <option value="top">Top</option>
+                  <option value="bottom">Bottom</option>
+                  <option value="left">Left</option>
+                  <option value="right">Right</option>
+                </select>
+              </div>
             </label>
 
             {/* X-Axis Title */}
@@ -3978,9 +4017,7 @@ const Dashboard = ({
         return (
           <div className="editor-data">
             <div className="editor-data-c-1">
-              <p className="editor-para-data-c">
-                {chartOptions.chartType}
-              </p>
+              <p className="editor-para-data-c">{chartOptions.chartType}</p>
             </div>
             {/* Dataset */}
             {chartOptions?.chartType != "typography" && (
@@ -3988,8 +4025,8 @@ const Dashboard = ({
                 {chartOptions?.chartType && (
                   <div>
                     <Select
-                    className="select-container"
-                    classNamePrefix="react-select"
+                      className="select-container"
+                      classNamePrefix="react-select"
                       options={
                         datasets
                           ? datasets.map((item) => ({
@@ -4135,7 +4172,9 @@ const Dashboard = ({
                       <Form>
                         {/* Category Dropdown */}
                         <div>
-                          <label htmlFor="category" className="label-category">Category:</label>
+                          <label htmlFor="category" className="label-category">
+                            Category:
+                          </label>
                           <Select
                             options={categoriesOptions}
                             value={categoriesOptions.find((option) => {
@@ -4169,7 +4208,9 @@ const Dashboard = ({
 
                         {/* Group By Radio Buttons */}
                         <div>
-                          <label className="label-category-group">Group By:</label>
+                          <label className="label-category-group">
+                            Group By:
+                          </label>
                           <div className="radio-group-container">
                             <label className="radio-option">
                               <Field
@@ -4197,7 +4238,10 @@ const Dashboard = ({
                         {/* Aggregate Function Dropdown (Visible if Group By is "Yes") */}
                         {values.groupBy === "yes" && (
                           <div>
-                            <label htmlFor="aggregateFunction" className="label-category-group">
+                            <label
+                              htmlFor="aggregateFunction"
+                              className="label-category-group"
+                            >
                               Select Aggregate Function:
                             </label>
                             <Select
@@ -4242,7 +4286,10 @@ const Dashboard = ({
                                 <div key={index}>
                                   {chartOptions.chartType === "mixed" && (
                                     <div>
-                                      <label htmlFor={`series[${index}].type`} className="label-category-group">
+                                      <label
+                                        htmlFor={`series[${index}].type`}
+                                        className="label-category-group"
+                                      >
                                         Chart Type:
                                       </label>
                                       <Select
@@ -4271,7 +4318,10 @@ const Dashboard = ({
                                   )}
 
                                   <div>
-                                    <label htmlFor={`series[${index}].column`} className="label-category-group">
+                                    <label
+                                      htmlFor={`series[${index}].column`}
+                                      className="label-category-group"
+                                    >
                                       Series {index + 1}:
                                     </label>
                                     <Select
@@ -4317,7 +4367,9 @@ const Dashboard = ({
 
                                   {chartOptions.chartType != "mixed" && (
                                     <div>
-                                      <label className="label-category-group">Group By:</label>
+                                      <label className="label-category-group">
+                                        Group By:
+                                      </label>
                                       <div className="radio-group-container">
                                         <label className="radio-option">
                                           <Field
@@ -4484,7 +4536,9 @@ const Dashboard = ({
                     <Form>
                       {/* Category Dropdown */}
                       <div>
-                        <label htmlFor="category" className="label-category">Category:</label>
+                        <label htmlFor="category" className="label-category">
+                          Category:
+                        </label>
                         <Select
                           options={categoriesOptions}
                           value={categoriesOptions.find((option) => {
@@ -4505,7 +4559,7 @@ const Dashboard = ({
                             });
                           }}
                           className="select-container"
-                            classNamePrefix="react-select"
+                          classNamePrefix="react-select"
                           placeholder="Choose Category"
                         />
                         {touched.category && errors.category && (
@@ -4518,7 +4572,9 @@ const Dashboard = ({
 
                       {/* Group By Radio Buttons */}
                       <div className="mt-3">
-                        <label className="label-category-group">Group By:</label>
+                        <label className="label-category-group">
+                          Group By:
+                        </label>
                         <div className="radio-group-container">
                           <label className="radio-option">
                             <Field
@@ -4546,7 +4602,10 @@ const Dashboard = ({
                       {/* Aggregate Function Dropdown (Visible if Group By is "Yes") */}
                       {values.groupBy === "yes" && (
                         <div className="mt-2">
-                          <label htmlFor="aggregateFunction" className="label-category-group">
+                          <label
+                            htmlFor="aggregateFunction"
+                            className="label-category-group"
+                          >
                             Select Aggregate Function:
                           </label>
                           <Select
@@ -4585,7 +4644,12 @@ const Dashboard = ({
 
                       {/* Series Dropdown */}
                       <div>
-                        <label htmlFor="series" className="label-category-group">Series:</label>
+                        <label
+                          htmlFor="series"
+                          className="label-category-group"
+                        >
+                          Series:
+                        </label>
                         <Select
                           options={categoriesOptions}
                           value={categoriesOptions.find((option) => {
@@ -4671,7 +4735,9 @@ const Dashboard = ({
                     <Form>
                       {/* Dropdown for X */}
                       <div>
-                        <label htmlFor="x" className="label-category-group">X:</label>
+                        <label htmlFor="x" className="label-category-group">
+                          X:
+                        </label>
                         <Select
                           options={categoriesOptions}
                           value={categoriesOptions.find((option) => {
@@ -4691,7 +4757,7 @@ const Dashboard = ({
                             });
                           }}
                           className="select-container"
-                            classNamePrefix="react-select"
+                          classNamePrefix="react-select"
                           placeholder="Choose X"
                         />
                         {touched.x && errors.x && (
@@ -4703,7 +4769,9 @@ const Dashboard = ({
 
                       {/* Dropdown for Y */}
                       <div>
-                        <label htmlFor="y" className="label-category-group">Y:</label>
+                        <label htmlFor="y" className="label-category-group">
+                          Y:
+                        </label>
                         <Select
                           options={categoriesOptions}
                           value={categoriesOptions.find((option) => {
@@ -4723,7 +4791,7 @@ const Dashboard = ({
                             });
                           }}
                           className="select-container"
-                            classNamePrefix="react-select"
+                          classNamePrefix="react-select"
                           placeholder="Choose Y"
                         />
                         {touched.y && errors.y && (
@@ -4823,7 +4891,10 @@ const Dashboard = ({
                               >
                                 {/* Name Input */}
                                 <div>
-                                  <label htmlFor={`series[${index}].name`} className="label-category-group">
+                                  <label
+                                    htmlFor={`series[${index}].name`}
+                                    className="label-category-group"
+                                  >
                                     Value:
                                   </label>
                                   <Field
@@ -4843,7 +4914,10 @@ const Dashboard = ({
 
                                 {/* Dropdown for X */}
                                 <div>
-                                  <label htmlFor={`series[${index}].x`} className="label-category-group">
+                                  <label
+                                    htmlFor={`series[${index}].x`}
+                                    className="label-category-group"
+                                  >
                                     X:
                                   </label>
                                   <Select
@@ -4885,7 +4959,10 @@ const Dashboard = ({
 
                                 {/* Dropdown for Y */}
                                 <div>
-                                  <label htmlFor={`series[${index}].y`} className="label-category-group">
+                                  <label
+                                    htmlFor={`series[${index}].y`}
+                                    className="label-category-group"
+                                  >
                                     Y:
                                   </label>
                                   <Select
@@ -4911,7 +4988,7 @@ const Dashboard = ({
                                       });
                                     }}
                                     className="select-container"
-                            classNamePrefix="react-select"
+                                    classNamePrefix="react-select"
                                     placeholder="Choose Y"
                                   />
                                   {errors.series &&
@@ -5066,8 +5143,11 @@ const Dashboard = ({
                               >
                                 {/* Name Field */}
                                 <div>
-                                  <label htmlFor={`datasets[${index}].name`} className="label-category-group">
-                                    Name: 
+                                  <label
+                                    htmlFor={`datasets[${index}].name`}
+                                    className="label-category-group"
+                                  >
+                                    Name:
                                   </label>
                                   <Field
                                     className="form-control"
@@ -5087,7 +5167,10 @@ const Dashboard = ({
 
                                 {/* Dropdown for X */}
                                 <div>
-                                  <label htmlFor={`datasets[${index}].data.x`} className="label-category-group">
+                                  <label
+                                    htmlFor={`datasets[${index}].data.x`}
+                                    className="label-category-group"
+                                  >
                                     X:
                                   </label>
                                   <Select
@@ -5131,7 +5214,10 @@ const Dashboard = ({
 
                                 {/* Dropdown for Y */}
                                 <div>
-                                  <label htmlFor={`datasets[${index}].data.y`} className="label-category-group">
+                                  <label
+                                    htmlFor={`datasets[${index}].data.y`}
+                                    className="label-category-group"
+                                  >
                                     Y:
                                   </label>
                                   <Select
@@ -5160,7 +5246,7 @@ const Dashboard = ({
                                       );
                                     }}
                                     className="select-container"
-                            classNamePrefix="react-select"
+                                    classNamePrefix="react-select"
                                     placeholder="Choose Y"
                                   />
                                   {errors.datasets &&
@@ -5175,7 +5261,10 @@ const Dashboard = ({
 
                                 {/* Dropdown for Z */}
                                 <div>
-                                  <label htmlFor={`datasets[${index}].data.z`} className="label-category-group">
+                                  <label
+                                    htmlFor={`datasets[${index}].data.z`}
+                                    className="label-category-group"
+                                  >
                                     Z:
                                   </label>
                                   <Select
@@ -5204,7 +5293,7 @@ const Dashboard = ({
                                       );
                                     }}
                                     className="select-container"
-                            classNamePrefix="react-select"
+                                    classNamePrefix="react-select"
                                     placeholder="Choose Z"
                                   />
                                   {errors.datasets &&
@@ -5307,7 +5396,12 @@ const Dashboard = ({
                     <Form>
                       {/* Dropdown for Column */}
                       <div>
-                        <label htmlFor="column" className="label-category-group">Select Column:</label>
+                        <label
+                          htmlFor="column"
+                          className="label-category-group"
+                        >
+                          Select Column:
+                        </label>
                         <Select
                           options={categoriesOptions}
                           value={categoriesOptions.find((option) => {
@@ -5328,7 +5422,7 @@ const Dashboard = ({
                             });
                           }}
                           className="select-container"
-                            classNamePrefix="react-select"
+                          classNamePrefix="react-select"
                           placeholder="Choose Column"
                         />
                         {touched.column && errors.column && (
@@ -5340,7 +5434,10 @@ const Dashboard = ({
 
                       {/* Dropdown for Function */}
                       <div className="mt-2">
-                        <label htmlFor="function" className="label-category-group">
+                        <label
+                          htmlFor="function"
+                          className="label-category-group"
+                        >
                           Select Aggregate Function:
                         </label>
                         <Select
@@ -5460,7 +5557,12 @@ const Dashboard = ({
                     <Form>
                       {/* Multi-Select Dropdown for Columns */}
                       <div>
-                        <label htmlFor="columns" className="label-category-group">Select Columns:</label>
+                        <label
+                          htmlFor="columns"
+                          className="label-category-group"
+                        >
+                          Select Columns:
+                        </label>
                         <Select
                           options={categoriesOptions}
                           isMulti
@@ -5489,7 +5591,7 @@ const Dashboard = ({
                             setFieldValue("columns", updatedColumns);
                           }}
                           className="select-container"
-                            classNamePrefix="react-select"
+                          classNamePrefix="react-select"
                           placeholder="Choose Columns"
                         />
                         {touched.columns && errors.columns && (
@@ -5530,7 +5632,7 @@ const Dashboard = ({
                                 setFieldValue("columns", updatedColumns);
                               }}
                               className="select-container"
-                            classNamePrefix="react-select"
+                              classNamePrefix="react-select"
                               placeholder="Select function"
                               style={{ marginLeft: "10px", minWidth: "200px" }}
                             />
@@ -5540,7 +5642,10 @@ const Dashboard = ({
 
                       {/* Multi-Select for Group Columns */}
                       <div>
-                        <label htmlFor="groupColumns" className="label-category-group">
+                        <label
+                          htmlFor="groupColumns"
+                          className="label-category-group"
+                        >
                           Select Group Columns:
                         </label>
                         <Select
@@ -5562,7 +5667,7 @@ const Dashboard = ({
                             setFieldValue("groupColumns", selectedGroupColumns);
                           }}
                           className="select-container"
-                            classNamePrefix="react-select"
+                          classNamePrefix="react-select"
                           placeholder="Choose Group Columns"
                         />
                         {touched.groupColumns && errors.groupColumns && (
@@ -5668,7 +5773,7 @@ const Dashboard = ({
               {/* <p>Dashboard title</p> */}
               <input
                 type="text"
-                className="form-control w-50"
+                className="dashboard-input-title"
                 placeholder="Enter dashboard title"
                 value={dashboardName}
                 onChange={(e) => setDashboardName(e.target.value)}
