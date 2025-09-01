@@ -221,7 +221,7 @@ const Grid = ({
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setIsEditing(false)}>Cancel</Button>
+          <Button onClick={() => setIsEditing(false)}  className="can-button">Cancel</Button>
           <Button
             onClick={handleSave}
             variant="contained"

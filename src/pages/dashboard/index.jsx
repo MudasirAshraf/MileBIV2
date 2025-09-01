@@ -4898,9 +4898,10 @@ const Dashboard = ({
                                     Value:
                                   </label>
                                   <Field
-                                    className="form-control"
+                                    className="form-control custom-field"
                                     name={`series[${index}].name`}
                                     placeholder="Enter Value"
+                                    
                                   />
                                   {errors.series &&
                                     errors.series[index]?.name &&
@@ -5150,7 +5151,7 @@ const Dashboard = ({
                                     Name:
                                   </label>
                                   <Field
-                                    className="form-control"
+                                    className="form-control custom-field"
                                     id={`datasets[${index}].name`}
                                     name={`datasets[${index}].name`}
                                     placeholder="Enter a name"
@@ -5874,35 +5875,12 @@ const Dashboard = ({
                   <img src={S5} alt="logo" />
                 </div>
               </div>
-              {/* <div>
-                <img src={L1} alt="logo" />
-              </div> */}
-              {/* <div className="sr-CDB-III">
-                <div className="sr-CDB-I">
-                  <img src={M2} alt="logo" />
-                </div>
-                <div className="sr-CDB-I">
-                  <img src={M1} alt="logo" />
-                </div>
-              </div> */}
-              {/* <div>
-                <img src={L1} alt="logo" />
-              </div>
-              <div className="sr-CDB-III">
-                <div className="sr-CDB-I">
-                  <img src={M3} alt="logo" />
-                </div>
-                <div className="sr-CDB-I">
-                  <img src={S6} alt="logo" />
-                </div>
-              </div> */}
+            
+          
               <div>
                 <img src={L1} alt="logo" />
               </div>
               <div className="sr-CDB-III">
-                {/* <div className="sr-CDB-I">
-                  <img src={M4} alt="logo" />
-                </div> */}
                 <div className="sr-CDB-I" onClick={handleDownloadPdf}>
                   <img src={M5} alt="logo" />
                 </div>

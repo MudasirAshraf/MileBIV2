@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { DataGrid } from "@mui/x-data-grid";
 import { toast } from "react-toastify";
+import "./workspace-list.scss";
 
 const ListWorkspace = () => {
   const [workspaces, setWorkspaces] = useState([]);
@@ -67,15 +68,15 @@ const ListWorkspace = () => {
       width: 200,
       sortable: false,
       renderCell: (params) => (
-        <div>
+        <div className="cont-buttons">
           <Link
             to={`/save-workspaces/${params.row.id}`}
-            className="btn btn-primary btn-sm me-1"
+            className="btn btn-primary btn-sm"
           >
             <FontAwesomeIcon icon={faEdit} />
           </Link>
           <button
-            className="btn btn-danger btn-sm"
+            className="btn btn-danger "
             onClick={() => deleteWorkspace(params.row.id)}
           >
             <FontAwesomeIcon icon={faTrash} />

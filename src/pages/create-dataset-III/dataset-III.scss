@@ -71,10 +71,24 @@
 .first-column-ds-III {
   display: flex;
   gap: 5px;
-  padding: 0px 10px;
-  color: #1c9ca7;
-  font-size: 0.7rem;
+  padding: 10px 10px;
   cursor: pointer;
+}
+.item-table-para {
+  margin: 0;
+  color: #ffffff;
+  font-size: 0.7rem;
+  font-weight: 600;
+  line-height: 1rem;
+}
+.item-table-para:hover {
+  color: #1c9ca7;
+}
+.no-data {
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 5px 10px;
 }
 .second-column-ds-III {
   display: flex;
@@ -102,6 +116,27 @@
   background: rgba(255, 255, 255, 0.05);
   border-top-right-radius: 10px;
   border-bottom-right-radius: 10px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) rgba(255, 255, 255, 0.05);
+}
+
+.render-table-data::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.render-table-data::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+.render-table-data::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+}
+
+.render-table-data::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
 }
 
 .second-row-table-ds-III th,
@@ -111,12 +146,20 @@
 }
 
 .second-row-table-ds-III th {
-  color: white;
-  font-weight: bold;
+  font-weight: 500;
+  font-size: 1rem;
+  line-height: 1.2rem;
+  background-color: #2f3743;
+  color: #ffffff !important;
+  padding: 10px 25px;
 }
-.second-row-table-ds-III th,
+
 .second-row-table-ds-III td {
-  padding: 12px 40px;
+  color: white !important;
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.2rem;
+  padding: 12px 25px;
 }
 
 .second-row-table-ds-III th:first-child,
@@ -189,6 +232,67 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  // padding-right: 86px;
   margin-top: 10px;
+}
+.select-datatables {
+  width: 100%;
+  padding: 6px 0px;
+}
+.select-datatables .MuiFormControl-root {
+  background: #2f3743;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.select-datatables .MuiInputLabel-root {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.2rem;
+  color: #bbb;
+}
+
+.select-datatables .MuiInputLabel-root.Mui-focused {
+  color: #90caf9;
+}
+
+.select-datatables .MuiOutlinedInput-notchedOutline legend {
+  max-width: 0;
+}
+
+.select-datatables .MuiSelect-select {
+  padding: 10px;
+  font-size: 1rem;
+  line-height: 1.2rem;
+  color: #ffffff;
+  font-weight: 500;
+}
+
+.select-datatables .MuiOutlinedInput-notchedOutline {
+  border-color: #3f4857;
+}
+
+.select-datatables .Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #90caf9;
+}
+
+.select-datatables .MuiMenuItem-root {
+  font-size: 1rem;
+  line-height: 1.2rem;
+  color: #ffffff;
+  font-weight: 500;
+  padding: 8px 14px;
+}
+
+.select-datatables .MuiMenuItem-root.Mui-selected {
+  background-color: #3f4857 !important;
+}
+
+.select-datatables .MuiMenuItem-root:hover {
+  background-color: #455060;
+}
+
+.select-datatables .MuiPaper-root {
+  background-color: #2f3743 !important;
+  color: #ffffff;
+  border-radius: 6px;
 }

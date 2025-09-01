@@ -76,7 +76,7 @@
   color: #888;
 }
 
-// Dataset-MUI-Table 
+// Dataset-MUI-Table
 .data-set-table-container {
   .MuiDataGrid-root {
     background: #fff;
@@ -108,24 +108,24 @@
       background: #fff;
       color: #333;
       display: flex;
-      align-items: center !important; 
+      align-items: center !important;
       justify-content: space-between;
     }
 
     .MuiTablePagination-root {
       display: flex;
-      align-items: center !important; 
+      align-items: center !important;
       font-size: 0.9rem;
     }
 
     .MuiTablePagination-toolbar {
       display: flex;
       align-items: center !important;
-      gap: 8px; 
+      gap: 8px;
     }
 
     .MuiTablePagination-displayedRows {
-      margin: 0; 
+      margin: 0;
     }
 
     .MuiTablePagination-selectLabel {
@@ -136,36 +136,11 @@
       margin: 0;
       padding: 0;
       display: flex;
-      align-items: center; 
+      align-items: center;
     }
   }
 }
 
-
-
-// .data-set-table-container .MuiDataGrid-cell {
-//   border-right: 2px solid #ccc;
-//   color: white;
-//   background-color: #2f3743;
-// }
-
-// .data-set-table-container .MuiDataGrid-columnHeaders {
-//   color: black;
-// }
-
-// .data-set-table-container .MuiDataGrid-footerContainer {
-//   background-color: #007bff;
-//   color: #fff;
-//   display: flex;
-//   justify-content: space-between;
-//   align-items: center;
-//   padding: 0px 16px;
-// }
-
-// .data-set-table-container .MuiTablePagination-root,
-// .data-set-table-container .MuiTablePagination-root * {
-//   color: #fff !important;
-// }
 .dataset-table-header {
   display: flex;
   flex-direction: column;
@@ -196,29 +171,57 @@
 
 /* Variants */
 .btn-primary {
-  background-color: #007bff;
+  background-color: #1a73e8;
+  color: #fff;
 }
 .btn-primary:hover {
-  background-color: #0069d9;
+  background-color: #155ab6;
 }
 
 .btn-success {
-  background-color: #28a745;
+  background-color: #00b894;
+  color: #fff;
 }
 .btn-success:hover {
-  background-color: #218838;
+  background-color: #019875;
 }
 
 .btn-info {
-  background-color: #17a2b8;
+  background-color: #00a0a0;
+  color: #fff;
 }
 .btn-info:hover {
-  background-color: #138496;
+    background-color: #00cec9;
+}
+
+.btn-warning {
+  background-color: #f39c12;
+  color: #fff;
+}
+.btn-warning:hover {
+  background-color: #d68910;
 }
 
 .btn-danger {
-  background-color: #dc3545;
+  background-color: #e74c3c;
+  color: #fff;
 }
 .btn-danger:hover {
-  background-color: #b02a37;
+  background-color: #c0392b;
+}
+
+.btn-primary,
+.btn-success,
+.btn-info,
+.btn-warning,
+.btn-danger {
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-primary:hover,
+.btn-success:hover,
+.btn-info:hover,
+.btn-warning:hover,
+.btn-danger:hover {
+  transform: translateY(-2px);
 }

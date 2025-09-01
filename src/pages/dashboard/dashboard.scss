@@ -131,7 +131,7 @@
   background-color: #656e7c;
   align-items: center;
   display: flex;
-  padding: 11px;
+  padding: 12px 15px;
   border-radius: 5px;
   position: relative;
 }
@@ -139,10 +139,15 @@
   background-color: #eb5d0d;
   border-radius: 100px;
   position: absolute;
-  left: 70%;
-  font-size: 0.7rem;
-  top: 10%;
-  padding: 0.5px;
+  left: 63%;
+  font-size: 0.59rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  top: 5%;
+  padding: 1px 2px;
+  color: #ffffff;
 }
 .CDB {
   display: flex;
@@ -297,7 +302,6 @@
   border: 1px solid #2d3748;
   background-color: #2a374a;
   box-shadow: none;
-
   transition: all 0.2s ease;
 }
 
@@ -513,7 +517,7 @@
   color: #ffffff;
 }
 
-.dashboard-input-title{
+.dashboard-input-title {
   width: 50%;
   max-width: 400px;
   border-radius: 5px;
@@ -607,6 +611,7 @@
   font-size: 0.95rem;
   font-weight: 500;
   padding: 6px 12px;
+  margin-top: 5px;
   cursor: pointer;
   transition: all 0.2s ease;
   appearance: none;
@@ -620,7 +625,7 @@
   color: #9ca3af;
   position: absolute;
   right: 12px;
-  top: 50%;
+  top: 60%;
   transform: translateY(-50%);
   pointer-events: none;
 }
@@ -636,4 +641,22 @@
 .chart-select option:hover {
   background-color: #374151 !important;
   color: #ffffff !important;
+}
+.custom-field {
+  border: 1px solid #2d3748;
+  background-color: #2a374a !important;
+  color: #e5e7eb;
+  outline: none;
+}
+
+.custom-field:focus {
+  background-color: #2a374a !important;
+  border-color: #4a5568;
+  box-shadow: none;
+  color: #e5e7eb;
+}
+
+.custom-field::placeholder {
+  color: #e5e7eb;
+  opacity: 0.7;
 }

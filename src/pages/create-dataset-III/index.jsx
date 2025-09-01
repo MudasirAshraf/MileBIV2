@@ -5,6 +5,7 @@ import Group from "../../assets/svg/group-III.svg";
 import Back from "../../assets/svg/Back.svg";
 import Cross from "../../assets/svg/cross.svg";
 import Line from "../../assets/svg/line.svg";
+import OutlinedInput from "@mui/material/OutlinedInput";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -154,7 +155,7 @@ const DatasetIII = ({
 
   const renderTables = () => {
     if (!tableDatas || tableDatas.length === 0) {
-      return <p>No tables available to display.</p>;
+      return <p className="no-data">No tables available to display.</p>;
     }
 
     return (
@@ -171,14 +172,16 @@ const DatasetIII = ({
           const columns = Object.keys(tableData.Table[0]);
           return (
             <div key={tableIndex} className="second-row-table-ds-III">
-              <div style={{ marginTop: "20px" }}>
-                <FormControl fullWidth>
+              <div className="select-datatables">
+                <FormControl fullWidth variant="outlined">
                   <InputLabel>Select Column</InputLabel>
                   <Select
+                    label="Select Column"
                     value={selectedColumns[tableIndex] || ""}
                     onChange={(e) =>
                       handleColumnChange(e.target.value, tableIndex)
                     }
+                    input={<OutlinedInput label="Select Column" />}
                   >
                     <MenuItem value="" disabled>
                       Choose a column
@@ -258,14 +261,14 @@ const DatasetIII = ({
                     name={index}
                     onChange={() => handleCheckboxChange(item.table_name)}
                   />
-                  <p>{item.table_name}</p>
+                  <p className="item-table-para">{item.table_name}</p>
                 </div>
               ))}
             </div>
           </div>
           <div className="render-table-data">{renderTables()}</div>
         </div>
-        <div className="row d-flex justify-content-center text-center mt-3">
+        <div className="row d-flex justify-content-end text-center mt-3 p-2">
           <button
             type="submit"
             className="btn btn-primary w-auto"
