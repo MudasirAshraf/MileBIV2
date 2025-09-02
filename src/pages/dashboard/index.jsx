@@ -1937,10 +1937,10 @@ const Dashboard = ({
             </label>
             {/* Legend-position */}
             <label className="chart-properties-labels">
-              <div className="chart-select-wrapper">
+              <div className="chart-select-wrapper-pie">
                 Legend Position:
                 <select
-                  className="chart-select"
+                  className="chart-select-pie"
                   name="options.responsive.legend.position"
                   value={
                     properties["options.responsive.legend.position"] || "bottom"

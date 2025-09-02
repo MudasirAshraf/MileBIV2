@@ -343,7 +343,7 @@
 }
 
 .select-container .react-select__option--is-selected {
-  background-color: #4f46e5;
+  background-color: #374151;
   color: white;
 }
 
@@ -642,6 +642,7 @@
   background-color: #374151 !important;
   color: #ffffff !important;
 }
+
 .custom-field {
   border: 1px solid #2d3748;
   background-color: #2a374a !important;
@@ -659,4 +660,51 @@
 .custom-field::placeholder {
   color: #e5e7eb;
   opacity: 0.7;
+}
+.chart-select-wrapper-pie {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  max-width: 250px;
+}
+
+.chart-select-pie {
+  width: 100%;
+  border-radius: 5px;
+  border: 1px solid #2d3748;
+  background-color: #2a374a;
+  color: #e5e7eb;
+  font-size: 0.95rem;
+  font-weight: 500;
+  padding: 6px 12px;
+  margin-top: 5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.chart-select-wrapper-pie::after {
+  content: "▼";
+  font-size: 0.7rem;
+  color: #9ca3af;
+  position: absolute;
+  right: 12px;
+  top: 75%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.chart-select-pie option {
+  background-color: #1f2937;
+  color: #f9fafb;
+  padding: 10px;
+  font-size: 0.95rem;
+}
+
+.chart-select-pie option:checked,
+.chart-select-pie option:hover {
+  background-color: #374151 !important;
+  color: #ffffff !important;
 }

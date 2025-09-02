@@ -84,11 +84,19 @@
   margin-top: 20px;
   gap: 8px;
   padding: 10px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #4a5568;
   border-radius: 7px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  background-color: #354153;
   width: 100%;
+transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
+
+.excel-upload-container:hover {
+  border-color: #5a6d8f; 
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); 
+}
+
 
 .excel-upload-label {
   font-size: 1rem;
