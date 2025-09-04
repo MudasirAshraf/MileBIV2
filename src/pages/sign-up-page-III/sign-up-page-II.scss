@@ -35,9 +35,12 @@
 }
 .paragraph-I {
   font-size: 1rem;
+  color: #ffffff;
+  font-weight: 500;
 }
 .paragraph-II {
   font-size: 0.8rem;
+  font-weight: 600;
   color: #b0bfd4;
 }
 .code-div {
@@ -64,8 +67,15 @@
   margin-left: 10px;
 }
 .code-resend-sp-II {
-  color: #2b5087;
+  color: #1c9ca7;
   cursor: pointer;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 400;
+}
+.code-resend-sp-II:hover {
+  text-decoration: wavy;
+  font-weight: 600;
 }
 .proceed-button {
   display: flex;
