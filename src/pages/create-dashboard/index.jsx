@@ -81,11 +81,11 @@ const CreateDashboard = ({
     },
   ];
 
-  const cardsDataI = [
-    { id: 1, title: "Template 1", image: TI, route: "/template-I" },
-    { id: 2, title: "Template 2", image: TII, route: "/template-I" },
-    { id: 3, title: "Template 3", image: TIII, route: "/template-I" },
-  ];
+const cardsDataI = [
+  { id: 1, title: "Template 1", image: TI, route: "/template-I" },
+  { id: 2, title: "Template 2", image: TII, route: "/template-II" },
+  { id: 3, title: "Template 3", image: TIII, route: "/template-III" },
+];
 
   const totalPages =
     activeTab === "create-dashboards"
@@ -221,7 +221,6 @@ const CreateDashboard = ({
                   ))}
               </div>
             )}
-            {/* Datasets */}
             {/* Datasets */}
             {activeTab === "datasets" && (
               <div className="main-container-datasets-grid-template">
