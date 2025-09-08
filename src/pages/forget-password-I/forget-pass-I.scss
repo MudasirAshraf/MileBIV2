@@ -39,13 +39,24 @@
   width: 800px;
   border-radius: 5px;
   background-color: #2a374a;
+
+  @media (max-width: 768px) {
+    margin-left: 0;
+    width: 100%;
+    max-width: 100%;
+  }
 }
+
 .input-group-fp-I input {
   flex: 1;
   border: none;
   outline: none;
   background-color: #2a374a;
   color: White;
+
+  @media (max-width: 768px) {
+    font-size: 0.95rem;
+  }
 }
 .button-fp-I {
   display: flex;
@@ -53,24 +64,46 @@
   justify-content: flex-end;
   align-items: flex-end;
   padding-right: 85px;
-  margin-top: 120px;
+  margin-top: 100px;
+
+  @media (max-width: 768px) {
+    justify-content: center;
+    padding-right: 0;
+    margin-top: 40px;
+    width: 100%;
+
+    button {
+      width: 100%;
+      justify-content: center;
+    }
+  }
 }
 .btn-fp-I {
   display: flex;
   align-items: center;
   gap: 5px;
 }
-.line-fp-I {
-  margin-top: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+// .line-fp-I {
+//   margin-top: 20px;
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+// }
 .form-sign-in-fp-I {
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
   align-items: flex-end;
   padding-right: 85px;
-  margin-top: 50px;
+  margin-top: 0px;
+
+  @media (max-width: 768px) {
+    justify-content: flex-end;
+    padding-right: 10px;
+    margin-top: 30px;
+
+    button {
+      width: 100%;
+    }
+  }
 }

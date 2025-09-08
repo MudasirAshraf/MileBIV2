@@ -151,7 +151,7 @@ const LoginPage = ({ response, getAuth, registerUser, getWorkspaces }) => {
                       </div>
                     </div>
                     <div className="form-button-div">
-                      <div>
+                      <div className="create-account-div">
                         <a
                           href="#"
                           className="form-link-i"

@@ -2,28 +2,19 @@
   width: 100%;
 }
 .container-sign-in-page-II {
-  max-width: 1280px;
   display: flex;
   flex-direction: column;
   gap: 40px;
   align-items: center;
-  margin: auto;
-}
-.header-container-sign-in-page-II {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: 370px;
-}
-.progress-bar-sign-in-page-II {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  margin-left: 180px;
-  margin-top: 5px;
+  justify-content: flex-start;
+  // margin: auto;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    padding: 20px;
+    justify-content: center;
+    // min-height: 100vh;
+  }
 }
 
 .paragrapgh-I-div {
@@ -32,26 +23,54 @@
   justify-content: flex-start;
   align-items: flex-start;
   padding-left: 100px;
+
+  @media (max-width: 768px) {
+    padding-left: 20px;
+    padding-right: 20px;
+    align-items: center;
+    text-align: center;
+  }
 }
 .paragraph-I {
   font-size: 1rem;
   color: #ffffff;
   font-weight: 500;
+
+  @media (max-width: 768px) {
+    font-size: 0.9rem;
+  }
 }
 .paragraph-II {
   font-size: 0.8rem;
   font-weight: 600;
   color: #b0bfd4;
+
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
 }
 .code-div {
   display: flex;
   flex-direction: column;
   gap: 10px;
   align-items: flex-start;
+
+  @media (max-width: 768px) {
+    align-items: center;
+    width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+  }
 }
+
 .code-entry {
   display: flex;
   gap: 10px;
+
+  @media (max-width: 768px) {
+    justify-content: center;
+    width: 100%;
+  }
 }
 
 .code-entry input {
@@ -59,28 +78,80 @@
   height: 40px;
   font-size: 24px;
   text-align: center;
-  background-color: #2a374a;
-  color: #ffffff;
+
+  @media (max-width: 768px) {
+    width: 36px;
+    height: 36px;
+    font-size: 20px;
+  }
 }
 
 .code-entry button {
   margin-left: 10px;
+
+  @media (max-width: 768px) {
+    margin-left: 0;
+    margin-top: 10px;
+    width: 100%;
+  }
 }
+
+.resend-code-div {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+
+  @media (max-width: 768px) {
+    justify-content: center;
+    margin: 5px 0 10px 0;
+  }
+}
+
 .code-resend-sp-II {
   color: #1c9ca7;
   cursor: pointer;
   text-decoration: none;
   font-size: 1rem;
   font-weight: 400;
+
+  @media (max-width: 768px) {
+    font-size: 0.875rem;
+  }
 }
-.code-resend-sp-II:hover {
-  text-decoration: wavy;
-  font-weight: 600;
-}
+
 .proceed-button {
   display: flex;
   align-items: flex-end;
   justify-content: flex-end;
   flex-direction: row;
   padding-right: 50px;
+  gap: 20px;
+
+  @media (max-width: 768px) {
+    justify-content: center;
+    padding-right: 0;
+    width: 100%;
+
+    button {
+      width: 100%;
+    }
+  }
 }
+
+// .header-container-sign-in-page-II {
+//   display: flex;
+//   flex-direction: row;
+//   align-items: center;
+//   justify-content: center;
+//   gap: 370px;
+// }
+// .progress-bar-sign-in-page-II {
+//   display: flex;
+//   flex-direction: row;
+//   align-items: center;
+//   justify-content: center;
+//   position: relative;
+//   margin-left: 180px;
+//   margin-top: 5px;
+// }

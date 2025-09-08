@@ -2,30 +2,20 @@
   width: 100%;
 }
 .container-sign-in-page-III {
-  max-width: 1280px;
   display: flex;
   flex-direction: column;
   gap: 40px;
   align-items: center;
+  justify-content: flex-start;
   margin: auto;
-}
-.header-container-sign-in-page-III {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: 370px;
-}
-.progress-bar-sign-in-page-III {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  margin-left: 180px;
-  margin-top: 15px;
-}
 
+  @media (max-width: 768px) {
+    width: 100%;
+    padding: 20px;
+    justify-content: center;
+    min-height: 100vh;
+  }
+}
 .select-login-page-III {
   width: 400px;
   padding: 5px;
@@ -40,3 +30,19 @@ select:invalid {
 option:not(:first-child) {
   color: #ffffff;
 }
+// .header-container-sign-in-page-III {
+//   display: flex;
+//   flex-direction: row;
+//   align-items: center;
+//   justify-content: center;
+//   gap: 370px;
+// }
+// .progress-bar-sign-in-page-III {
+//   display: flex;
+//   flex-direction: row;
+//   align-items: center;
+//   justify-content: center;
+//   position: relative;
+//   margin-left: 180px;
+//   margin-top: 15px;
+// }

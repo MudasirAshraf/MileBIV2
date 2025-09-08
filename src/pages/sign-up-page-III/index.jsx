@@ -10,7 +10,6 @@ import Question from "../../assets/svg/Question_light.svg";
 import { ToastContainer, toast, Slide } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-
 const SignPageIII = () => {
   const navigate = useNavigate();
 
@@ -41,14 +40,14 @@ const SignPageIII = () => {
   };
 
   const handleProceed = () => {
-  const enteredCode = code.join("");
-  if (enteredCode.length === 4) {
-    toast.success("Code Verified Successfully!");
-    navigate("/");
-  } else {
-    toast.error(" Please enter a valid 4-digit code");
-  }
-};
+    const enteredCode = code.join("");
+    if (enteredCode.length === 4) {
+      toast.success("Code Verified Successfully!");
+      navigate("/");
+    } else {
+      toast.error(" Please enter a valid 4-digit code");
+    }
+  };
 
   return (
     <div className="main-container-sign-in-page-II">
@@ -94,9 +93,7 @@ const SignPageIII = () => {
             <div className="sub-header-sign-in-page-I-text">
               <p>Verification</p>
             </div>
-            <div>
-              <img src={Line} alt="" />
-            </div>
+            <hr className="sub-header-line" />
           </div>
           {/* adding Paragraph */}
           <div className="paragrapgh-I-div">
@@ -122,7 +119,7 @@ const SignPageIII = () => {
                   />
                 ))}
               </div>
-              <div>
+              <div className="resend-code-div">
                 <a
                   onClick={() => toast.info("Resending code...")}
                   className="code-resend-sp-II"

@@ -10,6 +10,7 @@
   justify-content: center;
   margin: 0 auto;
   margin-top: 50px;
+  padding: 0 15px;
 }
 .login-page-select-option {
   display: flex;
@@ -34,8 +35,8 @@
   display: flex;
   flex-direction: column;
   border: 1.5px solid black;
-box-shadow: 0 2px 6px rgba(255, 255, 255, 0.05),
-              0 0 12px rgba(255, 255, 255, 0.08);
+  box-shadow: 0 2px 6px rgba(255, 255, 255, 0.05),
+    0 0 12px rgba(255, 255, 255, 0.08);
   border-radius: 10px;
   background-color: #354153;
   padding: 25px 10px;
@@ -169,4 +170,86 @@ button:hover {
 .btn-create:hover {
   background-color: #6c757d;
   font-weight: 600;
+}
+
+.links-row {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 10px;
+  font-size: 0.85rem;
+}
+
+//  1024 Screens
+@media (max-width: 1024px) {
+  .form-container {
+    width: 100%;
+    max-width: 430px;
+  }
+
+  .form-header-text {
+    font-size: 2rem;
+  }
+
+  .container-login-page {
+    gap: 30px;
+    margin-top: 40px;
+    padding: 0 20px;
+  }
+}
+
+// Tablet
+@media (max-width: 768px) {
+  .form-container {
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .form-header-text {
+    font-size: 1.8rem;
+  }
+}
+
+// Mobile
+@media (max-width: 480px) {
+  .container-login-page {
+    gap: 20px;
+    margin-top: 30px;
+  }
+
+  .form-container {
+    width: 100%;
+  }
+
+  .form-header-text {
+    font-size: 1.5rem;
+    text-align: center;
+  }
+
+  .input-group {
+    flex-direction: row;
+    padding: 0.4rem;
+  }
+
+  .input-group img {
+    width: 22px;
+    height: 22px;
+  }
+
+  .input-details {
+    font-size: 0.8rem;
+  }
+
+  button,
+  .btn-create {
+    font-size: 0.675rem;
+    padding: 5px;
+    width: 100%;
+  }
+
+  .form-link,
+  .form-link-i {
+    font-size: 0.8rem;
+    margin-bottom: 4px;
+  }
 }
