@@ -42,13 +42,13 @@
   font-weight: 400;
 
     @media (max-width: 768px) {
-    font-size: 1.4rem; /* scale down for small devices */
+    font-size: 1.4rem; 
   }
 }
 
 .side-logo-sign-in-page {
   @media (max-width: 768px) {
-    order: -1; /* move logo above title if you prefer */
+    order: -1; 
   }
 }
 
@@ -83,7 +83,17 @@
   justify-content: flex-end;
   align-items: flex-end;
   padding-right: 52px;
-  margin-top: 60px;
+  margin-top: 20px;
+
+  @media (max-width: 768px) {
+    justify-content: flex-end;
+    padding-right: 10px;
+    margin-top: 30px;
+
+    button {
+      width: 100%;
+    }
+  }
 }
 .code-div {
   position: relative;

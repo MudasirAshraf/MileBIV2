@@ -10,6 +10,7 @@
   flex-direction: row;
   gap: 20px;
   padding: 0px 35px;
+  white-space: nowrap;
 }
 
 .header-I-create-dashboard,
@@ -59,6 +60,32 @@
   height: 2px;
   background-color: #1c9ca7;
 }
+@media (max-width: 768px) {
+  .header-create-dasdhboard {
+    display: flex;
+    justify-content: space-evenly;
+    padding: 0px 15px;
+  }
+
+  .create-dashboard-links {
+    font-size: 0.8rem;
+    margin-top: 20px;
+  }
+
+  .create-dashboard-circle {
+    height: 16px;
+    width: 16px;
+    font-size: 0.65rem;
+    margin-top: 20px;
+  }
+
+  .header-I-create-dashboard.active::after,
+  .header-II-create-dashboard.active::after,
+  .header-III-create-dashboard.active::after {
+    bottom: -7px;
+    height: 1.5px;
+  }
+}
 
 // Dashboard-Card && Template-Card
 
@@ -78,7 +105,8 @@
   }
 
   @media (max-width: 768px) {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(1, 1fr);
+     padding: 16px 23px;
   }
 }
 

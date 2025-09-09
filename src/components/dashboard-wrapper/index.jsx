@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import "./dashboard-wrapper.scss";
@@ -24,6 +24,7 @@ const DashboardWrapper = ({
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const handleCreateDashboard = () => {
     navigate("/create-dashboard-modals");
@@ -56,10 +57,22 @@ const DashboardWrapper = ({
 
   return (
     <div className="main-container-dashboard-wrapper">
+      {/* Mobile Navbar */}
+      <div className="mobile-navbar">
+        <img src={Logo} alt="logo" className="mobile-logo" />
+        <button
+          className={`hamburger ${menuOpen ? "open" : ""}`}
+          onClick={() => setMenuOpen(!menuOpen)}
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
       {/* Main Container */}
       <div className="container-dashboard-wrapper">
         {/* Adding side-bar */}
-        <div className="container-side-bar">
+        <div className={`container-side-bar ${menuOpen ? "show" : ""}`}>
           <div className="main-container-side-bar">
             <div className="side-bar-logo">
               <img src={Logo} alt="side-bar-logo" />

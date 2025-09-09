@@ -5,19 +5,10 @@ import * as Yup from "yup";
 import "./forget-pass-III.scss";
 import Logo from "../../assets/svg/logo.svg";
 import Group from "../../assets/svg/group-III.svg";
-import Thrd from "../../assets/svg/third.svg";
 import Back from "../../assets/svg/Back.svg";
 import Three from "../../assets/png/3.png";
-import Ring from "../../assets/svg/ringtick.svg";
-import I from "../../assets/svg/1.svg";
-import UnionII from "../../assets/svg/Union(3).svg";
-import Two from "../../assets/svg/2(1).svg";
-import EllipseI from "../../assets/svg/Ellipse 103.svg";
-import Polygon from "../../assets/svg/Polygon 3.svg";
-import Line from "../../assets/svg/line.svg";
 import Password from "../../assets/svg/Key_light.svg";
 import Question from "../../assets/svg/Question_light.svg";
-import LineI from "../../assets/svg/line1.svg";
 import { useDispatch } from "react-redux";
 import { postResetDetails } from "../../actions/loginActions";
 import PropTypes from "prop-types";
@@ -119,9 +110,7 @@ const ForgetPasswordIII = (props) => {
             <div className="sub-header-sign-in-page-I-text">
               <p>Set New Password</p>
             </div>
-            <div>
-              <img src={Line} alt="" />
-            </div>
+            <hr className="sub-header-line" />
           </div>
           {/* Form using Formik */}
           <Formik
@@ -167,9 +156,9 @@ const ForgetPasswordIII = (props) => {
             )}
           </Formik>
           {/* Adding center line */}
-          <div className="line-fp-I">
-            <img src={LineI} alt="" />
-          </div>
+           <div className="container-subheader-line">
+                     <hr className="sub-header-line-I" />
+                   </div>
           <div className="button-fp-III">
             <div>
               <button className="btn-create" onClick={handleLoginPage}>

@@ -4,9 +4,7 @@ import Logo from "../../assets/svg/logo.svg";
 import Back from "../../assets/svg/Back.svg";
 import Group from "../../assets/svg/group-II.svg";
 import SPIN from "../../assets/svg/spin.svg";
-import Line from "../../assets/svg/line.svg";
 import B2 from "../../assets/png/2.png";
-import LineI from "../../assets/svg/line1.svg";
 import Question from "../../assets/svg/Question_light.svg";
 import { verifyCode } from "../../actions/loginActions";
 import { useDispatch } from "react-redux";
@@ -154,9 +152,7 @@ const ForgetPasswordII = (props) => {
             <div className="sub-header-sign-in-page-I-text">
               <p>Verification</p>
             </div>
-            <div>
-              <img src={Line} alt="" />
-            </div>
+            <hr className="sub-header-line" />
           </div>
           {/* adding Paragraph */}
           <div className="paragrapgh-I-div">
@@ -182,7 +178,7 @@ const ForgetPasswordII = (props) => {
                   />
                 ))}
               </div>
-              <div>
+              <div className="resend-code-div">
                 {/* {loading && <img src={SPIN} alt="" />} */}
                 <a onClick={handleResendCode} className="code-resend-sp-II">
                   Resend Code
@@ -197,9 +193,9 @@ const ForgetPasswordII = (props) => {
             </button>
           </div>
           {/* adding center line */}
-          <div className="line-fp-I">
-            <img src={LineI} alt="" />
-          </div>
+         <div className="container-subheader-line">
+                     <hr className="sub-header-line-I" />
+                   </div>
           <div className="form-sign-in-fp-II">
             <div>
               <button className="btn-create">Sign In</button>

@@ -19,9 +19,10 @@
   align-items: flex-start;
   background-color: #1b2534;
   width: 220px;
-  height: 300vh;
+  height: 100vh;
   padding: 0px 25px;
   gap: 29px;
+  transition: all 0.3s ease-in-out;
 }
 .container-list-items {
   display: flex;
@@ -70,7 +71,42 @@
   justify-content: space-between;
   background-color: #8b99ad;
   padding: 7px 10px;
+  flex-wrap: nowrap;
 }
+
+@media (max-width: 768px) {
+  .main-container-header-dashboard-wrapper {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .first-div-header-dashboard-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: auto;
+  }
+
+  .first-div-second-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  .first-div-second-row > div,
+  .first-div-second-row button {
+    flex: 1 1 45%;
+    min-width: 140px;
+  }
+
+  .first-div-second-row-btn-V {
+    display: none !important;
+  }
+}
+
 .first-div-header-dashboard-wrapper {
   display: flex;
   gap: 8px;
@@ -192,4 +228,71 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+// Mobile Navbar
+.mobile-navbar {
+  display: none;
+  justify-content: space-between;
+  align-items: center;
+  background: #1b2534;
+  padding: 10px 20px;
+}
+
+.mobile-logo {
+  height: 40px;
+}
+
+.hamburger {
+  width: 30px;
+  height: 22px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.hamburger span {
+  height: 3px;
+  background: white;
+  border-radius: 3px;
+  transition: 0.3s;
+}
+.hamburger.open span:nth-child(1) {
+  transform: rotate(45deg) translateY(9px);
+}
+.hamburger.open span:nth-child(2) {
+  opacity: 0;
+}
+.hamburger.open span:nth-child(3) {
+  transform: rotate(-45deg) translateY(-9px);
+}
+
+// Sidebar
+.container-side-bar {
+  transition: transform 0.3s ease-in-out;
+}
+@media (max-width: 768px) {
+  .mobile-navbar {
+    display: flex;
+  }
+
+  .container-side-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 220px;
+    background: #1b2534;
+    transform: translateX(-100%);
+    z-index: 1000;
+  }
+  .container-side-bar.show {
+    transform: translateX(0);
+  }
+
+  .main-container-side-bar {
+    height: 100%;
+  }
 }
