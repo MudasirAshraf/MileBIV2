@@ -21,4 +21,24 @@
   color: #1c9ca7;
   font-weight: 600;
   font-size: 1.1rem;
+
+  @media (max-width: 786px) {
+    font-size: 0.875rem;
+  }
+}
+@media (max-width: 768px) {
+  .account-settings-security {
+    gap: 6px;
+    padding: 25px 15px;
+  }
+
+  .account-settings-ci-paragraph {
+    font-size: 1rem;
+    line-height: 1.2rem;
+  }
+
+  .account-settings-security img {
+    width: 36px;
+    height: 36px;
+  }
 }

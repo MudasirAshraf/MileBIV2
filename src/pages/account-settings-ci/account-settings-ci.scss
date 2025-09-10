@@ -21,31 +21,49 @@
   color: #1c9ca7;
   font-weight: 600;
   font-size: 1.1rem;
+
+  @media (max-width: 768px) {
+    font-size: 0.875rem;
+  }
 }
 .account-settings-ci-form-container {
   display: flex;
   flex-direction: column;
   padding: 0px 15px;
   gap: 20px;
+
+  @media (max-width: 768px) {
+    gap: 10px;
+  }
 }
 .account-settings-ci-ist-row,
 .account-settings-ci-2nd-row {
   display: flex;
   flex-direction: row;
   gap: 20px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 10px;
+  }
 }
 .input-group-sign-in-account-settings-ci {
   display: flex;
   align-items: center;
   border: 1px solid #2a374a;
   padding: 10px 5px;
-  width: 285px;
+  width: 100%;
   border-radius: 5px;
   background-color: #232d3c;
   gap: 3px;
+
+  @media (min-width: 1024px) {
+    width: 285px;
+  }
 }
 .input-details-sign-in-account-settings-ci {
   background-color: #232d3c;
+  color: #ffffff;
 }
 .input-group-sign-in-account-settings-ci input {
   flex: 1;
@@ -55,7 +73,7 @@
   color: #ffffff;
 }
 .styled-select {
-  width: 285px;
+  width: 100%;
   padding: 5px;
   font-size: 14px;
   color: #ffffff;
@@ -63,6 +81,10 @@
   border: none;
   border-radius: 5px;
   cursor: pointer;
+
+  @media (min-width: 1024px) {
+    width: 285px;
+  }
 }
 
 .styled-select option {
@@ -87,10 +109,15 @@
   align-items: center;
   border: 1px solid #2a374a;
   padding: 10px 5px;
-  width: 582px;
+  width: 100%;
   border-radius: 5px;
   background-color: #232d3c;
+  color: #ffffff;
   gap: 3px;
+
+  @media (min-width: 1024px) {
+    width: 592px;
+  }
 }
 .input-details-adress-ci {
   background-color: #232d3c;
@@ -108,4 +135,20 @@
 }
 .account-settings-ci-paragraph:hover {
   color: #1c9ca7;
+}
+@media (max-width: 768px) {
+  .account-settings-ci {
+    gap: 6px;
+    padding: 25px 15px;
+  }
+
+  .account-settings-ci-paragraph {
+    font-size: 1rem;
+    line-height: 1.2rem;
+  }
+
+  .account-settings-ci img {
+    width: 36px;
+    height: 36px;
+  }
 }

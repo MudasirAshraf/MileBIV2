@@ -102,7 +102,7 @@ const AccountSettingsCI = ({ user }) => {
           </div>
           <div className="account-settings-ci-header">
             <p>{id ? "Edit Company Info" : "Change Company Info"}</p>
-            <img src={Line} alt="line" />
+            <hr className="divider" />
           </div>
           <div>
             <Formik
@@ -116,9 +116,9 @@ const AccountSettingsCI = ({ user }) => {
                   {/* First Row */}
                   <div className="account-settings-ci-ist-row">
                     <div className="input-wrapper">
-                      <div className="input-group-sign-in-row-I-account-settings-pi">
+                      <div className="input-group-sign-in-account-settings-ci">
                         <Field
-                          className="input-details-sign-in-row-I-account-settings-pi"
+                          className="input-details-sign-in-account-settings-ci"
                           type="text"
                           id="name"
                           name="name"

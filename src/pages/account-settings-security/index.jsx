@@ -89,7 +89,7 @@ const AccoutSettingsSecurity = ({ user }) => {
           </div>
           <div className="account-settings-security-header">
             <p>Change Password</p>
-            <img src={Line} alt="line" />
+            <hr className="divider" />
           </div>
           <div>
             <Formik

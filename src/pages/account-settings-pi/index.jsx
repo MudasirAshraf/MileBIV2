@@ -6,7 +6,6 @@ import "./account-settings-pi.scss";
 import DashboardWrapper from "../../components/dashboard-wrapper";
 import Check from "../../assets/svg/check.svg";
 import EArrow from "../../assets/svg/expandarrow.svg";
-import Line from "../../assets/svg/line.svg";
 import Avatar from "../../assets/png/avataar.png";
 import Phone from "../../assets/svg/Phone_light.svg";
 import axiosInstance from "../../components/axios";
@@ -117,7 +116,7 @@ const AccountSettingsPI = ({ user, updateCurrentUser }) => {
           </div>
           <div className="account-settings-pi-header">
             <p>Change Avatar</p>
-            <img src={Line} alt="line" />
+            <hr className="divider" />
           </div>
           <Formik
             initialValues={initialFormValues}
@@ -180,7 +179,7 @@ const AccountSettingsPI = ({ user, updateCurrentUser }) => {
                 </div>
                 <div className="account-settings-pi-header">
                   <p>Personal Info</p>
-                  <img src={Line} alt="line" />
+                  <hr className="divider" />
                 </div>
                 <Form className="form-account-settings-pi">
                   <div className="account-settings-pi-form">
