@@ -10,7 +10,7 @@ import { connect, useSelector } from "react-redux";
 import axiosInstance from "../axios";
 import urlswithoutgateway from "../../actions/urlswithoutgateway";
 import { getWorkspaces } from "../../actions/workspaceAction";
-
+import VisibilityIcon from "@mui/icons-material/Visibility";
 const DropdownMenu = ({
   onDelete,
   datasetId,
@@ -28,8 +28,16 @@ const DropdownMenu = ({
     setShowSubmenu(!showSubmenu);
   };
 
-  const handleEdit = () => {
-    navigate(`/grids/${dashboardId}`);
+  // const handleEdit = () => {
+  //   navigate(`/grids/${dashboardId}`);
+  // };
+
+    const handleEdit = () => {
+    navigate(`/edit/${dashboardId}`); // Edit route
+  };
+
+  const handleView = () => {
+    navigate(`/grids/${dashboardId}`); // View route
   };
 
   const handleDelete = () => {
@@ -56,6 +64,10 @@ const DropdownMenu = ({
       <ul>
         <li onClick={() => handleEdit()}>
           <img src={EDIT} alt="Edit" /> Edit
+        </li>
+        <li onClick={handleView}>
+             <VisibilityIcon fontSize="small" />
+              View
         </li>
         <li onClick={handleDelete}>
           <img src={Trash} alt="Delete" /> Delete

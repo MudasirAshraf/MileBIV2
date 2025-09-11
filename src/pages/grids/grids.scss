@@ -29,3 +29,27 @@
   line-height: 1.5rem;
   color: black;
 }
+
+.button-header-grid{
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  justify-content: flex-start;
+  @media (max-width: 768px) {
+    padding: 10px 20px;
+  }
+}
+
+.btn-header-grid {
+  display: inline-flex; 
+  background-color: #1C9CA7;
+  color: white;
+  padding: 10px 15px;
+  width: auto; 
+  max-width: 200px; 
+}
+@media (max-width: 768px) {
+  .btn-header-grid {
+    width: auto;
+  }
+}

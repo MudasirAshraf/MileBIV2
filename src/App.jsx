@@ -150,6 +150,7 @@ function App() {
                 <Route path="/grids" element={<Grids />} />
                 {/* Grid Wrapper */}
                 <Route path="/grids/:id" element={<Grids />} />
+                <Route path="/edit/:id" element={<Grids />} />
                 {/* Account Settings */}
                 <Route path="/account-settings" element={<AccountSettings />} />
                 <Route

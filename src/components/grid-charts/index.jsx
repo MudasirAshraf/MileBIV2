@@ -9,6 +9,7 @@ import Card from "../../chart-components/card";
 import SimpleTable from "../../chart-components/table";
 import Typography from "../../chart-components/typography";
 import { useDashboardAccess } from "../../hooks/useDashboardAccess";
+
 import {
   Dialog,
   DialogTitle,
@@ -92,7 +93,14 @@ const Grid = ({
         onClick={() => onSelect(index)}
       >
         <div
-          className="grid-header d-flex align-items-center justify-content-between"
+        className="grid-header"
+
+           style={{
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",   
+    gap: "8px",                        
+  }}
         >
           <div
             className="grid-title"
@@ -110,6 +118,8 @@ const Grid = ({
           {canAccess && (
             <Button
               variant="outlined"
+              sx={{ width: "auto", minWidth: "auto" }}
+                  size="small" 
               onClick={(e) => {
                 e.stopPropagation();
                 setIsEditing(true);

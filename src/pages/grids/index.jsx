@@ -1,13 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
 import "./grids.scss";
 import Dashboard from "../../pages/dashboard";
 import Grid from "../../components/grid-charts";
-import { updateDashboard } from "../../actions/dashboardActions";
+import { updateDashboard, getSpecificDashboard } from "../../actions/dashboardActions";
 import { connect } from "react-redux";
 import { getChartOptions } from "../../data/chartData";
 import { toast } from "react-toastify";
 
-const Grids = ({ dashboard, updateDashboard }) => {
+const Grids = ({ dashboard, updateDashboard, getSpecificDashboard }) => {
+   const location = useLocation();
+  const isViewMode = location.pathname.includes("/grids/");
   const [grid, setGrid] = useState({});
   const [selectedCharts, setSelectedCharts] = useState([]);
   const [chartOptions, setChartOptions] = useState({});
@@ -16,6 +19,16 @@ const Grids = ({ dashboard, updateDashboard }) => {
   const [gridToMoveIndex, setGridToMoveIndex] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [downloading, setDownloading] = useState(false);
+  const navigate = useNavigate();
+  // Fetch Dashboard  by ID
+  const { id } = useParams();
+
+
+ useEffect(() => {
+  if (isViewMode && id && !dashboard) {
+    getSpecificDashboard(id); 
+  }
+}, [isViewMode, id]);
 
   const handleCreateGrid = async (rows, cols, colsdata) => {
     const newGrid = { rows: rows, cols: cols, id: Date.now() };
@@ -187,6 +200,45 @@ const Grids = ({ dashboard, updateDashboard }) => {
     }
   };
 
+      if (isViewMode) {
+    return (
+      <div className="main-container">
+     <div className="button-header-grid">
+  <button
+    className="btn-header-grid"
+    onClick={() => navigate("/create-dashboard")}
+  >
+    ← Back
+  </button>
+</div>
+        {dashboard && dashboard.datasetsTree && dashboard.datasetsTree.length > 0 ? (
+          <div className="container-grids p-3">
+            <div className="content-grids p-0">
+              <div className="d-flex flex-wrap justify-content-center">
+                {dashboard.datasetsTree.map((dataset, index) => (
+                  <Grid
+                    key={index}
+                    dataset={dataset}
+                    dashboard={dashboard}
+                    chart={dataset?.options || {}}
+                    chartOptions={dataset?.options || {}}
+                    index={index}
+                    downloading={downloading}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="no-data text-center p-5">
+            <h3>Oops! Nothing to see here yet. Add a chart to start visualizing your data.
+</h3>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="main-container">
       <Dashboard
@@ -248,4 +300,5 @@ const mapStateToProps = (state) => ({
 });
 export default connect(mapStateToProps, {
   updateDashboard,
+   getSpecificDashboard,
 })(Grids);
