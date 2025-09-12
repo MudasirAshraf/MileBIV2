@@ -5,7 +5,6 @@ import Logo from "../../assets/svg/logo.svg";
 import Back from "../../assets/svg/Back.svg";
 import Group from "../../assets/svg/group-III.svg";
 import Three from "../../assets/png/3.png";
-import Line from "../../assets/svg/line.svg";
 import Question from "../../assets/svg/Question_light.svg";
 import { ToastContainer, toast, Slide } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";

@@ -4,10 +4,10 @@ import ReactApexChart from 'react-apexcharts';
 const AreaChart = ({
   title = 'Area Chart',
   backgroundColor = '#fff',
-  lineColors = ['#008FFB', '#FF4560'], // Colors for each line
+  lineColors = ['#008FFB', '#FF4560'], 
   showLegend = true,
   legendPosition = 'bottom',
-  height = 290, // default height
+  height = 290, 
   xaxisTitle = 'Date Time',
   yaxisTitle = 'Values',
   showTooltip = true,

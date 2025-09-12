@@ -7,7 +7,6 @@ const Card = ({
 }) => {
   return (
     <div style={{ backgroundColor: option?.options?.background || "#fff", height: gridHeight + "px" }} className='card-dashboard-cont'>
-      {/* first column */}
       <div>
         <h1 className="card-value" style={{ fontSize: '2rem', fontWeight: 'bold', color: '#333', textAlign: 'center' }}>
           {option?.options?.value || 0}

@@ -11,7 +11,7 @@ const Image = ({ title = 'hello' }) => {
       const reader = new FileReader();
       reader.onloadend = () => {
         setImage(reader.result);
-        setFileInputVisible(false); // Hide the file input after image is uploaded
+        setFileInputVisible(false); 
       };
       reader.readAsDataURL(file);
     }
@@ -30,7 +30,7 @@ const Image = ({ title = 'hello' }) => {
             type="file"
             accept="image/*"
             onChange={handleImageUpload}
-            className={fileInputVisible ? '' : 'hidden'} // Add 'hidden' class when needed
+            className={fileInputVisible ? '' : 'hidden'} 
           />
         )}
         {image && (

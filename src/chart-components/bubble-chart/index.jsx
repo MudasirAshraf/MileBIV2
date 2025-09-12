@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactApexChart from 'react-apexcharts';
 
-// Generate random data for bubbles
 const generateData = (baseval, count, yrange) => {
   const series = [];
   let i = 0;

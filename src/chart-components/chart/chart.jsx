@@ -6,8 +6,8 @@ const Chart = ({ option, gridHeight, overflow }) => {
 
   useEffect(() => {
     if (chartRef.current && option) {
-      const newOptions = { ...option.options }; // Ensure a new reference
-      const newSeries = [...option.options.series]; // Ensure a new reference
+      const newOptions = { ...option.options }; 
+      const newSeries = [...option.options.series]; 
       chartRef.current.chart.updateOptions(newOptions, true, true);
       chartRef.current.chart.updateSeries(newSeries, true);
     }
@@ -24,10 +24,8 @@ const Chart = ({ option, gridHeight, overflow }) => {
       id="chart-container"
       style={{
         width: "100%",
-        // maxWidth: "600px",
         margin: "0 auto",
         borderRadius: "8px",
-        // padding: "0.5rem 0.5rem",
       }}
     >
       {isValidOptions ? (
